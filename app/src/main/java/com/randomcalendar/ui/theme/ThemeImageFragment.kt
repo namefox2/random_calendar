@@ -82,13 +82,11 @@ class ThemeImageFragment : Fragment() {
 
                 if (swatches.isEmpty()) return@generate
 
-                extractedColors = swatches.map { swatch ->
+                val colorList = swatches.map { swatch ->
                     String.format("#%06X", 0xFFFFFF and swatch.rgb)
-                }.let { colors ->
-                    // 5개 미만이면 마지막 색상으로 패딩
-                    while (it.size < 5) (it as MutableList).add(it.last())
-                    it.take(5)
-                }
+                }.toMutableList()
+                while (colorList.size < 5) colorList.add(colorList.last())
+                extractedColors = colorList.take(5)
 
                 // 스와치 UI 표시
                 binding.swatchContainer.removeAllViews()
