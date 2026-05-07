@@ -26,6 +26,11 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".ui.randomlist.RandomListActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.main.MainActivity" />
+
         <service
             android:name=".ui.timer.TimerService"
             android:foregroundServiceType="mediaPlayback"

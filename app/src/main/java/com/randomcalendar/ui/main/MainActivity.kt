@@ -15,6 +15,7 @@ import com.randomcalendar.ui.calendar.CalendarAdapter
 import com.randomcalendar.ui.calendar.CalendarBuilder
 import com.randomcalendar.ui.common.ViewModelFactory
 import com.randomcalendar.ui.daydetail.DayDetailBottomSheet
+import com.randomcalendar.ui.randomlist.RandomListActivity
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
@@ -132,9 +133,9 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        // TODO Stage 6: 랜덤리스트 관리 화면 이동
         binding.btnRandomList.setOnClickListener {
             binding.drawerLayout.closeDrawer(binding.sidebarLayout)
+            startActivity(android.content.Intent(this, RandomListActivity::class.java))
         }
 
         // TODO Stage 9: 테마 화면 이동
