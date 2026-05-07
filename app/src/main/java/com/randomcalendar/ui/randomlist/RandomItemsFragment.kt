@@ -252,7 +252,8 @@ class RandomItemAdapter(
 
             b.headerRow.setOnClickListener {
                 if (item.id in expandedIds) expandedIds.remove(item.id) else expandedIds.add(item.id)
-                notifyItemChanged(bindingAdapterPosition)
+                val pos = currentList.indexOfFirst { it.id == item.id }
+                if (pos != -1) notifyItemChanged(pos)
             }
 
             if (isExpanded) {
