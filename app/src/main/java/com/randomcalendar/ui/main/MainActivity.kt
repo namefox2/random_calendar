@@ -14,6 +14,7 @@ import com.randomcalendar.databinding.ActivityMainBinding
 import com.randomcalendar.ui.calendar.CalendarAdapter
 import com.randomcalendar.ui.calendar.CalendarBuilder
 import com.randomcalendar.ui.common.ViewModelFactory
+import com.randomcalendar.ui.daydetail.DayDetailBottomSheet
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
@@ -54,7 +55,8 @@ class MainActivity : AppCompatActivity() {
     private fun setupCalendar() {
         calendarAdapter = CalendarAdapter { date ->
             viewModel.selectDate(date)
-            // TODO Stage 3: DayDetailBottomSheet.show(...)
+            DayDetailBottomSheet.newInstance(date)
+                .show(supportFragmentManager, DayDetailBottomSheet.TAG)
         }
         binding.rvCalendar.apply {
             layoutManager = GridLayoutManager(this@MainActivity, 7)
