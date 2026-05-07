@@ -1,6 +1,7 @@
 package com.randomcalendar.ui.main
 
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -16,6 +17,7 @@ import com.randomcalendar.ui.calendar.CalendarBuilder
 import com.randomcalendar.ui.common.ViewModelFactory
 import com.randomcalendar.ui.daydetail.DayDetailBottomSheet
 import com.randomcalendar.ui.randomlist.RandomListActivity
+import com.randomcalendar.ui.theme.ThemeActivity
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
@@ -46,6 +48,7 @@ class MainActivity : AppCompatActivity() {
         setupSidebar()
         setupMemo()
         observeViewModel()
+        applyThemeColors()
 
         val savedThreshold = prefs.getInt("achievement_threshold", 80)
         binding.seekAchievement.progress = savedThreshold
@@ -138,9 +141,9 @@ class MainActivity : AppCompatActivity() {
             startActivity(android.content.Intent(this, RandomListActivity::class.java))
         }
 
-        // TODO Stage 9: 테마 화면 이동
         binding.btnTheme.setOnClickListener {
             binding.drawerLayout.closeDrawer(binding.sidebarLayout)
+            startActivity(android.content.Intent(this, ThemeActivity::class.java))
         }
     }
 
@@ -209,5 +212,21 @@ class MainActivity : AppCompatActivity() {
             }
         )
         calendarAdapter.submitList(cells)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        applyThemeColors()
+    }
+
+    private fun applyThemeColors() {
+        try {
+            val primary = prefs.getString("theme_primary", "#1976D2")!!
+            val sidebar = prefs.getString("theme_sidebar", "#F5F5F5")!!
+            val primaryColor = Color.parseColor(primary)
+            val sidebarColor = Color.parseColor(sidebar)
+            binding.sloganBar.setBackgroundColor(primaryColor)
+            binding.sidebarLayout.setBackgroundColor(sidebarColor)
+        } catch (_: Exception) {}
     }
 }
