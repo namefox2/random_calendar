@@ -55,8 +55,9 @@ class MainActivity : AppCompatActivity() {
     private fun setupCalendar() {
         calendarAdapter = CalendarAdapter { date ->
             viewModel.selectDate(date)
-            DayDetailBottomSheet.newInstance(date)
-                .show(supportFragmentManager, DayDetailBottomSheet.TAG)
+            val sheet = DayDetailBottomSheet.newInstance(date)
+            sheet.onDataChanged = { viewModel.refreshMonthData() }
+            sheet.show(supportFragmentManager, DayDetailBottomSheet.TAG)
         }
         binding.rvCalendar.apply {
             layoutManager = GridLayoutManager(this@MainActivity, 7)

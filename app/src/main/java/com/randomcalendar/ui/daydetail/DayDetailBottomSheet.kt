@@ -29,8 +29,12 @@ class DayDetailBottomSheet : BottomSheetDialogFragment() {
         return binding.root
     }
 
+    // 캘린더 즉시 갱신을 위해 todo 변경을 MainActivity에 알림
+    var onDataChanged: (() -> Unit)? = null
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.todos.observe(viewLifecycleOwner) { onDataChanged?.invoke() }
 
         // BottomSheet를 최대 높이로 확장
         dialog?.setOnShowListener {
