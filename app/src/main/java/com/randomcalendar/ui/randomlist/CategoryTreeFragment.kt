@@ -150,7 +150,7 @@ class CategoryTreeAdapter(
 
     inner class CategoryViewHolder(private val b: ItemCategoryBinding) :
         RecyclerView.ViewHolder(b.root) {
-        fun bind(row: TreeRow) {
+        private fun bind(row: TreeRow) {
             val cat = row.category ?: return
             b.tvName.text = cat.name
             b.tvLevel.text = when (cat.level) { 0 -> "대"; 1 -> "중"; else -> "소" }
@@ -179,7 +179,7 @@ class CategoryTreeAdapter(
 
     inner class AddCategoryViewHolder(private val b: ItemAddCategoryBinding) :
         RecyclerView.ViewHolder(b.root) {
-        fun bind(row: TreeRow) {
+        private fun bind(row: TreeRow) {
             val hint = when (row.level) { 0 -> "+ 대분류 추가"; 1 -> "+ 중분류 추가"; else -> "+ 소분류 추가" }
             b.etNewCategory.hint = hint
             b.etNewCategory.text?.clear()
