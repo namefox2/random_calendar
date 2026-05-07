@@ -92,7 +92,7 @@ class ThemeImageFragment : Fragment() {
                         val hex = String.format("#%06X", 0xFFFFFF and swatch.rgb)
                         setBackgroundColor(Color.parseColor(hex))
                         layoutParams = android.widget.LinearLayout.LayoutParams(0,
-                            resources.getDimensionPixelSize(com.google.android.material.R.dimen.m3_btn_height)).apply {
+                            (48 * resources.displayMetrics.density).toInt()).apply {
                             weight = 1f
                         }
                     }
