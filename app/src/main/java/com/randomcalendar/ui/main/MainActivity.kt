@@ -18,6 +18,8 @@ import com.randomcalendar.ui.common.ViewModelFactory
 import com.randomcalendar.ui.daydetail.DayDetailBottomSheet
 import com.randomcalendar.ui.randomlist.RandomListActivity
 import com.randomcalendar.ui.theme.ThemeActivity
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
@@ -26,6 +28,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var calendarAdapter: CalendarAdapter
+    private lateinit var adView: AdView
 
     private val app get() = application as RandomCalendarApp
     private val prefs by lazy { getSharedPreferences("random_calendar_prefs", Context.MODE_PRIVATE) }
@@ -49,6 +52,7 @@ class MainActivity : AppCompatActivity() {
         setupMemo()
         observeViewModel()
         applyThemeColors()
+        setupAd()
 
         val savedThreshold = prefs.getInt("achievement_threshold", 80)
         binding.seekAchievement.progress = savedThreshold
@@ -214,9 +218,25 @@ class MainActivity : AppCompatActivity() {
         calendarAdapter.submitList(cells)
     }
 
+    private fun setupAd() {
+        adView = binding.adView
+        adView.loadAd(AdRequest.Builder().build())
+    }
+
     override fun onResume() {
         super.onResume()
         applyThemeColors()
+        if (::adView.isInitialized) adView.resume()
+    }
+
+    override fun onPause() {
+        if (::adView.isInitialized) adView.pause()
+        super.onPause()
+    }
+
+    override fun onDestroy() {
+        if (::adView.isInitialized) adView.destroy()
+        super.onDestroy()
     }
 
     private fun applyThemeColors() {
