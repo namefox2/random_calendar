@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
@@ -19,7 +18,6 @@ import com.randomcalendar.databinding.FragmentRandomTabBinding
 import com.randomcalendar.databinding.ItemPickedBinding
 import com.randomcalendar.ui.common.ViewModelFactory
 import com.randomcalendar.ui.randomlist.RandomListViewModel
-import kotlinx.coroutines.launch
 
 class RandomTabFragment : Fragment() {
 
