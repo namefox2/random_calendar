@@ -103,7 +103,7 @@ class CategoryTreeAdapter(
     private val onDelete: (Category) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private data class TreeRow(
+    internal data class TreeRow(
         val category: Category?,  // null = "추가" 행
         val parentId: Long?,
         val level: Int,
