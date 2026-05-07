@@ -28,7 +28,9 @@ class RandomItemsFragment : Fragment() {
 
     private lateinit var itemAdapter: RandomItemAdapter
     private var allCategories: List<Category> = emptyList()
+    private var allItems: List<RandomItem> = emptyList()
     private var selectedSmallId: Long? = null
+    private var searchQuery: String = ""
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -55,8 +57,11 @@ class RandomItemsFragment : Fragment() {
         binding.rvItems.adapter = itemAdapter
 
         viewModel.allItems.observe(viewLifecycleOwner) { items ->
-            itemAdapter.submitList(items)
+            allItems = items
+            applyFilter()
         }
+
+        setupSearch()
 
         viewModel.allCategories.observe(viewLifecycleOwner) { categories ->
             allCategories = categories
@@ -64,6 +69,30 @@ class RandomItemsFragment : Fragment() {
         }
 
         setupAddForm()
+    }
+
+    private fun setupSearch() {
+        binding.etSearch.addTextChangedListener(SimpleTextWatcher {
+            searchQuery = binding.etSearch.text.toString().trim()
+            binding.btnClearSearch.visibility = if (searchQuery.isNotEmpty()) View.VISIBLE else View.GONE
+            applyFilter()
+        })
+        binding.btnClearSearch.setOnClickListener {
+            binding.etSearch.text?.clear()
+            searchQuery = ""
+            binding.btnClearSearch.visibility = View.GONE
+            applyFilter()
+        }
+    }
+
+    private fun applyFilter() {
+        val filtered = if (searchQuery.isEmpty()) {
+            allItems
+        } else {
+            allItems.filter { it.name.contains(searchQuery, ignoreCase = true) }
+        }
+        itemAdapter.submitList(filtered)
+        binding.tvNoResults.visibility = if (filtered.isEmpty() && searchQuery.isNotEmpty()) View.VISIBLE else View.GONE
     }
 
     private fun buildCategoryChips(categories: List<Category>) {
