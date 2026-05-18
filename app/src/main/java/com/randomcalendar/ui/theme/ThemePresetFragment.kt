@@ -47,13 +47,13 @@ class ThemePresetFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.btnPink.setOnClickListener   { selectPreset(presets[0]) }
-        binding.btnBlue.setOnClickListener   { selectPreset(presets[1]) }
-        binding.btnGreen.setOnClickListener  { selectPreset(presets[2]) }
-        binding.btnYellow.setOnClickListener { selectPreset(presets[3]) }
-        binding.btnBlack.setOnClickListener  { selectPreset(presets[4]) }
+        binding.btnPink.setOnClickListener   { saveAndFinish(presets[0]) }
+        binding.btnBlue.setOnClickListener   { saveAndFinish(presets[1]) }
+        binding.btnGreen.setOnClickListener  { saveAndFinish(presets[2]) }
+        binding.btnYellow.setOnClickListener { saveAndFinish(presets[3]) }
+        binding.btnBlack.setOnClickListener  { saveAndFinish(presets[4]) }
 
-        binding.btnReset.setOnClickListener { selectPreset(defaultPreset) }
+        binding.btnReset.setOnClickListener { saveAndFinish(defaultPreset) }
         binding.btnApply.setOnClickListener { saveAndFinish(currentPreset) }
 
         val saved = ThemePreset(
