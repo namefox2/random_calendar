@@ -286,10 +286,8 @@ class CategoryTreeAdapter(
                 rows.add(TreeRow(null, cat.id, level, indent + 1, isAddItem = true))
             }
         }
-        // 카테고리 추가 행 (대/중분류만)
-        if (level < 2) {
-            rows.add(TreeRow(null, parentId, level, indent, isAddItem = false))
-        }
+        // 카테고리 추가 행 (모든 레벨)
+        rows.add(TreeRow(null, parentId, level, indent, isAddItem = false))
     }
 
     // 0 = 카테고리 행, 1 = 카테고리 추가 행, 2 = 항목 추가 행
