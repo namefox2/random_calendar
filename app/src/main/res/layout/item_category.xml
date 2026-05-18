@@ -87,6 +87,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:textSize="15sp"
+            android:textColor="@color/text_primary"
+            android:textColorHint="@color/text_secondary"
             android:background="@drawable/bg_input_field"
             android:paddingStart="12dp"
             android:paddingEnd="12dp"

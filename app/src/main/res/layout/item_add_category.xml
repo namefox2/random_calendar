@@ -16,6 +16,8 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:hint="새 분류 이름"
+        android:textColor="@color/text_primary"
+        android:textColorHint="@color/text_secondary"
         android:textSize="14sp"
         android:background="@drawable/bg_input_field"
         android:paddingStart="12dp"
