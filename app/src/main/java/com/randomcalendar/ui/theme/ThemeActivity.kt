@@ -27,7 +27,7 @@ class ThemeActivity : AppCompatActivity() {
         }
 
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, pos ->
-            tab.text = if (pos == 0) "이미지 추출" else "직접 설정"
+            tab.text = if (pos == 0) "이미지 추출" else "파스텔 테마"
         }.attach()
     }
 }

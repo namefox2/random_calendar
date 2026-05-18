@@ -20,21 +20,24 @@ class ThemePresetFragment : Fragment() {
 
     data class ThemePreset(
         val name: String,
-        val primary: String,
-        val sidebar: String,
-        val accent: String,
-        val bg: String,
-        val text: String
+        val primary: String,   // 슬로건바 배경
+        val sidebar: String,   // 사이드바 배경
+        val accent: String,    // 강조색
+        val bg: String,        // 앱 배경
+        val text: String       // 본문 텍스트
     )
 
     private val presets = listOf(
-        ThemePreset("미드나잇", "#1A237E", "#283593", "#FFD54F", "#121212", "#FFFFFF"),
-        ThemePreset("오션", "#006064", "#00838F", "#4DD0E1", "#E0F7FA", "#004D40"),
-        ThemePreset("포레스트", "#1B5E20", "#2E7D32", "#A5D6A7", "#F1F8E9", "#1B5E20"),
-        ThemePreset("로즈", "#880E4F", "#AD1457", "#F48FB1", "#FCE4EC", "#4A0026")
+        ThemePreset("핑크",  "#F48FB1", "#FCE4EC", "#E91E63", "#FFFFFF", "#880E4F"),
+        ThemePreset("파랑",  "#90CAF9", "#E3F2FD", "#1976D2", "#FFFFFF", "#0D47A1"),
+        ThemePreset("녹색",  "#A5D6A7", "#E8F5E9", "#388E3C", "#FFFFFF", "#1B5E20"),
+        ThemePreset("노랑",  "#FFF59D", "#FFFDE7", "#F9A825", "#FFFFFF", "#E65100"),
+        ThemePreset("블랙",  "#424242", "#212121", "#BDBDBD", "#121212", "#FFFFFF")
     )
 
-    private var currentPreset: ThemePreset = presets[0]
+    private val defaultPreset = ThemePreset("기본", "#1976D2", "#F5F5F5", "#FF9800", "#FFFFFF", "#212121")
+
+    private var currentPreset: ThemePreset = defaultPreset
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentThemePresetBinding.inflate(inflater, container, false)
@@ -44,48 +47,47 @@ class ThemePresetFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.btnMidnight.setOnClickListener { applyPreset(presets[0]) }
-        binding.btnOcean.setOnClickListener { applyPreset(presets[1]) }
-        binding.btnForest.setOnClickListener { applyPreset(presets[2]) }
-        binding.btnRose.setOnClickListener { applyPreset(presets[3]) }
+        binding.btnPink.setOnClickListener   { selectPreset(presets[0]) }
+        binding.btnBlue.setOnClickListener   { selectPreset(presets[1]) }
+        binding.btnGreen.setOnClickListener  { selectPreset(presets[2]) }
+        binding.btnYellow.setOnClickListener { selectPreset(presets[3]) }
+        binding.btnBlack.setOnClickListener  { selectPreset(presets[4]) }
 
-        binding.btnReset.setOnClickListener {
-            applyPreset(ThemePreset("기본", "#1976D2", "#F5F5F5", "#FF9800", "#FFFFFF", "#212121"))
-        }
+        binding.btnReset.setOnClickListener { selectPreset(defaultPreset) }
+        binding.btnApply.setOnClickListener { saveAndFinish(currentPreset) }
 
-        binding.btnApply.setOnClickListener { saveTheme(currentPreset) }
-
-        // 현재 저장된 테마로 미리보기 초기화
         val saved = ThemePreset(
             name = "",
-            primary = prefs.getString("theme_primary", "#1976D2")!!,
-            sidebar = prefs.getString("theme_sidebar", "#F5F5F5")!!,
-            accent = prefs.getString("theme_accent", "#FF9800")!!,
-            bg = prefs.getString("theme_bg", "#FFFFFF")!!,
-            text = prefs.getString("theme_text", "#212121")!!
+            primary = prefs.getString("theme_primary", defaultPreset.primary)!!,
+            sidebar = prefs.getString("theme_sidebar", defaultPreset.sidebar)!!,
+            accent  = prefs.getString("theme_accent",  defaultPreset.accent)!!,
+            bg      = prefs.getString("theme_bg",      defaultPreset.bg)!!,
+            text    = prefs.getString("theme_text",    defaultPreset.text)!!
         )
-        updatePreview(saved)
         currentPreset = saved
+        updatePreview(saved)
     }
 
-    private fun applyPreset(preset: ThemePreset) {
+    private fun selectPreset(preset: ThemePreset) {
         currentPreset = preset
         updatePreview(preset)
     }
 
     private fun updatePreview(preset: ThemePreset) {
         try {
+            val primaryColor = Color.parseColor(preset.primary)
+            binding.previewMain.setBackgroundColor(primaryColor)
             binding.previewSidebar.setBackgroundColor(Color.parseColor(preset.sidebar))
-            binding.previewMain.setBackgroundColor(Color.parseColor(preset.primary))
             binding.previewAccent.setBackgroundColor(Color.parseColor(preset.accent))
-            binding.previewText.setTextColor(Color.parseColor(preset.text))
 
-            // 스와치 표시
+            val onPrimary = if (isColorDark(primaryColor)) Color.WHITE else Color.BLACK
+            binding.previewText.setTextColor(onPrimary)
+
             binding.colorSwatches.removeAllViews()
             listOf(preset.primary, preset.sidebar, preset.accent, preset.bg, preset.text).forEach { hex ->
                 val swatch = View(requireContext()).apply {
-                    layoutParams = ViewGroup.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT)
-                        .also { (it as android.widget.LinearLayout.LayoutParams).weight = 1f }
+                    layoutParams = android.widget.LinearLayout.LayoutParams(0,
+                        android.widget.LinearLayout.LayoutParams.MATCH_PARENT).apply { weight = 1f }
                     setBackgroundColor(Color.parseColor(hex))
                 }
                 binding.colorSwatches.addView(swatch)
@@ -93,15 +95,22 @@ class ThemePresetFragment : Fragment() {
         } catch (_: Exception) {}
     }
 
-    private fun saveTheme(preset: ThemePreset) {
+    private fun saveAndFinish(preset: ThemePreset) {
         prefs.edit()
             .putString("theme_primary", preset.primary)
             .putString("theme_sidebar", preset.sidebar)
-            .putString("theme_accent", preset.accent)
-            .putString("theme_bg", preset.bg)
-            .putString("theme_text", preset.text)
+            .putString("theme_accent",  preset.accent)
+            .putString("theme_bg",      preset.bg)
+            .putString("theme_text",    preset.text)
             .apply()
         requireActivity().finish()
+    }
+
+    private fun isColorDark(color: Int): Boolean {
+        val r = Color.red(color)   / 255.0
+        val g = Color.green(color) / 255.0
+        val b = Color.blue(color)  / 255.0
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b < 0.5
     }
 
     override fun onDestroyView() {

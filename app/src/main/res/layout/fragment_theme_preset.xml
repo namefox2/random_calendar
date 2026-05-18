@@ -13,106 +13,141 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="프리셋 테마"
+            android:text="파스텔 테마"
             android:textSize="16sp"
             android:textStyle="bold"
             android:textColor="@color/text_primary"
-            android:layout_marginBottom="12dp" />
+            android:layout_marginBottom="16dp" />
 
-        <!-- 미리보기 -->
-        <LinearLayout
-            android:id="@+id/previewBar"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:orientation="horizontal"
-            android:layout_marginBottom="16dp">
-
-            <View
-                android:id="@+id/previewSidebar"
-                android:layout_width="48dp"
-                android:layout_height="match_parent" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:id="@+id/previewMain"
-                android:gravity="center">
-
-                <TextView
-                    android:id="@+id/previewText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="미리보기"
-                    android:textSize="14sp" />
-
-            </LinearLayout>
-
-            <View
-                android:id="@+id/previewAccent"
-                android:layout_width="48dp"
-                android:layout_height="match_parent" />
-
-        </LinearLayout>
-
-        <!-- 프리셋 버튼들 -->
+        <!-- 테마 선택 버튼 행 1 -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="8dp">
 
             <Button
-                android:id="@+id/btnMidnight"
+                android:id="@+id/btnPink"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="56dp"
                 android:layout_weight="1"
-                android:text="미드나잇"
-                android:layout_marginEnd="4dp"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+                android:text="🌸 핑크"
+                android:layout_marginEnd="6dp"
+                android:backgroundTint="#F48FB1"
+                android:textColor="#880E4F"
+                style="@style/Widget.MaterialComponents.Button" />
 
             <Button
-                android:id="@+id/btnOcean"
+                android:id="@+id/btnBlue"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="56dp"
                 android:layout_weight="1"
-                android:text="오션"
-                android:layout_marginEnd="4dp"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+                android:text="🩵 파랑"
+                android:layout_marginEnd="6dp"
+                android:backgroundTint="#90CAF9"
+                android:textColor="#0D47A1"
+                style="@style/Widget.MaterialComponents.Button" />
 
             <Button
-                android:id="@+id/btnForest"
+                android:id="@+id/btnGreen"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="56dp"
                 android:layout_weight="1"
-                android:text="포레스트"
-                android:layout_marginEnd="4dp"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
-
-            <Button
-                android:id="@+id/btnRose"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="로즈"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+                android:text="🌿 녹색"
+                android:backgroundTint="#A5D6A7"
+                android:textColor="#1B5E20"
+                style="@style/Widget.MaterialComponents.Button" />
 
         </LinearLayout>
 
-        <!-- 색상 역할 표시 -->
+        <!-- 테마 선택 버튼 행 2 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="20dp">
+
+            <Button
+                android:id="@+id/btnYellow"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:text="🌼 노랑"
+                android:layout_marginEnd="6dp"
+                android:backgroundTint="#FFF59D"
+                android:textColor="#E65100"
+                style="@style/Widget.MaterialComponents.Button" />
+
+            <Button
+                android:id="@+id/btnBlack"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:text="🖤 블랙"
+                android:layout_marginEnd="6dp"
+                android:backgroundTint="#424242"
+                android:textColor="#FFFFFF"
+                style="@style/Widget.MaterialComponents.Button" />
+
+            <!-- 빈 공간 -->
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+        </LinearLayout>
+
+        <!-- 미리보기 -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="선택된 색상"
+            android:text="미리보기"
             android:textSize="14sp"
             android:textStyle="bold"
             android:textColor="@color/text_primary"
             android:layout_marginBottom="8dp" />
 
         <LinearLayout
+            android:id="@+id/previewBar"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp">
+
+            <View
+                android:id="@+id/previewSidebar"
+                android:layout_width="56dp"
+                android:layout_height="match_parent" />
+
+            <LinearLayout
+                android:id="@+id/previewMain"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/previewText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="슬로건 텍스트"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <View
+                android:id="@+id/previewAccent"
+                android:layout_width="56dp"
+                android:layout_height="match_parent" />
+
+        </LinearLayout>
+
+        <!-- 색상 스와치 -->
+        <LinearLayout
             android:id="@+id/colorSwatches"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
+            android:layout_height="32dp"
             android:orientation="horizontal"
             android:layout_marginBottom="24dp" />
 
@@ -127,7 +162,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="초기화"
+                android:text="기본값 초기화"
                 android:layout_marginEnd="8dp"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
 
