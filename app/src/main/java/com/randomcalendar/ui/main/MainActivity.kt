@@ -131,12 +131,11 @@ class MainActivity : AppCompatActivity() {
         binding.seekAchievement.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 binding.tvAchievementValue.text = "${progress}%"
+                if (fromUser) viewModel.setAchievementThreshold(progress)
             }
             override fun onStartTrackingTouch(seekBar: SeekBar) {}
             override fun onStopTrackingTouch(seekBar: SeekBar) {
-                val progress = seekBar.progress
-                prefs.edit().putInt("achievement_threshold", progress).apply()
-                viewModel.setAchievementThreshold(progress)
+                prefs.edit().putInt("achievement_threshold", seekBar.progress).apply()
             }
         })
 
@@ -247,6 +246,19 @@ class MainActivity : AppCompatActivity() {
             val sidebarColor = Color.parseColor(sidebar)
             binding.sloganBar.setBackgroundColor(primaryColor)
             binding.sidebarLayout.setBackgroundColor(sidebarColor)
+
+            val onPrimary = if (isColorDark(primaryColor)) Color.WHITE else Color.BLACK
+            binding.tvSlogan.setTextColor(onPrimary)
+            binding.etSlogan.setTextColor(onPrimary)
+            binding.btnMenu.setColorFilter(onPrimary)
+            binding.btnEditSlogan.setColorFilter(onPrimary)
         } catch (_: Exception) {}
+    }
+
+    private fun isColorDark(color: Int): Boolean {
+        val r = Color.red(color) / 255.0
+        val g = Color.green(color) / 255.0
+        val b = Color.blue(color) / 255.0
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b < 0.5
     }
 }

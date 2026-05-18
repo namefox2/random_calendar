@@ -96,11 +96,11 @@ class TodoAdapter(
                 binding.tvUrl.visibility = View.GONE
             }
 
-            // 타이머 타입 칩
+            // 타이머 타입 칩 (리스너 해제 후 상태 설정, 재등록)
+            binding.chipGroupTimerType.setOnCheckedStateChangeListener(null)
             binding.chipTimerNone.isChecked = item.timerType == "NONE"
             binding.chipTimerNormal.isChecked = item.timerType == "NORMAL"
             binding.chipTimerSet.isChecked = item.timerType == "SET"
-
             binding.chipGroupTimerType.setOnCheckedStateChangeListener { _, checkedIds ->
                 val type = when {
                     R.id.chipTimerNormal in checkedIds -> "NORMAL"

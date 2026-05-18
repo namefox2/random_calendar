@@ -25,6 +25,8 @@ class RandomListActivity : AppCompatActivity() {
         binding = ActivityRandomListBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        viewModel // Fragment가 기본 팩토리로 생성 시도하기 전에 ViewModel을 먼저 초기화
+
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         binding.toolbar.setNavigationOnClickListener { finish() }

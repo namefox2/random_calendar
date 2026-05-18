@@ -74,7 +74,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="뜽기 수:"
+                    android:text="선택 개수:"
                     android:textSize="14sp"
                     android:textColor="@color/text_primary"
                     android:layout_marginEnd="8dp" />
@@ -98,7 +98,7 @@
                     android:id="@+id/btnPickRandom"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="랜덤 뜽기"
+                    android:text="랜덤 돌리기"
                     style="@style/Widget.MaterialComponents.Button" />
 
             </LinearLayout>
@@ -128,7 +128,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:text="분류를 선택하고 '랜덤 뜽기'를 눌러주세요"
+        android:text="분류를 선택하고 '랜덤 돌리기'를 눌러주세요"
         android:textSize="14sp"
         android:textColor="@color/text_secondary"
         android:gravity="center"
