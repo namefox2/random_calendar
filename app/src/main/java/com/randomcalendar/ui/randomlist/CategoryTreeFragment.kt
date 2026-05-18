@@ -84,7 +84,6 @@ class CategoryTreeFragment : Fragment() {
             val matched = allCategories.filter {
                 it.name.contains(searchQuery, ignoreCase = true)
             }.toMutableSet()
-            // 매칭된 항목의 상위 분류도 포함 (트리 구조 유지)
             matched.toList().forEach { cat ->
                 var parentId = cat.parentId
                 while (parentId != null) {
@@ -254,7 +253,8 @@ class CategoryTreeAdapter(
         val category: Category?,
         val parentId: Long?,
         val level: Int,
-        val indent: Int
+        val indent: Int,
+        val isAddItem: Boolean = false
     )
 
     private val rows = mutableListOf<TreeRow>()
@@ -273,23 +273,39 @@ class CategoryTreeAdapter(
             if (cat.id !in collapsedIds && level < 2) {
                 buildTree(all, cat.id, level + 1, indent + 1)
             }
+            // 소분류(level 2) 아래에 항목 추가 행 삽입
+            if (level == 2 && cat.id !in collapsedIds) {
+                rows.add(TreeRow(null, cat.id, level, indent + 1, isAddItem = true))
+            }
         }
-        rows.add(TreeRow(null, parentId, level, indent))
+        // 카테고리 추가 행 (level 0/1/2 모두)
+        rows.add(TreeRow(null, parentId, level, indent, isAddItem = false))
     }
 
-    override fun getItemViewType(position: Int) = if (rows[position].category == null) 1 else 0
+    // 0 = 카테고리 행, 1 = 카테고리 추가 행, 2 = 항목 추가 행
+    override fun getItemViewType(position: Int): Int {
+        val row = rows[position]
+        return when {
+            row.category != null -> 0
+            row.isAddItem -> 2
+            else -> 1
+        }
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
-        if (viewType == 0) {
-            CategoryViewHolder(ItemCategoryBinding.inflate(LayoutInflater.from(parent.context), parent, false))
-        } else {
-            AddCategoryViewHolder(ItemAddCategoryBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+        when (viewType) {
+            0 -> CategoryViewHolder(ItemCategoryBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+            2 -> AddItemViewHolder(ItemAddCategoryBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+            else -> AddCategoryViewHolder(ItemAddCategoryBinding.inflate(LayoutInflater.from(parent.context), parent, false))
         }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val row = rows[position]
-        if (holder is CategoryViewHolder) holder.bind(row)
-        else if (holder is AddCategoryViewHolder) holder.bind(row)
+        when (holder) {
+            is CategoryViewHolder -> holder.bind(row)
+            is AddCategoryViewHolder -> holder.bind(row)
+            is AddItemViewHolder -> holder.bind(row)
+        }
     }
 
     override fun getItemCount() = rows.size
@@ -338,6 +354,27 @@ class CategoryTreeAdapter(
                 val name = b.etNewCategory.text.toString().trim()
                 if (name.isNotBlank()) {
                     onAddCategory(row.parentId, row.level, name)
+                    b.etNewCategory.text?.clear()
+                }
+            }
+            b.etNewCategory.setOnEditorActionListener { _, actionId, _ ->
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    b.btnAddCategory.performClick(); true
+                } else false
+            }
+        }
+    }
+
+    inner class AddItemViewHolder(private val b: ItemAddCategoryBinding) :
+        RecyclerView.ViewHolder(b.root) {
+        internal fun bind(row: TreeRow) {
+            b.etNewCategory.hint = "+ 항목 이름 입력"
+            b.etNewCategory.text?.clear()
+            b.btnAddCategory.text = "항목 추가"
+            b.btnAddCategory.setOnClickListener {
+                val name = b.etNewCategory.text.toString().trim()
+                row.parentId?.let { parentId ->
+                    onAddItem(parentId, name)
                     b.etNewCategory.text?.clear()
                 }
             }

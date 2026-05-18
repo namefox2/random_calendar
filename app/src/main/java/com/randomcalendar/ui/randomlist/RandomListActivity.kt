@@ -3,10 +3,8 @@ package com.randomcalendar.ui.randomlist
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.viewpager2.adapter.FragmentStateAdapter
-import androidx.fragment.app.Fragment
-import com.google.android.material.tabs.TabLayoutMediator
 import com.randomcalendar.RandomCalendarApp
+import com.randomcalendar.R
 import com.randomcalendar.databinding.ActivityRandomListBinding
 import com.randomcalendar.ui.common.ViewModelFactory
 
@@ -25,20 +23,16 @@ class RandomListActivity : AppCompatActivity() {
         binding = ActivityRandomListBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        viewModel // Fragment가 기본 팩토리로 생성 시도하기 전에 ViewModel을 먼저 초기화
+        viewModel
 
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         binding.toolbar.setNavigationOnClickListener { finish() }
 
-        binding.viewPager.adapter = object : FragmentStateAdapter(this) {
-            override fun getItemCount() = 2
-            override fun createFragment(position: Int): Fragment =
-                if (position == 0) CategoryTreeFragment() else RandomItemsFragment()
+        if (savedInstanceState == null) {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainer, CategoryTreeFragment())
+                .commit()
         }
-
-        TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, pos ->
-            tab.text = if (pos == 0) "분류 관리" else "항목 목록"
-        }.attach()
     }
 }
