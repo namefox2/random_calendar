@@ -8,6 +8,7 @@
 
     <!-- 날짜 요약 헤더 -->
     <LinearLayout
+        android:id="@+id/layoutTodoHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -73,6 +74,7 @@
 
     <!-- 새 항목 추가 폼 -->
     <LinearLayout
+        android:id="@+id/layoutTodoForm"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -179,6 +181,7 @@
             android:visibility="gone">
 
             <TextView
+                android:id="@+id/tvGoalMinutesLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="목표 시간 (분, 선택):"
@@ -219,6 +222,7 @@
                 android:gravity="center_vertical">
 
                 <TextView
+                    android:id="@+id/tvWorkLabel"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -228,6 +232,7 @@
                     android:gravity="center" />
 
                 <TextView
+                    android:id="@+id/tvRestLabel"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -237,6 +242,7 @@
                     android:gravity="center" />
 
                 <TextView
+                    android:id="@+id/tvSetCountLabel"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"

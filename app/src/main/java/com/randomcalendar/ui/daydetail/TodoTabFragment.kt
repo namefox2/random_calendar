@@ -202,7 +202,41 @@ class TodoTabFragment : Fragment() {
             ThemeHelper.applyButton(binding.btnAdd, c)
             binding.pbAchievement.progressTintList =
                 android.content.res.ColorStateList.valueOf(c.primaryColor)
+
+            // Apply theme bg to header and form sections
+            binding.layoutTodoHeader.setBackgroundColor(c.bgColor)
+            binding.layoutTodoForm.setBackgroundColor(c.bgColor)
+
+            // Apply theme text colors to header views
+            binding.tvDate.setTextColor(c.textColor)
+            binding.tvSummary.setTextColor(c.textColor)
+
+            // Chip text: contrast against bgColor
+            val chipText = if (isDarkColor(c.bgColor)) android.graphics.Color.WHITE
+                           else android.graphics.Color.parseColor("#212121")
+            val chipCsl = android.content.res.ColorStateList.valueOf(chipText)
+            binding.chipUrl.setTextColor(chipCsl)
+            binding.chipNormalTimer.setTextColor(chipCsl)
+            binding.chipSetTimer.setTextColor(chipCsl)
+
+            // Form labels
+            val labelText = if (isDarkColor(c.bgColor)) android.graphics.Color.WHITE
+                            else android.graphics.Color.parseColor("#757575")
+            binding.tvGoalMinutesLabel.setTextColor(labelText)
+            binding.tvWorkLabel.setTextColor(labelText)
+            binding.tvRestLabel.setTextColor(labelText)
+            binding.tvSetCountLabel.setTextColor(labelText)
+
+            // Update adapter
+            todoAdapter.applyThemeColors(c)
         } catch (_: Exception) {}
+    }
+
+    private fun isDarkColor(color: Int): Boolean {
+        val r = android.graphics.Color.red(color) / 255.0
+        val g = android.graphics.Color.green(color) / 255.0
+        val b = android.graphics.Color.blue(color) / 255.0
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b < 0.5
     }
 
     override fun onDestroyView() {

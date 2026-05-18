@@ -207,6 +207,7 @@
         android:padding="16dp">
 
         <TextView
+            android:id="@+id/tvSidebarTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="설정"
@@ -216,6 +217,7 @@
             android:layout_marginBottom="24dp" />
 
         <TextView
+            android:id="@+id/tvAchievementLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="달성 기준 %"

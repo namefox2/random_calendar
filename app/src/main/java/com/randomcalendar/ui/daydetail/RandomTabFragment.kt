@@ -187,7 +187,7 @@ class RandomTabFragment : Fragment() {
         if (picked.isEmpty()) {
             binding.rvPickedItems.visibility = View.GONE
             binding.tvEmptyPick.visibility = View.VISIBLE
-            binding.tvEmptyPick.text = "해당 분류에 항목이 없습니다"
+            binding.tvEmptyPick.text = "해당 분류에 항목이 없습니다\n랜덤리스트 관리에서 항목을 추가하세요"
             binding.btnAddToTodo.visibility = View.GONE
         } else {
             binding.rvPickedItems.visibility = View.VISIBLE

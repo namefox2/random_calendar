@@ -376,7 +376,7 @@ class CategoryTreeAdapter(
     inner class AddItemViewHolder(private val b: ItemAddCategoryBinding) :
         RecyclerView.ViewHolder(b.root) {
         internal fun bind(row: TreeRow) {
-            b.etNewCategory.hint = "+ 소분류 이름 입력"
+            b.etNewCategory.hint = "+ 항목 이름 입력"
             b.etNewCategory.text?.clear()
             b.btnAddCategory.text = "추가"
             b.btnAddCategory.setOnClickListener {

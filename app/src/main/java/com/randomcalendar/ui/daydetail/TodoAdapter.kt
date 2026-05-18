@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.randomcalendar.R
 import com.randomcalendar.data.db.entity.TodoItem
 import com.randomcalendar.databinding.ItemTodoBinding
+import com.randomcalendar.ui.common.ThemeHelper
 import com.randomcalendar.ui.timer.TimerManager
 
 class TodoAdapter(
@@ -24,6 +25,13 @@ class TodoAdapter(
 ) : ListAdapter<TodoItem, TodoAdapter.ViewHolder>(TodoDiffCallback()) {
 
     private val expandedIds = mutableSetOf<Long>()
+
+    private var themeColors: ThemeHelper.Colors? = null
+
+    fun applyThemeColors(colors: ThemeHelper.Colors) {
+        themeColors = colors
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemTodoBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -38,6 +46,12 @@ class TodoAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: TodoItem) {
+            themeColors?.let { c ->
+                binding.root.setBackgroundColor(c.bgColor)
+                binding.tvName.setTextColor(c.textColor)
+                binding.tvElapsed.setTextColor(c.textColor)
+            }
+
             val isExpanded = item.id in expandedIds
 
             // 체크박스

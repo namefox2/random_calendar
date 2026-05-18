@@ -271,6 +271,25 @@ class MainActivity : AppCompatActivity() {
             binding.etSlogan.setTextColor(onPrimary)
             binding.btnMenu.setColorFilter(onPrimary)
             binding.btnEditSlogan.setColorFilter(onPrimary)
+
+            // SeekBar accent color
+            val accentColor = Color.parseColor(prefs.getString("theme_accent", "#FF9800")!!)
+            binding.seekAchievement.progressTintList = android.content.res.ColorStateList.valueOf(accentColor)
+            binding.seekAchievement.thumbTintList = android.content.res.ColorStateList.valueOf(accentColor)
+
+            // Sidebar text/button colors adapt to sidebar background
+            val onSidebar = if (isColorDark(sidebarColor)) Color.WHITE else Color.parseColor("#424242")
+            binding.tvSidebarTitle.setTextColor(onSidebar)
+            binding.tvAchievementLabel.setTextColor(onSidebar)
+            binding.tvAchievementValue.setTextColor(onSidebar)
+            (binding.btnRandomList as? com.google.android.material.button.MaterialButton)?.let { mb ->
+                mb.strokeColor = android.content.res.ColorStateList.valueOf(onSidebar)
+                mb.setTextColor(onSidebar)
+            }
+            (binding.btnTheme as? com.google.android.material.button.MaterialButton)?.let { mb ->
+                mb.strokeColor = android.content.res.ColorStateList.valueOf(onSidebar)
+                mb.setTextColor(onSidebar)
+            }
         } catch (_: Exception) {}
     }
 
