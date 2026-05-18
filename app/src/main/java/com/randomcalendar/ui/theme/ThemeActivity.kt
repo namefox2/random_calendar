@@ -2,9 +2,7 @@ package com.randomcalendar.ui.theme
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
-import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.google.android.material.tabs.TabLayoutMediator
+import com.randomcalendar.R
 import com.randomcalendar.databinding.ActivityThemeBinding
 
 class ThemeActivity : AppCompatActivity() {
@@ -20,14 +18,10 @@ class ThemeActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         binding.toolbar.setNavigationOnClickListener { finish() }
 
-        binding.viewPager.adapter = object : FragmentStateAdapter(this) {
-            override fun getItemCount() = 2
-            override fun createFragment(position: Int): Fragment =
-                if (position == 0) ThemeImageFragment() else ThemePresetFragment()
+        if (savedInstanceState == null) {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainer, ThemePresetFragment())
+                .commit()
         }
-
-        TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, pos ->
-            tab.text = if (pos == 0) "이미지 추출" else "파스텔 테마"
-        }.attach()
     }
 }

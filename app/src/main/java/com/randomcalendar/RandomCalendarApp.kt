@@ -18,4 +18,5 @@ class RandomCalendarApp : Application() {
     val randomItemRepository by lazy { RandomItemRepository(database.randomItemDao()) }
     val todoItemRepository by lazy { TodoItemRepository(database.todoItemDao()) }
     val monthMemoRepository by lazy { MonthMemoRepository(database.monthMemoDao()) }
+    val dayMemoRepository by lazy { DayMemoRepository(database.dayMemoDao()) }
 }

@@ -10,10 +10,11 @@ class DayDetailPagerAdapter(
     lifecycle: Lifecycle
 ) : FragmentStateAdapter(fm, lifecycle) {
 
-    override fun getItemCount() = 2
+    override fun getItemCount() = 3
 
     override fun createFragment(position: Int): Fragment = when (position) {
         0 -> TodoTabFragment()
+        1 -> DayMemoFragment()
         else -> RandomTabFragment()
     }
 }

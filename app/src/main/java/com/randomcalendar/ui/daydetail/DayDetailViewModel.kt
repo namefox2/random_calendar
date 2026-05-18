@@ -1,7 +1,9 @@
 package com.randomcalendar.ui.daydetail
 
 import androidx.lifecycle.*
+import com.randomcalendar.data.db.entity.DayMemo
 import com.randomcalendar.data.db.entity.TodoItem
+import com.randomcalendar.data.repository.DayMemoRepository
 import com.randomcalendar.data.repository.TodoItemRepository
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -9,6 +11,7 @@ import java.time.format.DateTimeFormatter
 
 class DayDetailViewModel(
     private val todoRepo: TodoItemRepository,
+    private val dayMemoRepo: DayMemoRepository,
     date: LocalDate
 ) : ViewModel() {
 
@@ -22,6 +25,14 @@ class DayDetailViewModel(
         val totalSec = list.sumOf { it.elapsedSeconds }
         val rate = if (total > 0) done * 100 / total else 0
         DaySummary(total, done, rate, totalSec)
+    }
+
+    val dayMemo: LiveData<DayMemo?> = dayMemoRepo.getByDate(dateStr)
+
+    fun saveMemoContent(content: String, photoPaths: String) {
+        viewModelScope.launch {
+            dayMemoRepo.save(dateStr, content, photoPaths)
+        }
     }
 
     fun addTodo(

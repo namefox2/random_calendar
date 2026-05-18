@@ -12,9 +12,10 @@ import com.randomcalendar.data.db.entity.*
         Category::class,
         RandomItem::class,
         TodoItem::class,
-        MonthMemo::class
+        MonthMemo::class,
+        DayMemo::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -23,6 +24,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun randomItemDao(): RandomItemDao
     abstract fun todoItemDao(): TodoItemDao
     abstract fun monthMemoDao(): MonthMemoDao
+    abstract fun dayMemoDao(): DayMemoDao
 
     companion object {
         @Volatile

@@ -7,10 +7,11 @@
     android:orientation="vertical"
     android:background="@color/bg_primary">
 
-    <!-- 분류 선택 -->
-    <ScrollView
+    <!-- 분류 선택 (스크롤 가능) -->
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -27,7 +28,6 @@
                 android:textColor="@color/text_primary"
                 android:layout_marginBottom="8dp" />
 
-            <!-- 대분류 chips -->
             <com.google.android.material.chip.ChipGroup
                 android:id="@+id/chipGroupTop"
                 android:layout_width="match_parent"
@@ -35,7 +35,6 @@
                 android:layout_marginBottom="4dp"
                 app:singleSelection="true" />
 
-            <!-- 중분류 chips -->
             <com.google.android.material.chip.ChipGroup
                 android:id="@+id/chipGroupMid"
                 android:layout_width="match_parent"
@@ -44,75 +43,74 @@
                 android:visibility="gone"
                 app:singleSelection="true" />
 
-            <!-- 소분류 chips -->
             <com.google.android.material.chip.ChipGroup
                 android:id="@+id/chipGroupSmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
+                android:layout_marginBottom="4dp"
                 android:visibility="gone"
                 app:singleSelection="true" />
 
-            <!-- 선택 경로 표시 -->
             <TextView
                 android:id="@+id/tvSelectedPath"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="13sp"
                 android:textColor="@color/primary"
-                android:layout_marginBottom="12dp"
                 android:visibility="gone" />
 
-            <!-- 뜽기 수 + 버튼 -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="12dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="선택 개수:"
-                    android:textSize="14sp"
-                    android:textColor="@color/text_primary"
-                    android:layout_marginEnd="8dp" />
-
-                <EditText
-                    android:id="@+id/etPickCount"
-                    android:layout_width="60dp"
-                    android:layout_height="wrap_content"
-                    android:text="3"
-                    android:inputType="number"
-                    android:gravity="center"
-                    android:textSize="15sp"
-                    android:background="@drawable/bg_input_field"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="8dp"
-                    android:paddingTop="6dp"
-                    android:paddingBottom="6dp"
-                    android:layout_marginEnd="12dp" />
-
-                <Button
-                    android:id="@+id/btnPickRandom"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="랜덤 돌리기"
-                    style="@style/Widget.MaterialComponents.Button" />
-
-            </LinearLayout>
-
         </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
-    </ScrollView>
+    <!-- 선택 개수 + 랜덤돌리기 버튼 (항상 고정 노출) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:background="@color/bg_primary">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="선택 개수:"
+            android:textSize="14sp"
+            android:textColor="@color/text_primary"
+            android:layout_marginEnd="8dp" />
+
+        <EditText
+            android:id="@+id/etPickCount"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:text="3"
+            android:inputType="number"
+            android:gravity="center"
+            android:textSize="15sp"
+            android:background="@drawable/bg_input_field"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:layout_marginEnd="12dp" />
+
+        <Button
+            android:id="@+id/btnPickRandom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="랜덤 돌리기"
+            style="@style/Widget.MaterialComponents.Button" />
+
+    </LinearLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/divider" />
 
-    <!-- 뜽힌 항목 목록 -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvPickedItems"
         android:layout_width="match_parent"
@@ -134,7 +132,6 @@
         android:gravity="center"
         android:visibility="visible" />
 
-    <!-- TODO에 추가 버튼 -->
     <Button
         android:id="@+id/btnAddToTodo"
         android:layout_width="match_parent"
