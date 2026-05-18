@@ -259,10 +259,18 @@ class CategoryTreeAdapter(
 
     private val rows = mutableListOf<TreeRow>()
     private val collapsedIds = mutableSetOf<Long>()
+    private var storedCategories: List<Category> = emptyList()
 
     fun submitCategories(categories: List<Category>) {
+        storedCategories = categories
         rows.clear()
         buildTree(categories, null, 0, 0)
+        notifyDataSetChanged()
+    }
+
+    private fun rebuild() {
+        rows.clear()
+        buildTree(storedCategories, null, 0, 0)
         notifyDataSetChanged()
     }
 
@@ -329,7 +337,7 @@ class CategoryTreeAdapter(
                 )
                 b.btnToggle.setOnClickListener {
                     if (cat.id in collapsedIds) collapsedIds.remove(cat.id) else collapsedIds.add(cat.id)
-                    notifyDataSetChanged()
+                    rebuild()
                 }
             } else {
                 b.btnToggle.visibility = View.INVISIBLE

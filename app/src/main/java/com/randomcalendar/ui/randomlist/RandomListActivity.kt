@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.randomcalendar.RandomCalendarApp
 import com.randomcalendar.R
 import com.randomcalendar.databinding.ActivityRandomListBinding
+import com.randomcalendar.ui.common.ThemeHelper
 import com.randomcalendar.ui.common.ViewModelFactory
 
 class RandomListActivity : AppCompatActivity() {
@@ -34,5 +35,13 @@ class RandomListActivity : AppCompatActivity() {
                 .replace(R.id.fragmentContainer, CategoryTreeFragment())
                 .commit()
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        try {
+            val c = ThemeHelper.load(this)
+            ThemeHelper.applyToolbar(binding.toolbar, c)
+        } catch (_: Exception) {}
     }
 }

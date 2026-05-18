@@ -12,6 +12,7 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.randomcalendar.data.db.entity.TodoItem
 import com.randomcalendar.databinding.FragmentTodoTabBinding
+import com.randomcalendar.ui.common.ThemeHelper
 import com.randomcalendar.ui.timer.TimerManager
 import com.randomcalendar.ui.timer.TimerService
 import java.time.LocalDate
@@ -41,6 +42,7 @@ class TodoTabFragment : Fragment() {
         setupAddForm()
         observeViewModel()
         observeTimer()
+        applyTheme()
     }
 
     private fun setupHeader() {
@@ -192,6 +194,15 @@ class TodoTabFragment : Fragment() {
         TimerManager.state.observe(viewLifecycleOwner) {
             todoAdapter.notifyDataSetChanged()
         }
+    }
+
+    private fun applyTheme() {
+        try {
+            val c = ThemeHelper.load(requireContext())
+            ThemeHelper.applyButton(binding.btnAdd, c)
+            binding.pbAchievement.progressTintList =
+                android.content.res.ColorStateList.valueOf(c.primaryColor)
+        } catch (_: Exception) {}
     }
 
     override fun onDestroyView() {

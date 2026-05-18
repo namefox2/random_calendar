@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
 import com.randomcalendar.databinding.FragmentDayMemoBinding
+import com.randomcalendar.ui.common.ThemeHelper
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -88,6 +89,13 @@ class DayMemoFragment : Fragment() {
             dayViewModel.saveMemoContent(content, pathsStr)
             Toast.makeText(requireContext(), "저장되었습니다", Toast.LENGTH_SHORT).show()
         }
+
+        try {
+            val c = ThemeHelper.load(requireContext())
+            ThemeHelper.applyButton(binding.btnSaveMemo, c)
+            ThemeHelper.applyOutlinedButton(binding.btnCamera, c)
+            ThemeHelper.applyOutlinedButton(binding.btnGallery, c)
+        } catch (_: Exception) {}
     }
 
     private fun launchCamera() {

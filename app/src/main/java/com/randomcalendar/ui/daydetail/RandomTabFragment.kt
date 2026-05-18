@@ -16,6 +16,7 @@ import com.randomcalendar.data.db.entity.Category
 import com.randomcalendar.data.db.entity.RandomItem
 import com.randomcalendar.databinding.FragmentRandomTabBinding
 import com.randomcalendar.databinding.ItemPickedBinding
+import com.randomcalendar.ui.common.ThemeHelper
 import com.randomcalendar.ui.common.ViewModelFactory
 import com.randomcalendar.ui.randomlist.RandomListViewModel
 
@@ -67,6 +68,12 @@ class RandomTabFragment : Fragment() {
         binding.btnPickRandom.setOnClickListener { doPick() }
 
         binding.btnAddToTodo.setOnClickListener { addPickedToTodo() }
+
+        try {
+            val c = ThemeHelper.load(requireContext())
+            ThemeHelper.applyButton(binding.btnPickRandom, c)
+            ThemeHelper.applyButton(binding.btnAddToTodo, c)
+        } catch (_: Exception) {}
     }
 
     private fun buildTopChips(categories: List<Category>) {

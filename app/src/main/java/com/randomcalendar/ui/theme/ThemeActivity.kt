@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.randomcalendar.R
 import com.randomcalendar.databinding.ActivityThemeBinding
+import com.randomcalendar.ui.common.ThemeHelper
 
 class ThemeActivity : AppCompatActivity() {
 
@@ -23,5 +24,13 @@ class ThemeActivity : AppCompatActivity() {
                 .replace(R.id.fragmentContainer, ThemePresetFragment())
                 .commit()
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        try {
+            val c = ThemeHelper.load(this)
+            ThemeHelper.applyToolbar(binding.toolbar, c)
+        } catch (_: Exception) {}
     }
 }

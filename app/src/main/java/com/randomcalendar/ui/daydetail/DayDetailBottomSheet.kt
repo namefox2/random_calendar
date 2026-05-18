@@ -10,6 +10,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.tabs.TabLayoutMediator
 import com.randomcalendar.RandomCalendarApp
 import com.randomcalendar.databinding.FragmentDayDetailBinding
+import com.randomcalendar.ui.common.ThemeHelper
 import com.randomcalendar.ui.common.ViewModelFactory
 import java.time.LocalDate
 
@@ -57,6 +58,11 @@ class DayDetailBottomSheet : BottomSheetDialogFragment() {
                 else -> "랜덤 선택"
             }
         }.attach()
+
+        try {
+            val c = ThemeHelper.load(requireContext())
+            ThemeHelper.applyTabLayout(binding.tabLayout, c)
+        } catch (_: Exception) {}
     }
 
     override fun onDestroyView() {
