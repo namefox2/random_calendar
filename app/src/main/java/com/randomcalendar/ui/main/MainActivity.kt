@@ -62,10 +62,17 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupCalendar() {
         calendarAdapter = CalendarAdapter { date ->
-            viewModel.selectDate(date)
-            val sheet = DayDetailBottomSheet.newInstance(date)
-            sheet.onDataChanged = { viewModel.refreshMonthData() }
-            sheet.show(supportFragmentManager, DayDetailBottomSheet.TAG)
+            if (date == calendarAdapter.selectedDate) {
+                // 두 번째 탭: TODO 창 열기
+                val sheet = DayDetailBottomSheet.newInstance(date)
+                sheet.onDataChanged = { viewModel.refreshMonthData() }
+                sheet.show(supportFragmentManager, DayDetailBottomSheet.TAG)
+            } else {
+                // 첫 번째 탭: 날짜 선택만
+                calendarAdapter.selectedDate = date
+                calendarAdapter.notifyDataSetChanged()
+                viewModel.selectDate(date)
+            }
         }
         binding.rvCalendar.apply {
             layoutManager = GridLayoutManager(this@MainActivity, 7)
@@ -126,6 +133,18 @@ class MainActivity : AppCompatActivity() {
             } else {
                 binding.drawerLayout.openDrawer(binding.sidebarLayout)
             }
+        }
+
+        binding.seekAchievement.setOnTouchListener { _, event ->
+            when (event.action) {
+                android.view.MotionEvent.ACTION_DOWN,
+                android.view.MotionEvent.ACTION_MOVE ->
+                    binding.drawerLayout.requestDisallowInterceptTouchEvent(true)
+                android.view.MotionEvent.ACTION_UP,
+                android.view.MotionEvent.ACTION_CANCEL ->
+                    binding.drawerLayout.requestDisallowInterceptTouchEvent(false)
+            }
+            false
         }
 
         binding.seekAchievement.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {

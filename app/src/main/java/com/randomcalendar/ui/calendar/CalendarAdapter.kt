@@ -15,6 +15,8 @@ class CalendarAdapter(
     private val onDayClick: (LocalDate) -> Unit
 ) : ListAdapter<DayCell, CalendarAdapter.DayCellViewHolder>(DayCellDiffCallback()) {
 
+    var selectedDate: LocalDate? = null
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DayCellViewHolder {
         val binding = ItemDayCellBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return DayCellViewHolder(binding)
@@ -58,8 +60,10 @@ class CalendarAdapter(
                 binding.tvElapsed.visibility = View.GONE
             }
 
-            // 배경 (녹색/빨강/오늘 테두리/흰색)
+            // 배경 (선택/녹색/빨강/오늘 테두리/흰색)
+            val isSelected = cell.date == selectedDate
             val bgRes = when {
+                isSelected -> R.drawable.bg_day_cell_selected
                 cell.isGreen -> R.drawable.bg_day_cell_green
                 cell.isRed -> R.drawable.bg_day_cell_red
                 cell.isToday -> R.drawable.bg_day_cell_today
