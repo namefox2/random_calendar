@@ -31,6 +31,8 @@ class CategoryTreeFragment : Fragment() {
     )
 
     private lateinit var adapter: CategoryTreeAdapter
+    private var allCategories: List<Category> = emptyList()
+    private var searchQuery: String = ""
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentCategoryTreeBinding.inflate(inflater, container, false)
@@ -49,7 +51,49 @@ class CategoryTreeFragment : Fragment() {
         binding.rvCategories.adapter = adapter
 
         viewModel.allCategories.observe(viewLifecycleOwner) { categories ->
-            adapter.submitCategories(categories)
+            allCategories = categories
+            applyFilter()
+        }
+
+        setupSearch()
+    }
+
+    private fun setupSearch() {
+        binding.etSearchCategory.addTextChangedListener(object : android.text.TextWatcher {
+            override fun afterTextChanged(s: android.text.Editable?) {
+                searchQuery = s.toString().trim()
+                binding.btnClearCategorySearch.visibility =
+                    if (searchQuery.isNotEmpty()) View.VISIBLE else View.GONE
+                applyFilter()
+            }
+            override fun beforeTextChanged(s: CharSequence?, st: Int, c: Int, a: Int) {}
+            override fun onTextChanged(s: CharSequence?, st: Int, b: Int, c: Int) {}
+        })
+        binding.btnClearCategorySearch.setOnClickListener {
+            binding.etSearchCategory.text?.clear()
+            searchQuery = ""
+            binding.btnClearCategorySearch.visibility = View.GONE
+            applyFilter()
+        }
+    }
+
+    private fun applyFilter() {
+        if (searchQuery.isEmpty()) {
+            adapter.submitCategories(allCategories)
+        } else {
+            val matched = allCategories.filter {
+                it.name.contains(searchQuery, ignoreCase = true)
+            }.toMutableSet()
+            // 매칭된 항목의 상위 분류도 포함 (트리 구조 유지)
+            matched.toList().forEach { cat ->
+                var parentId = cat.parentId
+                while (parentId != null) {
+                    val parent = allCategories.find { it.id == parentId } ?: break
+                    matched.add(parent)
+                    parentId = parent.parentId
+                }
+            }
+            adapter.submitCategories(allCategories.filter { it in matched })
         }
     }
 
@@ -282,26 +326,18 @@ class CategoryTreeAdapter(
     inner class AddCategoryViewHolder(private val b: ItemAddCategoryBinding) :
         RecyclerView.ViewHolder(b.root) {
         internal fun bind(row: TreeRow) {
-            if (row.level < 2) {
-                val hint = if (row.level == 0) "+ 대분류 이름 입력" else "+ 중분류 이름 입력"
-                b.etNewCategory.hint = hint
-                b.etNewCategory.text?.clear()
-                b.btnAddCategory.text = "추가"
-                b.btnAddCategory.setOnClickListener {
-                    val name = b.etNewCategory.text.toString().trim()
-                    if (name.isNotBlank()) {
-                        onAddCategory(row.parentId, row.level, name)
-                        b.etNewCategory.text?.clear()
-                    }
-                }
-            } else {
-                b.etNewCategory.hint = "+ 항목 이름 입력"
-                b.etNewCategory.text?.clear()
-                b.btnAddCategory.text = "항목 추가"
-                b.btnAddCategory.setOnClickListener {
-                    val name = b.etNewCategory.text.toString().trim()
-                    val parentSmallId = row.parentId ?: return@setOnClickListener
-                    onAddItem(parentSmallId, name)
+            val hint = when (row.level) {
+                0 -> "+ 대분류 이름 입력"
+                1 -> "+ 중분류 이름 입력"
+                else -> "+ 소분류 이름 입력"
+            }
+            b.etNewCategory.hint = hint
+            b.etNewCategory.text?.clear()
+            b.btnAddCategory.text = "추가"
+            b.btnAddCategory.setOnClickListener {
+                val name = b.etNewCategory.text.toString().trim()
+                if (name.isNotBlank()) {
+                    onAddCategory(row.parentId, row.level, name)
                     b.etNewCategory.text?.clear()
                 }
             }
