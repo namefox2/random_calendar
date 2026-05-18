@@ -376,20 +376,10 @@ class CategoryTreeAdapter(
     inner class AddItemViewHolder(private val b: ItemAddCategoryBinding) :
         RecyclerView.ViewHolder(b.root) {
         internal fun bind(row: TreeRow) {
-            b.etNewCategory.hint = "+ 항목 이름 입력"
-            b.etNewCategory.text?.clear()
-            b.btnAddCategory.text = "추가"
+            b.etNewCategory.visibility = android.view.View.GONE
+            b.btnAddCategory.text = "+ 항목 추가"
             b.btnAddCategory.setOnClickListener {
-                val name = b.etNewCategory.text.toString().trim()
-                row.parentId?.let { parentId ->
-                    onAddItem(parentId, name)
-                    b.etNewCategory.text?.clear()
-                }
-            }
-            b.etNewCategory.setOnEditorActionListener { _, actionId, _ ->
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    b.btnAddCategory.performClick(); true
-                } else false
+                row.parentId?.let { parentId -> onAddItem(parentId, "") }
             }
         }
     }
