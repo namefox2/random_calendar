@@ -1,23 +1,25 @@
 package com.randomcalendar.ui.randomlist
 
 import android.os.Bundle
+import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.RadioButton
+import android.widget.RadioGroup
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.randomcalendar.RandomCalendarApp
 import com.randomcalendar.data.db.entity.Category
 import com.randomcalendar.databinding.FragmentCategoryTreeBinding
 import com.randomcalendar.databinding.ItemAddCategoryBinding
 import com.randomcalendar.databinding.ItemCategoryBinding
-import com.randomcalendar.ui.common.ViewModelFactory
 
 class CategoryTreeFragment : Fragment() {
 
@@ -38,7 +40,8 @@ class CategoryTreeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         adapter = CategoryTreeAdapter(
-            onAdd = { parentId, level -> showAddDialog(parentId, level) },
+            onAddCategory = { parentId, level, name -> viewModel.addCategory(name, parentId, level) },
+            onAddItem = { parentSmallId, name -> showAddItemDialog(parentSmallId, name) },
             onEdit = { category -> showEditDialog(category) },
             onDelete = { category -> showDeleteConfirm(category) }
         )
@@ -50,17 +53,116 @@ class CategoryTreeFragment : Fragment() {
         }
     }
 
-    private fun showAddDialog(parentId: Long?, level: Int) {
-        val levelLabel = when (level) { 0 -> "대분류"; 1 -> "중분류"; else -> "소분류" }
-        val et = EditText(requireContext()).apply {
-            hint = "$levelLabel 이름 입력"
+    private fun showAddItemDialog(parentSmallId: Long, prefillName: String) {
+        val ctx = requireContext()
+        val dp = ctx.resources.displayMetrics.density
+        val pad = (16 * dp).toInt()
+        val padSm = (8 * dp).toInt()
+
+        val root = LinearLayout(ctx).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(pad * 2, pad, pad * 2, 0)
         }
-        AlertDialog.Builder(requireContext())
-            .setTitle("$levelLabel 추가")
-            .setView(et)
+
+        val etName = EditText(ctx).apply {
+            hint = "항목 이름 (필수)"
+            setText(prefillName)
+            setTextColor(ctx.getColor(com.randomcalendar.R.color.text_primary))
+            setHintTextColor(ctx.getColor(com.randomcalendar.R.color.text_secondary))
+            inputType = InputType.TYPE_CLASS_TEXT
+        }
+
+        val etUrl = EditText(ctx).apply {
+            hint = "URL 링크 (선택)"
+            setTextColor(ctx.getColor(com.randomcalendar.R.color.text_primary))
+            setHintTextColor(ctx.getColor(com.randomcalendar.R.color.text_secondary))
+            inputType = InputType.TYPE_TEXT_VARIATION_URI
+        }
+
+        val tvTimer = TextView(ctx).apply {
+            text = "타이머"
+            setTextColor(ctx.getColor(com.randomcalendar.R.color.text_secondary))
+            setPadding(0, padSm, 0, padSm / 2)
+        }
+
+        val radioGroup = RadioGroup(ctx).apply { orientation = RadioGroup.HORIZONTAL }
+        val rbNone   = RadioButton(ctx).apply { text = "없음";  id = 10; isChecked = true }
+        val rbNormal = RadioButton(ctx).apply { text = "일반";  id = 11 }
+        val rbSet    = RadioButton(ctx).apply { text = "세트";  id = 12 }
+        radioGroup.addView(rbNone); radioGroup.addView(rbNormal); radioGroup.addView(rbSet)
+
+        val layoutNormal = LinearLayout(ctx).apply {
+            orientation = LinearLayout.HORIZONTAL
+            visibility = View.GONE
+            setPadding(0, padSm, 0, 0)
+        }
+        val etGoal = EditText(ctx).apply {
+            hint = "목표 시간(분, 선택)"
+            setTextColor(ctx.getColor(com.randomcalendar.R.color.text_primary))
+            setHintTextColor(ctx.getColor(com.randomcalendar.R.color.text_secondary))
+            inputType = InputType.TYPE_CLASS_NUMBER
+            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+        }
+        layoutNormal.addView(etGoal)
+
+        val layoutSet = LinearLayout(ctx).apply {
+            orientation = LinearLayout.HORIZONTAL
+            visibility = View.GONE
+            setPadding(0, padSm, 0, 0)
+        }
+        val etWork = EditText(ctx).apply {
+            hint = "운동(초)"
+            setTextColor(ctx.getColor(com.randomcalendar.R.color.text_primary))
+            setHintTextColor(ctx.getColor(com.randomcalendar.R.color.text_secondary))
+            inputType = InputType.TYPE_CLASS_NUMBER
+            gravity = android.view.Gravity.CENTER
+            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply { marginEnd = padSm }
+        }
+        val etRest = EditText(ctx).apply {
+            hint = "휴식(초)"
+            setTextColor(ctx.getColor(com.randomcalendar.R.color.text_primary))
+            setHintTextColor(ctx.getColor(com.randomcalendar.R.color.text_secondary))
+            inputType = InputType.TYPE_CLASS_NUMBER
+            gravity = android.view.Gravity.CENTER
+            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply { marginEnd = padSm }
+        }
+        val etSets = EditText(ctx).apply {
+            hint = "세트수"
+            setTextColor(ctx.getColor(com.randomcalendar.R.color.text_primary))
+            setHintTextColor(ctx.getColor(com.randomcalendar.R.color.text_secondary))
+            inputType = InputType.TYPE_CLASS_NUMBER
+            gravity = android.view.Gravity.CENTER
+            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+        }
+        layoutSet.addView(etWork); layoutSet.addView(etRest); layoutSet.addView(etSets)
+
+        radioGroup.setOnCheckedChangeListener { _, checkedId ->
+            layoutNormal.visibility = if (checkedId == 11) View.VISIBLE else View.GONE
+            layoutSet.visibility    = if (checkedId == 12) View.VISIBLE else View.GONE
+        }
+
+        root.addView(etName)
+        root.addView(etUrl)
+        root.addView(tvTimer)
+        root.addView(radioGroup)
+        root.addView(layoutNormal)
+        root.addView(layoutSet)
+
+        AlertDialog.Builder(ctx)
+            .setTitle("항목 추가")
+            .setView(root)
             .setPositiveButton("추가") { _, _ ->
-                val name = et.text.toString().trim()
-                if (name.isNotBlank()) viewModel.addCategory(name, parentId, level)
+                val name = etName.text.toString().trim()
+                if (name.isBlank()) return@setPositiveButton
+                val url = etUrl.text.toString().trim()
+                val timerType = when (radioGroup.checkedRadioButtonId) {
+                    11 -> "NORMAL"; 12 -> "SET"; else -> "NONE"
+                }
+                val goalSec = etGoal.text.toString().toIntOrNull()?.let { it * 60 }
+                val work = etWork.text.toString().toIntOrNull() ?: 30
+                val rest = etRest.text.toString().toIntOrNull() ?: 10
+                val sets = etSets.text.toString().toIntOrNull() ?: 3
+                viewModel.addItem(name, parentSmallId, url, "", timerType, goalSec, work, rest, sets)
             }
             .setNegativeButton("취소", null)
             .show()
@@ -98,13 +200,14 @@ class CategoryTreeFragment : Fragment() {
 }
 
 class CategoryTreeAdapter(
-    private val onAdd: (parentId: Long?, level: Int) -> Unit,
+    private val onAddCategory: (parentId: Long?, level: Int, name: String) -> Unit,
+    private val onAddItem: (parentSmallId: Long, name: String) -> Unit,
     private val onEdit: (Category) -> Unit,
     private val onDelete: (Category) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     internal data class TreeRow(
-        val category: Category?,  // null = "추가" 행
+        val category: Category?,
         val parentId: Long?,
         val level: Int,
         val indent: Int
@@ -127,7 +230,6 @@ class CategoryTreeAdapter(
                 buildTree(all, cat.id, level + 1, indent + 1)
             }
         }
-        // 추가 버튼 행
         rows.add(TreeRow(null, parentId, level, indent))
     }
 
@@ -180,21 +282,32 @@ class CategoryTreeAdapter(
     inner class AddCategoryViewHolder(private val b: ItemAddCategoryBinding) :
         RecyclerView.ViewHolder(b.root) {
         internal fun bind(row: TreeRow) {
-            val hint = when (row.level) { 0 -> "+ 대분류 추가"; 1 -> "+ 중분류 추가"; else -> "+ 소분류 추가" }
-            b.etNewCategory.hint = hint
-            b.etNewCategory.text?.clear()
-            b.btnAddCategory.text = "추가"
-            b.btnAddCategory.setOnClickListener {
-                val name = b.etNewCategory.text.toString().trim()
-                if (name.isNotBlank()) {
-                    onAdd(row.parentId, row.level)
+            if (row.level < 2) {
+                val hint = if (row.level == 0) "+ 대분류 이름 입력" else "+ 중분류 이름 입력"
+                b.etNewCategory.hint = hint
+                b.etNewCategory.text?.clear()
+                b.btnAddCategory.text = "추가"
+                b.btnAddCategory.setOnClickListener {
+                    val name = b.etNewCategory.text.toString().trim()
+                    if (name.isNotBlank()) {
+                        onAddCategory(row.parentId, row.level, name)
+                        b.etNewCategory.text?.clear()
+                    }
+                }
+            } else {
+                b.etNewCategory.hint = "+ 항목 이름 입력"
+                b.etNewCategory.text?.clear()
+                b.btnAddCategory.text = "항목 추가"
+                b.btnAddCategory.setOnClickListener {
+                    val name = b.etNewCategory.text.toString().trim()
+                    val parentSmallId = row.parentId ?: return@setOnClickListener
+                    onAddItem(parentSmallId, name)
                     b.etNewCategory.text?.clear()
                 }
             }
             b.etNewCategory.setOnEditorActionListener { _, actionId, _ ->
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    b.btnAddCategory.performClick()
-                    true
+                    b.btnAddCategory.performClick(); true
                 } else false
             }
         }
