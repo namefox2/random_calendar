@@ -49,7 +49,7 @@ object ThemeHelper {
         tabLayout.setTabTextColors(Color.parseColor("#757575"), colors.primaryColor)
     }
 
-    fun applyButton(button: MaterialButton, colors: Colors) {
+    fun applyButton(button: android.widget.Button, colors: Colors) {
         button.backgroundTintList = ColorStateList.valueOf(colors.accentColor)
         button.setTextColor(colors.onAccent)
     }
