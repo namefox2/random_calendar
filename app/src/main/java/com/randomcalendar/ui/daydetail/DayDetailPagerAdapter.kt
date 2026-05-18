@@ -14,7 +14,7 @@ class DayDetailPagerAdapter(
 
     override fun createFragment(position: Int): Fragment = when (position) {
         0 -> TodoTabFragment()
-        1 -> DayMemoFragment()
-        else -> RandomTabFragment()
+        1 -> RandomTabFragment()
+        else -> DayMemoFragment()
     }
 }

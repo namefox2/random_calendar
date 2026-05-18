@@ -286,10 +286,8 @@ class CategoryTreeAdapter(
                 rows.add(TreeRow(null, cat.id, level, indent + 1, isAddItem = true))
             }
         }
-        // 카테고리 추가 행 (대/중분류만, 소분류는 항목 추가 행으로 대체)
-        if (level < 2) {
-            rows.add(TreeRow(null, parentId, level, indent, isAddItem = false))
-        }
+        // 카테고리 추가 행 (모든 레벨)
+        rows.add(TreeRow(null, parentId, level, indent, isAddItem = false))
     }
 
     // 0 = 카테고리 행, 1 = 카테고리 추가 행, 2 = 항목 추가 행
@@ -378,9 +376,9 @@ class CategoryTreeAdapter(
     inner class AddItemViewHolder(private val b: ItemAddCategoryBinding) :
         RecyclerView.ViewHolder(b.root) {
         internal fun bind(row: TreeRow) {
-            b.etNewCategory.hint = "+ 소분류 이름 입력"
+            b.etNewCategory.hint = "+ 항목 이름 입력"
             b.etNewCategory.text?.clear()
-            b.btnAddCategory.text = "추가"
+            b.btnAddCategory.text = "항목 추가"
             b.btnAddCategory.setOnClickListener {
                 val name = b.etNewCategory.text.toString().trim()
                 row.parentId?.let { parentId ->

@@ -54,8 +54,8 @@ class DayDetailBottomSheet : BottomSheetDialogFragment() {
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             tab.text = when (position) {
                 0 -> "TODO"
-                1 -> "메모"
-                else -> "랜덤 선택"
+                1 -> "랜덤 선택"
+                else -> "메모"
             }
         }.attach()
 

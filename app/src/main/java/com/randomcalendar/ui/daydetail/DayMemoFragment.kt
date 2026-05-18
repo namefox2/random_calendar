@@ -1,6 +1,7 @@
 package com.randomcalendar.ui.daydetail
 
-import android.content.Context
+import android.app.Dialog
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -12,6 +13,7 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -48,6 +50,13 @@ class DayMemoFragment : Fragment() {
         pendingCameraPath = null
     }
 
+    private val cameraPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) launchCamera()
+        else Toast.makeText(requireContext(), "카메라 권한이 필요합니다", Toast.LENGTH_SHORT).show()
+    }
+
     private val galleryLauncher = registerForActivityResult(
         ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
@@ -80,7 +89,13 @@ class DayMemoFragment : Fragment() {
             }
         }
 
-        binding.btnCamera.setOnClickListener { launchCamera() }
+        binding.btnCamera.setOnClickListener {
+            val hasPerm = ContextCompat.checkSelfPermission(
+                requireContext(), android.Manifest.permission.CAMERA
+            ) == PackageManager.PERMISSION_GRANTED
+            if (hasPerm) launchCamera()
+            else cameraPermissionLauncher.launch(android.Manifest.permission.CAMERA)
+        }
         binding.btnGallery.setOnClickListener { galleryLauncher.launch("image/*") }
 
         binding.btnSaveMemo.setOnClickListener {
@@ -99,23 +114,29 @@ class DayMemoFragment : Fragment() {
     }
 
     private fun launchCamera() {
-        val dir = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-            ?: requireContext().filesDir
-        val file = File(dir, "memo_${SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())}.jpg")
-        pendingCameraPath = file.absolutePath
-        val uri = FileProvider.getUriForFile(
-            requireContext(),
-            "${requireContext().packageName}.fileprovider",
-            file
-        )
-        cameraLauncher.launch(uri)
+        try {
+            val dir = (requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+                ?: requireContext().filesDir).also { it.mkdirs() }
+            val ts = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+            val file = File(dir, "memo_$ts.jpg")
+            pendingCameraPath = file.absolutePath
+            val uri = FileProvider.getUriForFile(
+                requireContext(),
+                "${requireContext().packageName}.fileprovider",
+                file
+            )
+            cameraLauncher.launch(uri)
+        } catch (e: Exception) {
+            Toast.makeText(requireContext(), "카메라를 열 수 없습니다: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun copyToInternal(uri: Uri): String? {
         return try {
-            val dir = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-                ?: requireContext().filesDir
-            val dest = File(dir, "memo_${SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())}.jpg")
+            val dir = (requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+                ?: requireContext().filesDir).also { it.mkdirs() }
+            val ts = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+            val dest = File(dir, "memo_$ts.jpg")
             requireContext().contentResolver.openInputStream(uri)?.use { input ->
                 dest.outputStream().use { output -> input.copyTo(output) }
             }
@@ -144,6 +165,7 @@ class DayMemoFragment : Fragment() {
             scaleType = ImageView.ScaleType.CENTER_CROP
         }
         Glide.with(this).load(File(path)).into(iv)
+        iv.setOnClickListener { showFullscreen(path) }
 
         val del = ImageButton(ctx).apply {
             layoutParams = FrameLayout.LayoutParams(btnSize, btnSize).apply {
@@ -155,16 +177,26 @@ class DayMemoFragment : Fragment() {
             setBackgroundColor(android.graphics.Color.parseColor("#AA000000"))
             setPadding((4 * dp).toInt(), (4 * dp).toInt(), (4 * dp).toInt(), (4 * dp).toInt())
         }
-
         del.setOnClickListener {
             photoPaths.remove(path)
             binding.photoContainer.removeView(frame)
-            File(path).delete()
         }
 
         frame.addView(iv)
         frame.addView(del)
         binding.photoContainer.addView(frame)
+    }
+
+    private fun showFullscreen(path: String) {
+        val dialog = Dialog(requireContext(), android.R.style.Theme_Black_NoTitleBar_Fullscreen)
+        val iv = ImageView(requireContext()).apply {
+            scaleType = ImageView.ScaleType.FIT_CENTER
+            setBackgroundColor(android.graphics.Color.BLACK)
+        }
+        Glide.with(this).load(File(path)).into(iv)
+        iv.setOnClickListener { dialog.dismiss() }
+        dialog.setContentView(iv)
+        dialog.show()
     }
 
     override fun onDestroyView() {
