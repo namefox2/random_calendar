@@ -61,6 +61,7 @@ class DayDetailBottomSheet : BottomSheetDialogFragment() {
 
         try {
             val c = ThemeHelper.load(requireContext())
+            binding.root.setBackgroundColor(c.bgColor)
             ThemeHelper.applyTabLayout(binding.tabLayout, c)
         } catch (_: Exception) {}
     }

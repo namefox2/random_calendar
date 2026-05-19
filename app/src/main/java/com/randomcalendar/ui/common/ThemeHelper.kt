@@ -46,7 +46,14 @@ object ThemeHelper {
 
     fun applyTabLayout(tabLayout: TabLayout, colors: Colors) {
         tabLayout.setSelectedTabIndicatorColor(colors.primaryColor)
-        tabLayout.setTabTextColors(Color.parseColor("#757575"), colors.primaryColor)
+        tabLayout.setBackgroundColor(colors.bgColor)
+        val unselectedColor = Color.argb(
+            (255 * 0.6).toInt(),
+            Color.red(colors.textColor),
+            Color.green(colors.textColor),
+            Color.blue(colors.textColor)
+        )
+        tabLayout.setTabTextColors(unselectedColor, colors.primaryColor)
     }
 
     fun applyButton(button: android.widget.Button, colors: Colors) {

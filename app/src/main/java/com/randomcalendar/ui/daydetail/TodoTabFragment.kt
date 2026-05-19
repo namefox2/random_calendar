@@ -215,12 +215,15 @@ class TodoTabFragment : Fragment() {
             val chipText = if (isDarkColor(c.bgColor)) android.graphics.Color.WHITE
                            else android.graphics.Color.parseColor("#212121")
             val chipCsl = android.content.res.ColorStateList.valueOf(chipText)
-            val chipBgCsl = android.content.res.ColorStateList.valueOf(
-                android.graphics.Color.argb(38,
-                    android.graphics.Color.red(c.textColor),
-                    android.graphics.Color.green(c.textColor),
-                    android.graphics.Color.blue(c.textColor))
-            )
+            val chipBgColor = if (isDarkColor(c.bgColor)) {
+                android.graphics.Color.argb(255,
+                    minOf(android.graphics.Color.red(c.bgColor) + 70, 255),
+                    minOf(android.graphics.Color.green(c.bgColor) + 70, 255),
+                    minOf(android.graphics.Color.blue(c.bgColor) + 70, 255))
+            } else {
+                android.graphics.Color.parseColor("#E0E0E0")
+            }
+            val chipBgCsl = android.content.res.ColorStateList.valueOf(chipBgColor)
             listOf(binding.chipUrl, binding.chipNormalTimer, binding.chipSetTimer).forEach { chip ->
                 chip.setTextColor(chipCsl)
                 chip.chipBackgroundColor = chipBgCsl
