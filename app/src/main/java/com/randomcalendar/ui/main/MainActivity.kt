@@ -267,25 +267,43 @@ class MainActivity : AppCompatActivity() {
 
     private fun applyThemeColors() {
         try {
+            val c = com.randomcalendar.ui.common.ThemeHelper.load(this)
             val primary = prefs.getString("theme_primary", "#1976D2")!!
             val sidebar = prefs.getString("theme_sidebar", "#F5F5F5")!!
             val primaryColor = Color.parseColor(primary)
             val sidebarColor = Color.parseColor(sidebar)
+
+            // 메인 콘텐츠 배경 (이게 없으면 다크테마에서 달력 글씨가 안 보임)
+            binding.mainContent.setBackgroundColor(c.bgColor)
+            binding.rvCalendar.setBackgroundColor(c.bgColor)
+
+            // 슬로건 바
             binding.sloganBar.setBackgroundColor(primaryColor)
             binding.sidebarLayout.setBackgroundColor(sidebarColor)
-
             val onPrimary = if (isColorDark(primaryColor)) Color.WHITE else Color.BLACK
             binding.tvSlogan.setTextColor(onPrimary)
             binding.etSlogan.setTextColor(onPrimary)
             binding.btnMenu.setColorFilter(onPrimary)
             binding.btnEditSlogan.setColorFilter(onPrimary)
 
+            // 월 네비게이션 카드
+            binding.monthNavCard.setCardBackgroundColor(c.bgColor)
+            binding.tvYearMonth.setTextColor(c.textColor)
+            binding.btnPrevMonth.setColorFilter(c.textColor)
+            binding.btnNextMonth.setColorFilter(c.textColor)
+
+            // 메모 카드
+            binding.memoCard.setCardBackgroundColor(c.bgColor)
+            binding.tvMemo.setTextColor(Color.argb(140,
+                Color.red(c.textColor), Color.green(c.textColor), Color.blue(c.textColor)))
+            binding.etMemo.setTextColor(c.textColor)
+
             // SeekBar accent color
             val accentColor = Color.parseColor(prefs.getString("theme_accent", "#FF9800")!!)
             binding.seekAchievement.progressTintList = android.content.res.ColorStateList.valueOf(accentColor)
             binding.seekAchievement.thumbTintList = android.content.res.ColorStateList.valueOf(accentColor)
 
-            // Sidebar text/button colors adapt to sidebar background
+            // Sidebar text/button colors
             val onSidebar = if (isColorDark(sidebarColor)) Color.WHITE else Color.parseColor("#424242")
             binding.tvSidebarTitle.setTextColor(onSidebar)
             binding.tvAchievementLabel.setTextColor(onSidebar)
@@ -299,7 +317,7 @@ class MainActivity : AppCompatActivity() {
                 mb.setTextColor(onSidebar)
             }
             if (::calendarAdapter.isInitialized) {
-                calendarAdapter.applyTheme(com.randomcalendar.ui.common.ThemeHelper.load(this))
+                calendarAdapter.applyTheme(c)
             }
         } catch (_: Exception) {}
     }

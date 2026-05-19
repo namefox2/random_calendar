@@ -8,6 +8,7 @@
 
     <!-- 메인 콘텐츠 -->
     <LinearLayout
+        android:id="@+id/mainContent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -24,7 +25,6 @@
             android:paddingEnd="12dp"
             android:background="@color/primary">
 
-            <!-- 햄버거 버튼 -->
             <ImageButton
                 android:id="@+id/btnMenu"
                 android:layout_width="40dp"
@@ -34,7 +34,6 @@
                 android:tint="@color/white"
                 android:contentDescription="메뉴" />
 
-            <!-- 슬로건 텍스트 -->
             <TextView
                 android:id="@+id/tvSlogan"
                 android:layout_width="0dp"
@@ -47,7 +46,6 @@
                 android:maxLines="1"
                 android:ellipsize="end" />
 
-            <!-- 편집 버튼 -->
             <ImageButton
                 android:id="@+id/btnEditSlogan"
                 android:layout_width="40dp"
@@ -57,7 +55,6 @@
                 android:tint="@color/white"
                 android:contentDescription="슬로건 편집" />
 
-            <!-- 슬로건 편집 필드 (평소엔 숨김) -->
             <EditText
                 android:id="@+id/etSlogan"
                 android:layout_width="0dp"
@@ -74,50 +71,63 @@
 
         </LinearLayout>
 
-        <!-- 월 네비게이션 -->
-        <LinearLayout
+        <!-- 월 네비게이션 카드 -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/monthNavCard"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp">
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="4dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="2dp"
+            app:cardBackgroundColor="@color/bg_primary">
 
-            <ImageButton
-                android:id="@+id/btnPrevMonth"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_chevron_left"
-                android:contentDescription="이전 달" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp">
 
-            <TextView
-                android:id="@+id/tvYearMonth"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="@color/text_primary" />
+                <ImageButton
+                    android:id="@+id/btnPrevMonth"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_chevron_left"
+                    android:contentDescription="이전 달" />
 
-            <ImageButton
-                android:id="@+id/btnNextMonth"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_chevron_right"
-                android:contentDescription="다음 달" />
+                <TextView
+                    android:id="@+id/tvYearMonth"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary" />
 
-        </LinearLayout>
+                <ImageButton
+                    android:id="@+id/btnNextMonth"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_chevron_right"
+                    android:contentDescription="다음 달" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
         <!-- 요일 헤더 -->
         <GridLayout
             android:layout_width="match_parent"
             android:layout_height="32dp"
             android:columnCount="7"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp">
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
 
             <TextView style="@style/DayHeader" android:text="일" android:textColor="@color/calendar_red" android:fontFamily="@font/gaegu" />
             <TextView style="@style/DayHeader" android:text="월" android:fontFamily="@font/gaegu" />
@@ -140,48 +150,55 @@
             android:clipToPadding="false"
             android:overScrollMode="never" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/divider" />
-
-        <!-- 월별 메모 -->
-        <LinearLayout
+        <!-- 월별 메모 카드 -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/memoCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="56dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp">
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="2dp"
+            app:cardBackgroundColor="@color/bg_primary">
 
-            <TextView
-                android:id="@+id/tvMemo"
-                android:layout_width="0dp"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="이달의 메모를 입력하세요..."
-                android:textColor="@color/text_secondary"
-                android:textSize="14sp" />
+                android:minHeight="52dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp">
 
-            <EditText
-                android:id="@+id/etMemo"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textSize="14sp"
-                android:textColor="@color/text_primary"
-                android:hint="이달의 메모..."
-                android:background="@null"
-                android:imeOptions="actionDone"
-                android:inputType="text"
-                android:maxLines="3"
-                android:visibility="gone" />
+                <TextView
+                    android:id="@+id/tvMemo"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="이달의 메모를 입력하세요..."
+                    android:textColor="@color/text_secondary"
+                    android:textSize="14sp" />
 
+                <EditText
+                    android:id="@+id/etMemo"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="14sp"
+                    android:textColor="@color/text_primary"
+                    android:hint="이달의 메모..."
+                    android:background="@null"
+                    android:imeOptions="actionDone"
+                    android:inputType="text"
+                    android:maxLines="3"
+                    android:visibility="gone" />
 
-        </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
         <!-- AdMob 배너 광고 -->
         <com.google.android.gms.ads.AdView
@@ -195,7 +212,7 @@
 
     </LinearLayout>
 
-    <!-- 사이드바 (Drawer) — Stage 8에서 채움 -->
+    <!-- 사이드바 -->
     <LinearLayout
         android:id="@+id/sidebarLayout"
         android:layout_width="280dp"
