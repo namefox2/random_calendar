@@ -11,9 +11,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import com.randomcalendar.RandomCalendarApp
+import com.randomcalendar.R
 import com.randomcalendar.databinding.ActivityMainBinding
 import com.randomcalendar.ui.calendar.CalendarAdapter
 import com.randomcalendar.ui.calendar.CalendarBuilder
+import com.randomcalendar.ui.common.ThemeHelper
 import com.randomcalendar.ui.common.ViewModelFactory
 import com.randomcalendar.ui.daydetail.DayDetailBottomSheet
 import com.randomcalendar.ui.randomlist.RandomListActivity
@@ -49,6 +51,7 @@ class MainActivity : AppCompatActivity() {
         setupMonthNav()
         setupSlogan()
         setupSidebar()
+        setupFontSize()
         setupMemo()
         observeViewModel()
         applyThemeColors()
@@ -265,6 +268,34 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
+    override fun attachBaseContext(newBase: Context) {
+        val fontScale = ThemeHelper.loadFontScale(newBase)
+        val config = newBase.resources.configuration
+        config.fontScale = fontScale
+        super.attachBaseContext(newBase.createConfigurationContext(config))
+    }
+
+    private fun setupFontSize() {
+        val saved = prefs.getString("font_size", "medium")
+        when (saved) {
+            "small" -> binding.chipFontSmall.isChecked = true
+            "large" -> binding.chipFontLarge.isChecked = true
+            else    -> binding.chipFontMedium.isChecked = true
+        }
+        binding.chipGroupFontSize.setOnCheckedStateChangeListener { _, checkedIds ->
+            if (checkedIds.isEmpty()) return@setOnCheckedStateChangeListener
+            val size = when (checkedIds[0]) {
+                R.id.chipFontSmall -> "small"
+                R.id.chipFontLarge -> "large"
+                else               -> "medium"
+            }
+            if (size != prefs.getString("font_size", "medium")) {
+                prefs.edit().putString("font_size", size).apply()
+                recreate()
+            }
+        }
+    }
+
     private fun applyThemeColors() {
         try {
             val c = com.randomcalendar.ui.common.ThemeHelper.load(this)
@@ -308,6 +339,7 @@ class MainActivity : AppCompatActivity() {
             binding.tvSidebarTitle.setTextColor(onSidebar)
             binding.tvAchievementLabel.setTextColor(onSidebar)
             binding.tvAchievementValue.setTextColor(onSidebar)
+            binding.tvFontSizeLabel.setTextColor(onSidebar)
             (binding.btnRandomList as? com.google.android.material.button.MaterialButton)?.let { mb ->
                 mb.strokeColor = android.content.res.ColorStateList.valueOf(onSidebar)
                 mb.setTextColor(onSidebar)

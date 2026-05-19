@@ -1,5 +1,6 @@
 package com.randomcalendar.ui.randomlist
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
@@ -69,6 +70,13 @@ class RandomListActivity : AppCompatActivity() {
             }
             .setNegativeButton("취소", null)
             .show()
+    }
+
+    override fun attachBaseContext(newBase: Context) {
+        val fontScale = ThemeHelper.loadFontScale(newBase)
+        val config = newBase.resources.configuration
+        config.fontScale = fontScale
+        super.attachBaseContext(newBase.createConfigurationContext(config))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

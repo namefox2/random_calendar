@@ -1,5 +1,6 @@
 package com.randomcalendar.ui.theme
 
+import android.content.Context
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.randomcalendar.R
@@ -9,6 +10,13 @@ import com.randomcalendar.ui.common.ThemeHelper
 class ThemeActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityThemeBinding
+
+    override fun attachBaseContext(newBase: Context) {
+        val fontScale = ThemeHelper.loadFontScale(newBase)
+        val config = newBase.resources.configuration
+        config.fontScale = fontScale
+        super.attachBaseContext(newBase.createConfigurationContext(config))
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

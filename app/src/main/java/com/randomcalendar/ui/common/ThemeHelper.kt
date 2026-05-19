@@ -28,6 +28,15 @@ object ThemeHelper {
         }
     }
 
+    fun loadFontScale(context: Context): Float {
+        val p = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+        return when (p.getString("font_size", "medium")) {
+            "small" -> 0.85f
+            "large" -> 1.2f
+            else    -> 1.0f
+        }
+    }
+
     fun load(context: Context): Colors {
         val p = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
         return Colors(
