@@ -39,6 +39,7 @@ class RandomTabFragment : Fragment() {
 
     private var allCategories: List<Category> = emptyList()
     private var allItems: List<RandomItem> = emptyList()
+    private var validSmallIds: Set<Long> = emptySet()
     private var selectedTopId: Long? = null
     private var selectedMidId: Long? = null
     private var selectedSmallId: Long? = null
@@ -58,6 +59,7 @@ class RandomTabFragment : Fragment() {
 
         randomViewModel.allCategories.observe(viewLifecycleOwner) { cats ->
             allCategories = cats
+            validSmallIds = cats.filter { it.level == 2 }.map { it.id }.toSet()
             buildTopChips(cats)
         }
 
@@ -183,7 +185,6 @@ class RandomTabFragment : Fragment() {
 
     private fun doPick() {
         val count = binding.etPickCount.text.toString().toIntOrNull() ?: 3
-        val validSmallIds = allCategories.filter { it.level == 2 }.map { it.id }.toSet()
         val validItems = allItems.filter { it.categorySmallId in validSmallIds }
         val filtered = when {
             selectedSmallId != null -> validItems.filter { it.categorySmallId == selectedSmallId }

@@ -20,6 +20,7 @@ class TimerService : Service() {
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val handler = Handler(Looper.getMainLooper())
     private var toneGenerator: ToneGenerator? = null
+    private var lastNotifText = ""
 
     private val tickRunnable = object : Runnable {
         override fun run() {
@@ -105,6 +106,15 @@ class TimerService : Service() {
     }
 
     private fun updateNotification() {
+        val state = TimerManager.state.value
+        val text = if (state != null) {
+            val elapsed = TimerManager.formatSeconds(state.elapsedSeconds)
+            if (state.timerType == "SET")
+                "${if (state.isWorkPhase) "운동" else "휴식"} · ${state.currentSet}/${state.totalSets}세트 · $elapsed"
+            else elapsed
+        } else ""
+        if (text == lastNotifText) return
+        lastNotifText = text
         val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         nm.notify(NOTIF_ID, buildNotification())
     }
@@ -135,10 +145,7 @@ class TimerService : Service() {
         }
 
         fun stop(context: Context) {
-            val intent = Intent(context, TimerService::class.java).apply {
-                action = ACTION_STOP
-            }
-            context.startService(intent)
+            context.stopService(Intent(context, TimerService::class.java))
         }
     }
 }
