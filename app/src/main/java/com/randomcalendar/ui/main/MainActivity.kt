@@ -173,13 +173,16 @@ class MainActivity : AppCompatActivity() {
         binding.tvMemo.setOnClickListener {
             binding.tvMemo.visibility = android.view.View.GONE
             binding.etMemo.visibility = android.view.View.VISIBLE
+            binding.btnSaveMemo.visibility = android.view.View.VISIBLE
             binding.etMemo.requestFocus()
             val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
             imm.showSoftInput(binding.etMemo, InputMethodManager.SHOW_IMPLICIT)
         }
 
-        binding.etMemo.setOnFocusChangeListener { _, hasFocus ->
-            if (!hasFocus) saveMemo()
+        binding.btnSaveMemo.setOnClickListener { saveMemo() }
+
+        binding.etMemo.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) { saveMemo(); true } else false
         }
     }
 
@@ -193,6 +196,7 @@ class MainActivity : AppCompatActivity() {
         )
         binding.tvMemo.visibility = android.view.View.VISIBLE
         binding.etMemo.visibility = android.view.View.GONE
+        binding.btnSaveMemo.visibility = android.view.View.GONE
         val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(binding.etMemo.windowToken, 0)
     }

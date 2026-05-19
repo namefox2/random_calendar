@@ -180,7 +180,19 @@
                 android:textColor="@color/text_primary"
                 android:hint="이달의 메모..."
                 android:background="@null"
+                android:imeOptions="actionDone"
+                android:inputType="text"
+                android:maxLines="3"
                 android:visibility="gone" />
+
+            <Button
+                android:id="@+id/btnSaveMemo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="저장"
+                android:textSize="13sp"
+                android:visibility="gone"
+                style="@style/Widget.MaterialComponents.Button.TextButton" />
 
         </LinearLayout>
 
