@@ -38,14 +38,14 @@ interface TodoItemDao {
     suspend fun update(item: TodoItem)
 
     @Query("UPDATE todo_items SET isDone = :isDone WHERE id = :id")
-    suspend fun updateIsDone(id: Long, isDone: Boolean)
+    suspend fun updateIsDone(id: Long, isDone: Boolean): Int
 
     @Query("UPDATE todo_items SET elapsedSeconds = :seconds WHERE id = :id")
-    suspend fun updateElapsedSeconds(id: Long, seconds: Int)
+    suspend fun updateElapsedSeconds(id: Long, seconds: Int): Int
 
     @Delete
     suspend fun delete(item: TodoItem)
 
     @Query("DELETE FROM todo_items WHERE id = :id")
-    suspend fun deleteById(id: Long)
+    suspend fun deleteById(id: Long): Int
 }

@@ -23,5 +23,5 @@ interface MonthMemoDao {
     suspend fun delete(memo: MonthMemo)
 
     @Query("DELETE FROM month_memos WHERE yearMonth = :yearMonth")
-    suspend fun deleteByYearMonth(yearMonth: String)
+    suspend fun deleteByYearMonth(yearMonth: String): Int
 }
