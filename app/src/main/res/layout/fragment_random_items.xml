@@ -7,54 +7,60 @@
     android:orientation="vertical"
     android:background="@color/bg_primary">
 
-    <!-- 검색창 -->
-    <LinearLayout
+    <!-- 검색창 카드 -->
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-        android:background="@color/bg_primary">
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="4dp"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="2dp"
+        app:cardBackgroundColor="@color/bg_primary">
 
-        <EditText
-            android:id="@+id/etSearch"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="항목 이름 검색"
-            android:textColor="@color/text_primary"
-            android:textColorHint="@color/text_secondary"
-            android:textSize="14sp"
-            android:background="@drawable/bg_input_field"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:imeOptions="actionSearch"
-            android:inputType="text"
-            android:singleLine="true"
-            android:drawableStart="@drawable/ic_search"
-            android:drawablePadding="8dp" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp">
 
-        <ImageButton
-            android:id="@+id/btnClearSearch"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_marginStart="4dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_close"
-            android:contentDescription="검색 초기화"
-            android:visibility="gone" />
+            <EditText
+                android:id="@+id/etSearch"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="항목 이름 검색"
+                android:textColor="@color/text_primary"
+                android:textColorHint="@color/text_secondary"
+                android:textSize="14sp"
+                android:background="@null"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:imeOptions="actionSearch"
+                android:inputType="text"
+                android:singleLine="true"
+                android:drawableStart="@drawable/ic_search"
+                android:drawablePadding="8dp" />
 
-    </LinearLayout>
+            <ImageButton
+                android:id="@+id/btnClearSearch"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginEnd="4dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_close"
+                android:contentDescription="검색 초기화"
+                android:visibility="gone" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/divider" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
     <!-- 검색 결과 없음 -->
     <TextView
@@ -76,250 +82,257 @@
         android:layout_weight="1"
         android:overScrollMode="never"
         android:clipToPadding="false"
-        android:paddingBottom="8dp" />
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp" />
 
-    <View
+    <!-- 새 항목 추가 카드 -->
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/divider" />
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="8dp"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="3dp"
+        app:cardBackgroundColor="@color/bg_primary">
 
-    <!-- 새 항목 추가 폼 -->
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <LinearLayout
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="12dp">
-
-            <EditText
-                android:id="@+id/etItemName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="항목 이름 (필수)"
-                android:textColor="@color/text_primary"
-                android:textColorHint="@color/text_secondary"
-                android:textSize="15sp"
-                android:background="@drawable/bg_input_field"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp"
-                android:layout_marginBottom="8dp"
-                android:imeOptions="actionNext"
-                android:inputType="text" />
-
-            <!-- 분류 선택 -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="분류 선택"
-                android:textSize="12sp"
-                android:textColor="@color/text_secondary"
-                android:layout_marginBottom="4dp" />
-
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/chipGroupTop"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                app:singleSelection="true" />
-
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/chipGroupMid"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:visibility="gone"
-                app:singleSelection="true" />
-
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/chipGroupSmall"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:visibility="gone"
-                app:singleSelection="true" />
-
-            <EditText
-                android:id="@+id/etItemUrl"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="URL (선택)"
-                android:textColor="@color/text_primary"
-                android:textColorHint="@color/text_secondary"
-                android:textSize="14sp"
-                android:background="@drawable/bg_input_field"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp"
-                android:layout_marginBottom="8dp"
-                android:inputType="textUri" />
-
-            <EditText
-                android:id="@+id/etItemMemo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="메모 (선택)"
-                android:textColor="@color/text_primary"
-                android:textColorHint="@color/text_secondary"
-                android:textSize="14sp"
-                android:background="@drawable/bg_input_field"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp"
-                android:layout_marginBottom="8dp"
-                android:inputType="textMultiLine"
-                android:minLines="2" />
-
-            <!-- 타이머 선택 -->
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/chipGroupTimerType"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                app:singleSelection="true">
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipTimerNone"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="타이머 없음"
-                    android:checked="true" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipTimerNormal"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="일반 타이머" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipTimerSet"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="세트 타이머" />
-
-            </com.google.android.material.chip.ChipGroup>
+            android:layout_height="wrap_content">
 
             <LinearLayout
-                android:id="@+id/layoutNormalTimer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="8dp"
-                android:visibility="gone">
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <EditText
+                    android:id="@+id/etItemName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="항목 이름 (필수)"
+                    android:textColor="@color/text_primary"
+                    android:textColorHint="@color/text_secondary"
+                    android:textSize="15sp"
+                    android:background="@drawable/bg_input_field"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:imeOptions="actionNext"
+                    android:inputType="text" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="목표 시간 (분):"
-                    android:textSize="13sp"
+                    android:text="분류 선택"
+                    android:textSize="12sp"
                     android:textColor="@color/text_secondary"
-                    android:layout_marginEnd="8dp" />
+                    android:layout_marginBottom="4dp" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroupTop"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    app:singleSelection="true" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroupMid"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:visibility="gone"
+                    app:singleSelection="true" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroupSmall"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:visibility="gone"
+                    app:singleSelection="true" />
 
                 <EditText
-                    android:id="@+id/etGoalMin"
-                    android:layout_width="80dp"
+                    android:id="@+id/etItemUrl"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="number"
-                    android:hint="없음"
+                    android:hint="URL (선택)"
                     android:textColor="@color/text_primary"
                     android:textColorHint="@color/text_secondary"
                     android:textSize="14sp"
                     android:background="@drawable/bg_input_field"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="8dp"
-                    android:paddingTop="6dp"
-                    android:paddingBottom="6dp" />
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:inputType="textUri" />
 
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/layoutSetTimer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginBottom="8dp"
-                android:visibility="gone">
-
-                <LinearLayout
+                <EditText
+                    android:id="@+id/etItemMemo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:hint="메모 (선택)"
+                    android:textColor="@color/text_primary"
+                    android:textColorHint="@color/text_secondary"
+                    android:textSize="14sp"
+                    android:background="@drawable/bg_input_field"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:inputType="textMultiLine"
+                    android:minLines="2" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroupTimerType"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    app:singleSelection="true">
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipTimerNone"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="타이머 없음"
+                        android:checked="true" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipTimerNormal"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="일반 타이머" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipTimerSet"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="세트 타이머" />
+
+                </com.google.android.material.chip.ChipGroup>
+
+                <LinearLayout
+                    android:id="@+id/layoutNormalTimer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="8dp"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="목표 시간 (분):"
+                        android:textSize="13sp"
+                        android:textColor="@color/text_secondary"
+                        android:layout_marginEnd="8dp" />
 
                     <EditText
-                        android:id="@+id/etWorkSec"
-                        android:layout_width="0dp"
+                        android:id="@+id/etGoalMin"
+                        android:layout_width="80dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:inputType="number"
-                        android:hint="운동(초)"
+                        android:hint="없음"
                         android:textColor="@color/text_primary"
                         android:textColorHint="@color/text_secondary"
-                        android:gravity="center"
-                        android:layout_marginEnd="4dp"
+                        android:textSize="14sp"
                         android:background="@drawable/bg_input_field"
-                        android:paddingTop="8dp"
-                        android:paddingBottom="8dp" />
-
-                    <EditText
-                        android:id="@+id/etRestSec"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:inputType="number"
-                        android:hint="휴식(초)"
-                        android:textColor="@color/text_primary"
-                        android:textColorHint="@color/text_secondary"
-                        android:gravity="center"
-                        android:layout_marginEnd="4dp"
-                        android:background="@drawable/bg_input_field"
-                        android:paddingTop="8dp"
-                        android:paddingBottom="8dp" />
-
-                    <EditText
-                        android:id="@+id/etSets"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:inputType="number"
-                        android:hint="세트"
-                        android:textColor="@color/text_primary"
-                        android:textColorHint="@color/text_secondary"
-                        android:gravity="center"
-                        android:background="@drawable/bg_input_field"
-                        android:paddingTop="8dp"
-                        android:paddingBottom="8dp" />
+                        android:paddingStart="8dp"
+                        android:paddingEnd="8dp"
+                        android:paddingTop="6dp"
+                        android:paddingBottom="6dp" />
 
                 </LinearLayout>
 
-                <TextView
-                    android:id="@+id/tvEstimatedTime"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:id="@+id/layoutSetTimer"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="12sp"
-                    android:textColor="@color/text_secondary"
-                    android:layout_marginTop="4dp" />
+                    android:orientation="vertical"
+                    android:layout_marginBottom="8dp"
+                    android:visibility="gone">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <EditText
+                            android:id="@+id/etWorkSec"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:inputType="number"
+                            android:hint="운동(초)"
+                            android:textColor="@color/text_primary"
+                            android:textColorHint="@color/text_secondary"
+                            android:gravity="center"
+                            android:layout_marginEnd="4dp"
+                            android:background="@drawable/bg_input_field"
+                            android:paddingTop="8dp"
+                            android:paddingBottom="8dp" />
+
+                        <EditText
+                            android:id="@+id/etRestSec"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:inputType="number"
+                            android:hint="휴식(초)"
+                            android:textColor="@color/text_primary"
+                            android:textColorHint="@color/text_secondary"
+                            android:gravity="center"
+                            android:layout_marginEnd="4dp"
+                            android:background="@drawable/bg_input_field"
+                            android:paddingTop="8dp"
+                            android:paddingBottom="8dp" />
+
+                        <EditText
+                            android:id="@+id/etSets"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:inputType="number"
+                            android:hint="세트"
+                            android:textColor="@color/text_primary"
+                            android:textColorHint="@color/text_secondary"
+                            android:gravity="center"
+                            android:background="@drawable/bg_input_field"
+                            android:paddingTop="8dp"
+                            android:paddingBottom="8dp" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvEstimatedTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="12sp"
+                        android:textColor="@color/text_secondary"
+                        android:layout_marginTop="4dp" />
+
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btnAddItem"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="항목 추가"
+                    style="@style/Widget.MaterialComponents.Button" />
 
             </LinearLayout>
 
-            <Button
-                android:id="@+id/btnAddItem"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="항목 추가"
-                style="@style/Widget.MaterialComponents.Button" />
+        </ScrollView>
 
-        </LinearLayout>
-
-    </ScrollView>
+    </com.google.android.material.card.MaterialCardView>
 
 </LinearLayout>

@@ -25,6 +25,9 @@ interface CategoryDao {
     @Query("SELECT * FROM categories ORDER BY level ASC, name ASC")
     fun getAll(): LiveData<List<Category>>
 
+    @Query("SELECT * FROM categories ORDER BY level ASC, name ASC")
+    suspend fun getAllOnce(): List<Category>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(category: Category): Long
 

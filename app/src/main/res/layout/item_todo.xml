@@ -1,300 +1,303 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:background="@color/bg_primary">
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="4dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="2dp"
+    app:cardBackgroundColor="@color/bg_primary">
 
-    <!-- 항상 보이는 헤더 -->
     <LinearLayout
-        android:id="@+id/headerRow"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp"
-        android:paddingTop="4dp"
-        android:paddingBottom="4dp"
-        android:minHeight="52dp">
+        android:orientation="vertical">
 
-        <CheckBox
-            android:id="@+id/cbDone"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:buttonTint="@color/primary" />
-
-        <TextView
-            android:id="@+id/tvName"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textSize="15sp"
-            android:textColor="@color/text_primary"
-            android:layout_marginStart="4dp"
-            android:layout_marginEnd="4dp" />
-
-        <TextView
-            android:id="@+id/tvElapsed"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="12sp"
-            android:textColor="@color/text_secondary"
-            android:layout_marginEnd="4dp"
-            android:visibility="gone" />
-
-        <ImageButton
-            android:id="@+id/btnExpand"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_chevron_down"
-            android:contentDescription="펼치기" />
-
-    </LinearLayout>
-
-    <!-- 펼친 상태 콘텐츠 -->
-    <LinearLayout
-        android:id="@+id/expandedContent"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:paddingBottom="8dp"
-        android:visibility="gone">
-
-        <!-- URL 링크 -->
-        <TextView
-            android:id="@+id/tvUrl"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="13sp"
-            android:textColor="@color/primary"
-            android:autoLink="web"
-            android:linksClickable="true"
-            android:layout_marginBottom="8dp"
-            android:visibility="gone" />
-
-        <!-- 타이머 종류 선택 -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="타이머"
-            android:textSize="12sp"
-            android:textColor="@color/text_secondary"
-            android:layout_marginBottom="4dp" />
-
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/chipGroupTimerType"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            app:singleSelection="true"
-            app:selectionRequired="true">
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipTimerNone"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="없음"
-                style="@style/Widget.MaterialComponents.Chip.Choice" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipTimerNormal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="일반"
-                style="@style/Widget.MaterialComponents.Chip.Choice" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipTimerSet"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="세트"
-                style="@style/Widget.MaterialComponents.Chip.Choice" />
-
-        </com.google.android.material.chip.ChipGroup>
-
-        <!-- 일반 타이머 섹션 -->
+        <!-- 항상 보이는 헤더 -->
         <LinearLayout
-            android:id="@+id/sectionNormalTimer"
+            android:id="@+id/headerRow"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone">
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:minHeight="52dp">
 
-            <TextView
-                android:id="@+id/tvTimerDisplay"
-                android:layout_width="match_parent"
+            <CheckBox
+                android:id="@+id/cbDone"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="00:00"
-                android:textSize="32sp"
-                android:textStyle="bold"
-                android:textColor="@color/text_primary"
-                android:gravity="center"
-                android:fontFamily="monospace"
-                android:layout_marginBottom="4dp" />
+                android:buttonTint="@color/primary" />
 
             <TextView
-                android:id="@+id/tvTimerGoal"
-                android:layout_width="match_parent"
+                android:id="@+id/tvName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="15sp"
+                android:textColor="@color/text_primary"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp" />
+
+            <TextView
+                android:id="@+id/tvElapsed"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="12sp"
                 android:textColor="@color/text_secondary"
-                android:gravity="center"
-                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="4dp"
                 android:visibility="gone" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center"
-                android:layout_marginBottom="8dp">
-
-                <Button
-                    android:id="@+id/btnTimerStart"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="시작"
-                    android:layout_marginEnd="8dp"
-                    style="@style/Widget.MaterialComponents.Button" />
-
-                <Button
-                    android:id="@+id/btnTimerPause"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="일시정지"
-                    android:layout_marginEnd="8dp"
-                    android:enabled="false"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
-
-                <Button
-                    android:id="@+id/btnTimerReset"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="리셋"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
-
-            </LinearLayout>
+            <ImageButton
+                android:id="@+id/btnExpand"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_chevron_down"
+                android:contentDescription="펼치기" />
 
         </LinearLayout>
 
-        <!-- 세트 타이머 섹션 -->
+        <!-- 펼친 상태 콘텐츠 -->
         <LinearLayout
-            android:id="@+id/sectionSetTimer"
+            android:id="@+id/expandedContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="12dp"
             android:visibility="gone">
 
-            <LinearLayout
+            <TextView
+                android:id="@+id/tvUrl"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center"
-                android:layout_marginBottom="4dp">
-
-                <TextView
-                    android:id="@+id/tvSetPhase"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="운동중"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/primary"
-                    android:gravity="center" />
-
-                <TextView
-                    android:id="@+id/tvSetCount"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="1 / 3 세트"
-                    android:textSize="14sp"
-                    android:textColor="@color/text_secondary"
-                    android:gravity="center" />
-
-            </LinearLayout>
+                android:textSize="13sp"
+                android:textColor="@color/primary"
+                android:autoLink="web"
+                android:linksClickable="true"
+                android:layout_marginBottom="8dp"
+                android:visibility="gone" />
 
             <TextView
-                android:id="@+id/tvSetTimerDisplay"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="00:30"
-                android:textSize="32sp"
-                android:textStyle="bold"
-                android:textColor="@color/text_primary"
-                android:gravity="center"
-                android:fontFamily="monospace"
+                android:text="타이머"
+                android:textSize="12sp"
+                android:textColor="@color/text_secondary"
                 android:layout_marginBottom="4dp" />
 
-            <ProgressBar
-                android:id="@+id/pbSetPhase"
-                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="8dp"
-                android:max="100"
-                android:progress="100"
-                android:progressTint="@color/primary"
-                android:progressBackgroundTint="@color/divider"
-                android:layout_marginBottom="8dp" />
-
-            <LinearLayout
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupTimerType"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center"
-                android:layout_marginBottom="8dp">
+                android:layout_marginBottom="8dp"
+                app:singleSelection="true"
+                app:selectionRequired="true">
 
-                <Button
-                    android:id="@+id/btnSetStart"
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipTimerNone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="시작"
-                    android:layout_marginEnd="8dp"
-                    style="@style/Widget.MaterialComponents.Button" />
+                    android:text="없음"
+                    style="@style/Widget.MaterialComponents.Chip.Choice" />
 
-                <Button
-                    android:id="@+id/btnSetPause"
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipTimerNormal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="일시정지"
-                    android:layout_marginEnd="8dp"
-                    android:enabled="false"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+                    android:text="일반"
+                    style="@style/Widget.MaterialComponents.Chip.Choice" />
 
-                <Button
-                    android:id="@+id/btnSetReset"
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipTimerSet"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="리셋"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+                    android:text="세트"
+                    style="@style/Widget.MaterialComponents.Chip.Choice" />
+
+            </com.google.android.material.chip.ChipGroup>
+
+            <!-- 일반 타이머 섹션 -->
+            <LinearLayout
+                android:id="@+id/sectionNormalTimer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/tvTimerDisplay"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="00:00"
+                    android:textSize="36sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary"
+                    android:gravity="center"
+                    android:fontFamily="@font/gaegu"
+                    android:layout_marginBottom="4dp" />
+
+                <TextView
+                    android:id="@+id/tvTimerGoal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    android:textColor="@color/text_secondary"
+                    android:gravity="center"
+                    android:layout_marginBottom="8dp"
+                    android:visibility="gone" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:layout_marginBottom="8dp">
+
+                    <Button
+                        android:id="@+id/btnTimerStart"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="시작"
+                        android:layout_marginEnd="8dp"
+                        style="@style/Widget.MaterialComponents.Button" />
+
+                    <Button
+                        android:id="@+id/btnTimerPause"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="일시정지"
+                        android:layout_marginEnd="8dp"
+                        android:enabled="false"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
+                    <Button
+                        android:id="@+id/btnTimerReset"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="리셋"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
+                </LinearLayout>
 
             </LinearLayout>
+
+            <!-- 세트 타이머 섹션 -->
+            <LinearLayout
+                android:id="@+id/sectionSetTimer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:layout_marginBottom="4dp">
+
+                    <TextView
+                        android:id="@+id/tvSetPhase"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="운동중"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/primary"
+                        android:gravity="center" />
+
+                    <TextView
+                        android:id="@+id/tvSetCount"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="1 / 3 세트"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_secondary"
+                        android:gravity="center" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvSetTimerDisplay"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="00:30"
+                    android:textSize="36sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary"
+                    android:gravity="center"
+                    android:fontFamily="@font/gaegu"
+                    android:layout_marginBottom="4dp" />
+
+                <ProgressBar
+                    android:id="@+id/pbSetPhase"
+                    style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="8dp"
+                    android:max="100"
+                    android:progress="100"
+                    android:progressTint="@color/primary"
+                    android:progressBackgroundTint="@color/divider"
+                    android:layout_marginBottom="8dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:layout_marginBottom="8dp">
+
+                    <Button
+                        android:id="@+id/btnSetStart"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="시작"
+                        android:layout_marginEnd="8dp"
+                        style="@style/Widget.MaterialComponents.Button" />
+
+                    <Button
+                        android:id="@+id/btnSetPause"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="일시정지"
+                        android:layout_marginEnd="8dp"
+                        android:enabled="false"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
+                    <Button
+                        android:id="@+id/btnSetReset"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="리셋"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnDelete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="삭제"
+                android:textColor="@color/calendar_red"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_gravity="end" />
 
         </LinearLayout>
 
-        <!-- 삭제 버튼 -->
-        <Button
-            android:id="@+id/btnDelete"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="삭제"
-            android:textColor="@color/calendar_red"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:layout_gravity="end" />
-
     </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/divider"
-        android:layout_marginStart="16dp" />
-
-</LinearLayout>
+</com.google.android.material.card.MaterialCardView>

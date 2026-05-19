@@ -23,4 +23,6 @@ class CategoryRepository(private val dao: CategoryDao) {
     suspend fun delete(category: Category) = dao.delete(category)
 
     suspend fun deleteById(id: Long) = dao.deleteById(id)
+
+    suspend fun getAllOnce(): List<Category> = dao.getAllOnce()
 }

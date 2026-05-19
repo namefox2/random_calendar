@@ -25,4 +25,6 @@ class RandomItemRepository(private val dao: RandomItemDao) {
 
     fun pickRandom(items: List<RandomItem>, count: Int): List<RandomItem> =
         items.shuffled().take(count)
+
+    suspend fun getAllOnce(): List<RandomItem> = dao.getAllOnce()
 }

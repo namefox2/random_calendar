@@ -10,6 +10,9 @@ interface RandomItemDao {
     @Query("SELECT * FROM random_items ORDER BY name ASC")
     fun getAll(): LiveData<List<RandomItem>>
 
+    @Query("SELECT * FROM random_items ORDER BY name ASC")
+    suspend fun getAllOnce(): List<RandomItem>
+
     @Query("SELECT * FROM random_items WHERE categorySmallId = :categoryId ORDER BY name ASC")
     fun getByCategory(categoryId: Long): LiveData<List<RandomItem>>
 

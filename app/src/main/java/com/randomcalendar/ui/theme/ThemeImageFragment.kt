@@ -30,7 +30,7 @@ class ThemeImageFragment : Fragment() {
     ) { uri: Uri? ->
         uri ?: return@registerForActivityResult
         binding.ivPreviewImage.visibility = View.VISIBLE
-        Glide.with(this).load(uri).into(binding.ivPreviewImage)
+        Glide.with(this).load(uri).into(binding.ivImage)
         extractColors(uri)
     }
 
