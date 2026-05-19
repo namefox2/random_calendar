@@ -3,7 +3,9 @@ package com.randomcalendar.ui.daydetail
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.graphics.Typeface
 import android.os.Bundle
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DiffUtil
@@ -11,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
+import com.randomcalendar.R
 import com.randomcalendar.RandomCalendarApp
 import com.randomcalendar.data.db.entity.Category
 import com.randomcalendar.data.db.entity.RandomItem
@@ -182,6 +185,9 @@ class RandomTabFragment : Fragment() {
                     android.graphics.Color.parseColor("#E0E0E0")
                 }
                 chipBackgroundColor = android.content.res.ColorStateList.valueOf(chipBgColor)
+                typeface = if (ThemeHelper.isHandwritingFont(context)) {
+                    ResourcesCompat.getFont(context, R.font.gaegu) ?: Typeface.DEFAULT
+                } else Typeface.DEFAULT
             } catch (_: Exception) {}
             setOnCheckedChangeListener { chip, checked -> listener(chip as com.google.android.material.chip.Chip, checked) }
         }
