@@ -211,13 +211,20 @@ class TodoTabFragment : Fragment() {
             binding.tvDate.setTextColor(c.textColor)
             binding.tvSummary.setTextColor(c.textColor)
 
-            // Chip text: contrast against bgColor
+            // Chip text + background: adapt to theme
             val chipText = if (isDarkColor(c.bgColor)) android.graphics.Color.WHITE
                            else android.graphics.Color.parseColor("#212121")
             val chipCsl = android.content.res.ColorStateList.valueOf(chipText)
-            binding.chipUrl.setTextColor(chipCsl)
-            binding.chipNormalTimer.setTextColor(chipCsl)
-            binding.chipSetTimer.setTextColor(chipCsl)
+            val chipBgCsl = android.content.res.ColorStateList.valueOf(
+                android.graphics.Color.argb(38,
+                    android.graphics.Color.red(c.textColor),
+                    android.graphics.Color.green(c.textColor),
+                    android.graphics.Color.blue(c.textColor))
+            )
+            listOf(binding.chipUrl, binding.chipNormalTimer, binding.chipSetTimer).forEach { chip ->
+                chip.setTextColor(chipCsl)
+                chip.chipBackgroundColor = chipBgCsl
+            }
 
             // Form labels
             val labelText = if (isDarkColor(c.bgColor)) android.graphics.Color.WHITE
@@ -227,8 +234,9 @@ class TodoTabFragment : Fragment() {
             binding.tvRestLabel.setTextColor(labelText)
             binding.tvSetCountLabel.setTextColor(labelText)
 
-            // EditText text/hint colors
+            // EditText text/hint/background colors
             val hintColor = if (isDarkColor(c.bgColor)) 0xFFBDBDBD.toInt() else 0xFF9E9E9E.toInt()
+            val density = resources.displayMetrics.density
             listOf(
                 binding.etNewName, binding.etNewUrl,
                 binding.etGoalMinutes, binding.etWorkSeconds,
@@ -236,6 +244,19 @@ class TodoTabFragment : Fragment() {
             ).forEach { et ->
                 et.setTextColor(c.textColor)
                 et.setHintTextColor(hintColor)
+                val inputBg = android.graphics.drawable.GradientDrawable().apply {
+                    shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+                    cornerRadius = 8 * density
+                    setColor(android.graphics.Color.argb(25,
+                        android.graphics.Color.red(c.textColor),
+                        android.graphics.Color.green(c.textColor),
+                        android.graphics.Color.blue(c.textColor)))
+                    setStroke((1 * density).toInt(), android.graphics.Color.argb(60,
+                        android.graphics.Color.red(c.textColor),
+                        android.graphics.Color.green(c.textColor),
+                        android.graphics.Color.blue(c.textColor)))
+                }
+                et.background = inputBg
             }
 
             // RecyclerView background

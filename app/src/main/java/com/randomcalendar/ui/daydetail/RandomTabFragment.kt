@@ -173,6 +173,12 @@ class RandomTabFragment : Fragment() {
                 val chipText = if (isDarkColor(c.bgColor)) android.graphics.Color.WHITE
                                else android.graphics.Color.parseColor("#212121")
                 setTextColor(android.content.res.ColorStateList.valueOf(chipText))
+                chipBackgroundColor = android.content.res.ColorStateList.valueOf(
+                    android.graphics.Color.argb(38,
+                        android.graphics.Color.red(c.textColor),
+                        android.graphics.Color.green(c.textColor),
+                        android.graphics.Color.blue(c.textColor))
+                )
             } catch (_: Exception) {}
             setOnCheckedChangeListener { chip, checked -> listener(chip as com.google.android.material.chip.Chip, checked) }
         }
