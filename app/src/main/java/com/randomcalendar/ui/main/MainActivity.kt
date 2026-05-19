@@ -3,6 +3,7 @@ package com.randomcalendar.ui.main
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.SeekBar
@@ -43,6 +44,7 @@ class MainActivity : AppCompatActivity() {
     private val yearMonthKeyFormatter = DateTimeFormatter.ofPattern("yyyy-MM")
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         if (ThemeHelper.isHandwritingFont(this)) setTheme(R.style.Theme_RandomCalendar_Gaegu)
         else setTheme(R.style.Theme_RandomCalendar)
         super.onCreate(savedInstanceState)
