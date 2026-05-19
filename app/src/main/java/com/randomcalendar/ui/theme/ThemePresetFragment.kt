@@ -33,7 +33,8 @@ class ThemePresetFragment : Fragment() {
         ThemePreset("파랑",  "#90CAF9", "#E3F2FD", "#1976D2", "#FFFFFF", "#0D47A1"),
         ThemePreset("녹색",  "#A5D6A7", "#E8F5E9", "#388E3C", "#FFFFFF", "#1B5E20"),
         ThemePreset("노랑",  "#FFF59D", "#FFFDE7", "#F9A825", "#FFFFFF", "#E65100"),
-        ThemePreset("블랙",  "#424242", "#212121", "#BDBDBD", "#121212", "#FFFFFF")
+        ThemePreset("블랙",  "#424242", "#212121", "#BDBDBD", "#121212", "#FFFFFF"),
+        ThemePreset("주황",  "#FF7043", "#FBE9E7", "#E64A19", "#FFFFFF", "#BF360C")
     )
 
     private val defaultPreset = ThemePreset("기본", "#1976D2", "#F5F5F5", "#FF9800", "#FFFFFF", "#212121")
@@ -53,6 +54,7 @@ class ThemePresetFragment : Fragment() {
         binding.btnGreen.setOnClickListener  { selectPreset(presets[2]) }
         binding.btnYellow.setOnClickListener { selectPreset(presets[3]) }
         binding.btnBlack.setOnClickListener  { selectPreset(presets[4]) }
+        binding.btnOrange.setOnClickListener { selectPreset(presets[5]) }
 
         binding.btnReset.setOnClickListener { selectPreset(defaultPreset) }
         binding.btnApply.setOnClickListener { saveAndFinish(currentPreset) }

@@ -103,10 +103,15 @@
                         android:textColor="#FFFFFF"
                         style="@style/Widget.MaterialComponents.Button" />
 
-                    <View
+                    <Button
+                        android:id="@+id/btnOrange"
                         android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:layout_weight="1" />
+                        android:layout_height="56dp"
+                        android:layout_weight="1"
+                        android:text="🍊 주황"
+                        android:backgroundTint="#FF7043"
+                        android:textColor="#FFFFFF"
+                        style="@style/Widget.MaterialComponents.Button" />
 
                 </LinearLayout>
 
