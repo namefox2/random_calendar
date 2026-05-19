@@ -65,7 +65,7 @@ class MainViewModel(
             val dayDataMap = grouped.mapValues { (_, dayItems) ->
                 val total = dayItems.size
                 val done = dayItems.count { it.isDone }
-                val elapsedSeconds = dayItems.sumOf { it.elapsedSeconds }
+                val elapsedSeconds = dayItems.filter { it.isDone }.sumOf { it.elapsedSeconds }
                 val achievementRate = if (total > 0) done.toFloat() / total * 100f else 0f
                 DayData(
                     totalCount = total,

@@ -12,22 +12,34 @@ import java.time.format.DateTimeFormatter
 class DayDetailViewModel(
     private val todoRepo: TodoItemRepository,
     private val dayMemoRepo: DayMemoRepository,
-    date: LocalDate
+    initialDate: LocalDate
 ) : ViewModel() {
 
-    val dateStr: String = date.format(DateTimeFormatter.ISO_LOCAL_DATE)
+    private val _currentDate = MutableLiveData(initialDate)
+    val currentDate: LiveData<LocalDate> = _currentDate
 
-    val todos: LiveData<List<TodoItem>> = todoRepo.getByDate(dateStr)
+    private val fmt = DateTimeFormatter.ISO_LOCAL_DATE
+    val dateStr: String get() = _currentDate.value!!.format(fmt)
+
+    fun setDate(date: LocalDate) {
+        _currentDate.value = date
+    }
+
+    val todos: LiveData<List<TodoItem>> = _currentDate.switchMap { date ->
+        todoRepo.getByDate(date.format(fmt))
+    }
 
     val summary: LiveData<DaySummary> = todos.map { list ->
         val total = list.size
         val done = list.count { it.isDone }
-        val totalSec = list.sumOf { it.elapsedSeconds }
+        val totalSec = list.filter { it.isDone }.sumOf { it.elapsedSeconds }
         val rate = if (total > 0) done * 100 / total else 0
         DaySummary(total, done, rate, totalSec)
     }
 
-    val dayMemo: LiveData<DayMemo?> = dayMemoRepo.getByDate(dateStr)
+    val dayMemo: LiveData<DayMemo?> = _currentDate.switchMap { date ->
+        dayMemoRepo.getByDate(date.format(fmt))
+    }
 
     fun saveMemoContent(content: String, photoPaths: String) {
         viewModelScope.launch {

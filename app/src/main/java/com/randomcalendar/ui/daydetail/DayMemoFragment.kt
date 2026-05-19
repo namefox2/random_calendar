@@ -74,12 +74,17 @@ class DayMemoFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.tvDate.text = dayViewModel.dateStr
+        dayViewModel.currentDate.observe(viewLifecycleOwner) { date ->
+            binding.tvDate.text = date.toString()
+            binding.etDayMemo.tag = null  // allow memo to reload when date changes
+        }
 
         dayViewModel.dayMemo.observe(viewLifecycleOwner) { memo ->
             if (binding.etDayMemo.tag == null) {
                 binding.etDayMemo.setText(memo?.content ?: "")
                 binding.etDayMemo.tag = "loaded"
+                photoPaths.clear()
+                binding.photoContainer.removeAllViews()
             }
             val storedPaths = memo?.photoPaths?.split(",")
                 ?.filter { it.isNotBlank() } ?: emptyList()

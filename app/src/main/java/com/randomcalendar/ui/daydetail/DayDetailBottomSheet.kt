@@ -26,30 +26,30 @@ class DayDetailBottomSheet : BottomSheetDialogFragment() {
         ViewModelFactory(app.todoItemRepository, app.dayMemoRepository, date)
     }
 
+    var onDataChanged: (() -> Unit)? = null
+
+    private val dateFormatter = DateTimeFormatter.ofPattern("yyyy년 M월 d일 (E)", java.util.Locale.KOREAN)
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentDayDetailBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    var onDataChanged: (() -> Unit)? = null
-
-    private val dateFormatter = DateTimeFormatter.ofPattern("yyyy년 M월 d일 (E)", java.util.Locale.KOREAN)
+    override fun onStart() {
+        super.onStart()
+        val bottomSheet = dialog?.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+        bottomSheet?.let {
+            it.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
+            val behavior = BottomSheetBehavior.from(it)
+            behavior.peekHeight = resources.displayMetrics.heightPixels
+            behavior.state = BottomSheetBehavior.STATE_EXPANDED
+            behavior.skipCollapsed = true
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.todos.observe(viewLifecycleOwner) { onDataChanged?.invoke() }
-
-        dialog?.setOnShowListener {
-            val bottomSheet = dialog?.findViewById<View>(
-                com.google.android.material.R.id.design_bottom_sheet
-            )
-            bottomSheet?.let {
-                val behavior = BottomSheetBehavior.from(it)
-                it.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
-                behavior.state = BottomSheetBehavior.STATE_EXPANDED
-                behavior.skipCollapsed = true
-            }
-        }
 
         val pagerAdapter = DayDetailPagerAdapter(childFragmentManager, viewLifecycleOwner.lifecycle)
         binding.viewPager.adapter = pagerAdapter
@@ -62,11 +62,16 @@ class DayDetailBottomSheet : BottomSheetDialogFragment() {
             }
         }.attach()
 
-        val currentDate = LocalDate.parse(requireArguments().getString(ARG_DATE)!!)
-        binding.tvDetailDate.text = currentDate.format(dateFormatter)
-
-        binding.btnPrevDay.setOnClickListener { navigateToDate(currentDate.minusDays(1)) }
-        binding.btnNextDay.setOnClickListener { navigateToDate(currentDate.plusDays(1)) }
+        // Date navigation — update ViewModel directly (no dismiss/reopen)
+        viewModel.currentDate.observe(viewLifecycleOwner) { date ->
+            binding.tvDetailDate.text = date.format(dateFormatter)
+        }
+        binding.btnPrevDay.setOnClickListener {
+            viewModel.setDate(viewModel.currentDate.value!!.minusDays(1))
+        }
+        binding.btnNextDay.setOnClickListener {
+            viewModel.setDate(viewModel.currentDate.value!!.plusDays(1))
+        }
 
         try {
             val c = ThemeHelper.load(requireContext())
@@ -76,13 +81,6 @@ class DayDetailBottomSheet : BottomSheetDialogFragment() {
             binding.btnNextDay.setColorFilter(c.textColor)
             ThemeHelper.applyTabLayout(binding.tabLayout, c)
         } catch (_: Exception) {}
-    }
-
-    private fun navigateToDate(date: LocalDate) {
-        val newSheet = newInstance(date)
-        newSheet.onDataChanged = onDataChanged
-        dismiss()
-        newSheet.show(parentFragmentManager, TAG)
     }
 
     override fun onDestroyView() {

@@ -46,9 +46,10 @@ class TodoTabFragment : Fragment() {
     }
 
     private fun setupHeader() {
-        val date = LocalDate.parse(viewModel.dateStr)
         val formatter = DateTimeFormatter.ofPattern("M월 d일 (E)", java.util.Locale.KOREAN)
-        binding.tvDate.text = date.format(formatter)
+        viewModel.currentDate.observe(viewLifecycleOwner) { date ->
+            binding.tvDate.text = date.format(formatter)
+        }
     }
 
     private fun setupRecyclerView() {

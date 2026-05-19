@@ -29,17 +29,17 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="내보내기"
+            android:text="📤 내보내기"
             android:layout_marginEnd="6dp"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+            style="@style/Widget.MaterialComponents.Button" />
 
         <Button
             android:id="@+id/btnImport"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="가져오기"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+            android:text="📥 가져오기"
+            style="@style/Widget.MaterialComponents.Button" />
 
     </LinearLayout>
 

@@ -102,8 +102,8 @@ class RandomListActivity : AppCompatActivity() {
         try {
             val c = ThemeHelper.load(this)
             ThemeHelper.applyToolbar(binding.toolbar, c)
-            ThemeHelper.applyOutlinedButton(binding.btnExport as com.google.android.material.button.MaterialButton, c)
-            ThemeHelper.applyOutlinedButton(binding.btnImport as com.google.android.material.button.MaterialButton, c)
+            ThemeHelper.applyButton(binding.btnExport, c)
+            ThemeHelper.applyButton(binding.btnImport, c)
         } catch (_: Exception) {}
     }
 }
