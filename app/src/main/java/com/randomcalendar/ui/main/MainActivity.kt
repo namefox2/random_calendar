@@ -79,6 +79,7 @@ class MainActivity : AppCompatActivity() {
             adapter = calendarAdapter
             itemAnimator = null
         }
+        calendarAdapter.applyTheme(com.randomcalendar.ui.common.ThemeHelper.load(this))
     }
 
     private fun setupMonthNav() {
@@ -296,6 +297,9 @@ class MainActivity : AppCompatActivity() {
             (binding.btnTheme as? com.google.android.material.button.MaterialButton)?.let { mb ->
                 mb.strokeColor = android.content.res.ColorStateList.valueOf(onSidebar)
                 mb.setTextColor(onSidebar)
+            }
+            if (::calendarAdapter.isInitialized) {
+                calendarAdapter.applyTheme(com.randomcalendar.ui.common.ThemeHelper.load(this))
             }
         } catch (_: Exception) {}
     }
