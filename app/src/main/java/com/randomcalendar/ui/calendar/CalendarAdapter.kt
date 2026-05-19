@@ -92,16 +92,18 @@ class CalendarAdapter(
             val dayOfWeek = cell.date.dayOfWeek.value % 7 // 0=일, 6=토
 
             // tvDay 원형 배경 (선택/오늘/기본)
+            val accentColor = c?.accentColor ?: ctx.getColor(R.color.accent)
+
             when {
                 isSelected -> {
-                    binding.tvDay.background = oval(primaryColor)
+                    binding.tvDay.background = oval(accentColor)
                     binding.tvDay.setTextColor(
-                        if (isColorDark(primaryColor)) Color.WHITE else Color.BLACK
+                        if (isColorDark(accentColor)) Color.WHITE else Color.BLACK
                     )
                 }
                 cell.isToday -> {
-                    binding.tvDay.background = ovalStroke(primaryColor, 2f, ctx)
-                    binding.tvDay.setTextColor(primaryColor)
+                    binding.tvDay.background = ovalStroke(accentColor, 2.5f, ctx)
+                    binding.tvDay.setTextColor(accentColor)
                 }
                 else -> {
                     binding.tvDay.background = null

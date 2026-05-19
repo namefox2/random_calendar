@@ -13,6 +13,7 @@ import com.randomcalendar.databinding.FragmentDayDetailBinding
 import com.randomcalendar.ui.common.ThemeHelper
 import com.randomcalendar.ui.common.ViewModelFactory
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class DayDetailBottomSheet : BottomSheetDialogFragment() {
 
@@ -31,6 +32,8 @@ class DayDetailBottomSheet : BottomSheetDialogFragment() {
     }
 
     var onDataChanged: (() -> Unit)? = null
+
+    private val dateFormatter = DateTimeFormatter.ofPattern("yyyy년 M월 d일 (E)", java.util.Locale.KOREAN)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -59,11 +62,27 @@ class DayDetailBottomSheet : BottomSheetDialogFragment() {
             }
         }.attach()
 
+        val currentDate = LocalDate.parse(requireArguments().getString(ARG_DATE)!!)
+        binding.tvDetailDate.text = currentDate.format(dateFormatter)
+
+        binding.btnPrevDay.setOnClickListener { navigateToDate(currentDate.minusDays(1)) }
+        binding.btnNextDay.setOnClickListener { navigateToDate(currentDate.plusDays(1)) }
+
         try {
             val c = ThemeHelper.load(requireContext())
             binding.root.setBackgroundColor(c.bgColor)
+            binding.tvDetailDate.setTextColor(c.textColor)
+            binding.btnPrevDay.setColorFilter(c.textColor)
+            binding.btnNextDay.setColorFilter(c.textColor)
             ThemeHelper.applyTabLayout(binding.tabLayout, c)
         } catch (_: Exception) {}
+    }
+
+    private fun navigateToDate(date: LocalDate) {
+        val newSheet = newInstance(date)
+        newSheet.onDataChanged = onDataChanged
+        dismiss()
+        newSheet.show(parentFragmentManager, TAG)
     }
 
     override fun onDestroyView() {
