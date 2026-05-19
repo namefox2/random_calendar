@@ -14,5 +14,5 @@ interface DayMemoDao {
     suspend fun getByDateOnce(date: String): DayMemo?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertOrReplace(memo: DayMemo)
+    suspend fun insertOrReplace(memo: DayMemo): Long
 }

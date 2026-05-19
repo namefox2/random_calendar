@@ -32,7 +32,7 @@ interface TodoItemDao {
     suspend fun insert(item: TodoItem): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(items: List<TodoItem>)
+    suspend fun insertAll(items: List<TodoItem>): List<Long>
 
     @Update
     suspend fun update(item: TodoItem)

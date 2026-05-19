@@ -14,7 +14,7 @@ interface MonthMemoDao {
     suspend fun getByYearMonthOnce(yearMonth: String): MonthMemo?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(memo: MonthMemo)
+    suspend fun insert(memo: MonthMemo): Long
 
     @Update
     suspend fun update(memo: MonthMemo)
