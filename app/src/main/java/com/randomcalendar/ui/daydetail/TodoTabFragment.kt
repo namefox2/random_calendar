@@ -1,15 +1,18 @@
 package com.randomcalendar.ui.daydetail
 
 import android.content.Context
+import android.graphics.Typeface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.randomcalendar.R
 import com.randomcalendar.data.db.entity.TodoItem
 import com.randomcalendar.databinding.FragmentTodoTabBinding
 import com.randomcalendar.ui.common.ThemeHelper
@@ -266,8 +269,16 @@ class TodoTabFragment : Fragment() {
             // RecyclerView background
             binding.rvTodos.setBackgroundColor(c.bgColor)
 
+            // Apply typeface to option chips
+            val chipTypeface: Typeface = if (ThemeHelper.isHandwritingFont(requireContext())) {
+                ResourcesCompat.getFont(requireContext(), R.font.gaegu) ?: Typeface.DEFAULT
+            } else Typeface.DEFAULT
+            listOf(binding.chipUrl, binding.chipNormalTimer, binding.chipSetTimer).forEach {
+                it.typeface = chipTypeface
+            }
+
             // Update adapter
-            todoAdapter.applyThemeColors(c)
+            todoAdapter.applyThemeColors(c, chipTypeface)
         } catch (_: Exception) {}
     }
 

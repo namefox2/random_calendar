@@ -2,6 +2,7 @@ package com.randomcalendar.ui.daydetail
 
 import android.content.Intent
 import android.graphics.Paint
+import android.graphics.Typeface
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
@@ -27,9 +28,11 @@ class TodoAdapter(
     private val expandedIds = mutableSetOf<Long>()
 
     private var themeColors: ThemeHelper.Colors? = null
+    private var chipTypeface: Typeface = Typeface.DEFAULT
 
-    fun applyThemeColors(colors: ThemeHelper.Colors) {
+    fun applyThemeColors(colors: ThemeHelper.Colors, typeface: Typeface = Typeface.DEFAULT) {
         themeColors = colors
+        chipTypeface = typeface
         notifyDataSetChanged()
     }
 
@@ -61,6 +64,9 @@ class TodoAdapter(
                 binding.chipTimerNone.setTextColor(chipCsl)
                 binding.chipTimerNormal.setTextColor(chipCsl)
                 binding.chipTimerSet.setTextColor(chipCsl)
+                binding.chipTimerNone.typeface = chipTypeface
+                binding.chipTimerNormal.typeface = chipTypeface
+                binding.chipTimerSet.typeface = chipTypeface
             }
 
             val isExpanded = item.id in expandedIds

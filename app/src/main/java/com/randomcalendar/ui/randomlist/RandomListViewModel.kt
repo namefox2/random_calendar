@@ -98,6 +98,9 @@ class RandomListViewModel(
         }
     }
 
+    suspend fun getItemBySmallCategoryId(categoryId: Long): RandomItem? =
+        itemRepo.getByCategoryIdOnce(categoryId)
+
     fun deleteItem(item: RandomItem) {
         viewModelScope.launch {
             itemRepo.delete(item)
@@ -155,7 +158,11 @@ class RandomListViewModel(
                     val oldId = catJson.getLong("id")
                     val oldParentId = if (catJson.isNull("parentId")) null else catJson.getLong("parentId")
                     val newParentId = oldParentId?.let { idMap[it] }
-                    val newId = categoryRepo.insert(Category(name = catJson.getString("name"), parentId = newParentId, level = level))
+                    val name = catJson.getString("name")
+                    val existing = categoryRepo.findByNameAndParent(name, newParentId, level)
+                    val newId = existing?.id ?: categoryRepo.insert(
+                        Category(name = name, parentId = newParentId, level = level)
+                    )
                     idMap[oldId] = newId
                 }
             }
@@ -163,18 +170,23 @@ class RandomListViewModel(
             for (i in 0 until itemArray.length()) {
                 val itemJson = itemArray.getJSONObject(i)
                 val oldCatId = if (itemJson.isNull("categorySmallId")) null else itemJson.getLong("categorySmallId")
-                itemRepo.insert(RandomItem(
-                    name = itemJson.getString("name"),
-                    categorySmallId = oldCatId?.let { idMap[it] },
-                    url = itemJson.optString("url", ""),
-                    memo = itemJson.optString("memo", ""),
-                    timerType = itemJson.optString("timerType", "NONE"),
-                    timerGoalSeconds = if (itemJson.isNull("timerGoalSeconds")) null else itemJson.getInt("timerGoalSeconds"),
-                    setWorkSeconds = itemJson.optInt("setWorkSeconds", 0),
-                    setRestSeconds = itemJson.optInt("setRestSeconds", 0),
-                    setCount = itemJson.optInt("setCount", 0)
-                ))
-                count++
+                val newCatId = oldCatId?.let { idMap[it] }
+                val itemName = itemJson.getString("name")
+                val alreadyExists = itemRepo.findByNameAndCategory(itemName, newCatId) != null
+                if (!alreadyExists) {
+                    itemRepo.insert(RandomItem(
+                        name = itemName,
+                        categorySmallId = newCatId,
+                        url = itemJson.optString("url", ""),
+                        memo = itemJson.optString("memo", ""),
+                        timerType = itemJson.optString("timerType", "NONE"),
+                        timerGoalSeconds = if (itemJson.isNull("timerGoalSeconds")) null else itemJson.getInt("timerGoalSeconds"),
+                        setWorkSeconds = itemJson.optInt("setWorkSeconds", 0),
+                        setRestSeconds = itemJson.optInt("setRestSeconds", 0),
+                        setCount = itemJson.optInt("setCount", 0)
+                    ))
+                    count++
+                }
             }
             Result.success(count)
         } catch (e: Exception) {

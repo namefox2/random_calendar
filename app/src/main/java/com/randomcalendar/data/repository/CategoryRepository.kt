@@ -25,4 +25,7 @@ class CategoryRepository(private val dao: CategoryDao) {
     suspend fun deleteById(id: Long) = dao.deleteById(id)
 
     suspend fun getAllOnce(): List<Category> = dao.getAllOnce()
+
+    suspend fun findByNameAndParent(name: String, parentId: Long?, level: Int): Category? =
+        dao.findByNameAndParent(name, parentId, level)
 }

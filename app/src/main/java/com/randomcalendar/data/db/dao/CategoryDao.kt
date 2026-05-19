@@ -28,6 +28,9 @@ interface CategoryDao {
     @Query("SELECT * FROM categories ORDER BY level ASC, name ASC")
     suspend fun getAllOnce(): List<Category>
 
+    @Query("SELECT * FROM categories WHERE name = :name AND parentId IS :parentId AND level = :level LIMIT 1")
+    suspend fun findByNameAndParent(name: String, parentId: Long?, level: Int): Category?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(category: Category): Long
 

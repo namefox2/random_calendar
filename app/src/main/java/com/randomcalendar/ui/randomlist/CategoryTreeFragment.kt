@@ -14,12 +14,14 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.randomcalendar.data.db.entity.Category
 import com.randomcalendar.databinding.FragmentCategoryTreeBinding
 import com.randomcalendar.databinding.ItemAddCategoryBinding
 import com.randomcalendar.databinding.ItemCategoryBinding
+import kotlinx.coroutines.launch
 
 class CategoryTreeFragment : Fragment() {
 
@@ -213,16 +215,157 @@ class CategoryTreeFragment : Fragment() {
     }
 
     private fun showEditDialog(category: Category) {
-        val et = EditText(requireContext()).apply {
-            setText(category.name)
-            selectAll()
+        if (category.level == 2) {
+            // For small categories: load the associated item and show full edit dialog
+            lifecycleScope.launch {
+                val item = viewModel.getItemBySmallCategoryId(category.id)
+                showSmallCategoryEditDialog(category, item)
+            }
+        } else {
+            val et = EditText(requireContext()).apply {
+                setText(category.name)
+                selectAll()
+            }
+            AlertDialog.Builder(requireContext())
+                .setTitle("분류 이름 편집")
+                .setView(et)
+                .setPositiveButton("저장") { _, _ ->
+                    val name = et.text.toString().trim()
+                    if (name.isNotBlank()) viewModel.renameCategory(category, name)
+                }
+                .setNegativeButton("취소", null)
+                .show()
         }
-        AlertDialog.Builder(requireContext())
-            .setTitle("분류 이름 편집")
-            .setView(et)
+    }
+
+    private fun showSmallCategoryEditDialog(category: Category, existingItem: com.randomcalendar.data.db.entity.RandomItem?) {
+        val ctx = requireContext()
+        val dp = ctx.resources.displayMetrics.density
+        val pad = (16 * dp).toInt()
+        val padSm = (8 * dp).toInt()
+
+        val root = LinearLayout(ctx).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(pad * 2, pad, pad * 2, 0)
+        }
+
+        val etName = EditText(ctx).apply {
+            hint = "소분류 이름 (필수)"
+            setText(category.name)
+            setTextColor(ctx.getColor(com.randomcalendar.R.color.text_primary))
+            setHintTextColor(ctx.getColor(com.randomcalendar.R.color.text_secondary))
+            inputType = InputType.TYPE_CLASS_TEXT
+        }
+
+        val etUrl = EditText(ctx).apply {
+            hint = "URL 링크 (선택)"
+            setText(existingItem?.url ?: "")
+            setTextColor(ctx.getColor(com.randomcalendar.R.color.text_primary))
+            setHintTextColor(ctx.getColor(com.randomcalendar.R.color.text_secondary))
+            inputType = InputType.TYPE_TEXT_VARIATION_URI
+        }
+
+        val tvTimer = TextView(ctx).apply {
+            text = "타이머"
+            setTextColor(ctx.getColor(com.randomcalendar.R.color.text_secondary))
+            setPadding(0, padSm, 0, padSm / 2)
+        }
+
+        val radioGroup = RadioGroup(ctx).apply { orientation = RadioGroup.HORIZONTAL }
+        val rbNone   = RadioButton(ctx).apply { text = "없음"; id = 10 }
+        val rbNormal = RadioButton(ctx).apply { text = "일반"; id = 11 }
+        val rbSet    = RadioButton(ctx).apply { text = "세트"; id = 12 }
+        radioGroup.addView(rbNone); radioGroup.addView(rbNormal); radioGroup.addView(rbSet)
+
+        when (existingItem?.timerType) {
+            "NORMAL" -> rbNormal.isChecked = true
+            "SET"    -> rbSet.isChecked = true
+            else     -> rbNone.isChecked = true
+        }
+
+        val layoutNormal = LinearLayout(ctx).apply {
+            orientation = LinearLayout.HORIZONTAL
+            visibility = if (existingItem?.timerType == "NORMAL") View.VISIBLE else View.GONE
+            setPadding(0, padSm, 0, 0)
+        }
+        val etGoal = EditText(ctx).apply {
+            hint = "목표 시간(분, 선택)"
+            setText(existingItem?.timerGoalSeconds?.let { (it / 60).toString() } ?: "")
+            setTextColor(ctx.getColor(com.randomcalendar.R.color.text_primary))
+            setHintTextColor(ctx.getColor(com.randomcalendar.R.color.text_secondary))
+            inputType = InputType.TYPE_CLASS_NUMBER
+            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+        }
+        layoutNormal.addView(etGoal)
+
+        val layoutSet = LinearLayout(ctx).apply {
+            orientation = LinearLayout.HORIZONTAL
+            visibility = if (existingItem?.timerType == "SET") View.VISIBLE else View.GONE
+            setPadding(0, padSm, 0, 0)
+        }
+        val etWork = EditText(ctx).apply {
+            hint = "운동(초)"
+            setText(if ((existingItem?.setWorkSeconds ?: 0) > 0) existingItem!!.setWorkSeconds.toString() else "")
+            setTextColor(ctx.getColor(com.randomcalendar.R.color.text_primary))
+            setHintTextColor(ctx.getColor(com.randomcalendar.R.color.text_secondary))
+            inputType = InputType.TYPE_CLASS_NUMBER
+            gravity = android.view.Gravity.CENTER
+            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply { marginEnd = padSm }
+        }
+        val etRest = EditText(ctx).apply {
+            hint = "휴식(초)"
+            setText(if ((existingItem?.setRestSeconds ?: 0) > 0) existingItem!!.setRestSeconds.toString() else "")
+            setTextColor(ctx.getColor(com.randomcalendar.R.color.text_primary))
+            setHintTextColor(ctx.getColor(com.randomcalendar.R.color.text_secondary))
+            inputType = InputType.TYPE_CLASS_NUMBER
+            gravity = android.view.Gravity.CENTER
+            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply { marginEnd = padSm }
+        }
+        val etSets = EditText(ctx).apply {
+            hint = "세트수"
+            setText(if ((existingItem?.setCount ?: 0) > 0) existingItem!!.setCount.toString() else "")
+            setTextColor(ctx.getColor(com.randomcalendar.R.color.text_primary))
+            setHintTextColor(ctx.getColor(com.randomcalendar.R.color.text_secondary))
+            inputType = InputType.TYPE_CLASS_NUMBER
+            gravity = android.view.Gravity.CENTER
+            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+        }
+        layoutSet.addView(etWork); layoutSet.addView(etRest); layoutSet.addView(etSets)
+
+        radioGroup.setOnCheckedChangeListener { _, checkedId ->
+            layoutNormal.visibility = if (checkedId == 11) View.VISIBLE else View.GONE
+            layoutSet.visibility    = if (checkedId == 12) View.VISIBLE else View.GONE
+        }
+
+        root.addView(etName)
+        root.addView(etUrl)
+        root.addView(tvTimer)
+        root.addView(radioGroup)
+        root.addView(layoutNormal)
+        root.addView(layoutSet)
+
+        AlertDialog.Builder(ctx)
+            .setTitle("소분류 편집")
+            .setView(root)
             .setPositiveButton("저장") { _, _ ->
-                val name = et.text.toString().trim()
-                if (name.isNotBlank()) viewModel.renameCategory(category, name)
+                val name = etName.text.toString().trim()
+                if (name.isBlank()) return@setPositiveButton
+                val url = etUrl.text.toString().trim()
+                val timerType = when (radioGroup.checkedRadioButtonId) {
+                    11 -> "NORMAL"; 12 -> "SET"; else -> "NONE"
+                }
+                val goalSec = etGoal.text.toString().toIntOrNull()?.let { it * 60 }
+                val work = etWork.text.toString().toIntOrNull() ?: 30
+                val rest = etRest.text.toString().toIntOrNull() ?: 10
+                val sets = etSets.text.toString().toIntOrNull() ?: 3
+                viewModel.renameCategory(category, name)
+                if (existingItem != null) {
+                    viewModel.updateItem(existingItem.copy(
+                        name = name, url = url, timerType = timerType,
+                        timerGoalSeconds = goalSec, setWorkSeconds = work,
+                        setRestSeconds = rest, setCount = sets
+                    ))
+                }
             }
             .setNegativeButton("취소", null)
             .show()

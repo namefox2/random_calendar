@@ -27,4 +27,10 @@ class RandomItemRepository(private val dao: RandomItemDao) {
         items.shuffled().take(count)
 
     suspend fun getAllOnce(): List<RandomItem> = dao.getAllOnce()
+
+    suspend fun findByNameAndCategory(name: String, categorySmallId: Long?): RandomItem? =
+        dao.findByNameAndCategory(name, categorySmallId)
+
+    suspend fun getByCategoryIdOnce(categoryId: Long): RandomItem? =
+        dao.getByCategoryIdOnce(categoryId)
 }

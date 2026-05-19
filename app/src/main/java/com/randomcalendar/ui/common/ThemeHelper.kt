@@ -28,6 +28,11 @@ object ThemeHelper {
         }
     }
 
+    fun isHandwritingFont(context: Context): Boolean {
+        val p = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+        return p.getString("font_style", "handwriting") == "handwriting"
+    }
+
     fun loadFontScale(context: Context): Float {
         val p = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
         return when (p.getString("font_size", "medium")) {

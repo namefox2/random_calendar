@@ -22,6 +22,12 @@ interface RandomItemDao {
     @Query("SELECT * FROM random_items WHERE id = :id")
     suspend fun getById(id: Long): RandomItem?
 
+    @Query("SELECT * FROM random_items WHERE name = :name AND categorySmallId IS :categorySmallId LIMIT 1")
+    suspend fun findByNameAndCategory(name: String, categorySmallId: Long?): RandomItem?
+
+    @Query("SELECT * FROM random_items WHERE categorySmallId = :categoryId LIMIT 1")
+    suspend fun getByCategoryIdOnce(categoryId: Long): RandomItem?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(item: RandomItem): Long
 

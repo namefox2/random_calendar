@@ -19,6 +19,8 @@ class ThemeActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        if (com.randomcalendar.ui.common.ThemeHelper.isHandwritingFont(this))
+            setTheme(com.randomcalendar.R.style.Theme_RandomCalendar_Gaegu)
         super.onCreate(savedInstanceState)
         binding = ActivityThemeBinding.inflate(layoutInflater)
         setContentView(binding.root)

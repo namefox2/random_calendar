@@ -2,7 +2,9 @@ package com.randomcalendar.ui.main
 
 import android.content.Context
 import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
+import androidx.core.content.res.ResourcesCompat
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.SeekBar
@@ -43,6 +45,7 @@ class MainActivity : AppCompatActivity() {
     private val yearMonthKeyFormatter = DateTimeFormatter.ofPattern("yyyy-MM")
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        if (ThemeHelper.isHandwritingFont(this)) setTheme(R.style.Theme_RandomCalendar_Gaegu)
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -52,6 +55,7 @@ class MainActivity : AppCompatActivity() {
         setupSlogan()
         setupSidebar()
         setupFontSize()
+        setupFontStyle()
         setupMemo()
         observeViewModel()
         applyThemeColors()
@@ -275,6 +279,25 @@ class MainActivity : AppCompatActivity() {
         super.attachBaseContext(newBase.createConfigurationContext(config))
     }
 
+    private fun setupFontStyle() {
+        val saved = prefs.getString("font_style", "handwriting")
+        when (saved) {
+            "system" -> binding.chipFontSystem.isChecked = true
+            else -> binding.chipFontHandwriting.isChecked = true
+        }
+        binding.chipGroupFontStyle.setOnCheckedStateChangeListener { _, checkedIds ->
+            if (checkedIds.isEmpty()) return@setOnCheckedStateChangeListener
+            val style = when (checkedIds[0]) {
+                R.id.chipFontSystem -> "system"
+                else -> "handwriting"
+            }
+            if (style != prefs.getString("font_style", "handwriting")) {
+                prefs.edit().putString("font_style", style).apply()
+                recreate()
+            }
+        }
+    }
+
     private fun setupFontSize() {
         val saved = prefs.getString("font_size", "medium")
         when (saved) {
@@ -339,7 +362,17 @@ class MainActivity : AppCompatActivity() {
             binding.tvSidebarTitle.setTextColor(onSidebar)
             binding.tvAchievementLabel.setTextColor(onSidebar)
             binding.tvAchievementValue.setTextColor(onSidebar)
+            binding.tvFontStyleLabel.setTextColor(onSidebar)
             binding.tvFontSizeLabel.setTextColor(onSidebar)
+
+            // Apply typeface to all sidebar chips
+            val chipTypeface: Typeface = if (ThemeHelper.isHandwritingFont(this)) {
+                ResourcesCompat.getFont(this, R.font.gaegu) ?: Typeface.DEFAULT
+            } else Typeface.DEFAULT
+            listOf(
+                binding.chipFontHandwriting, binding.chipFontSystem,
+                binding.chipFontSmall, binding.chipFontMedium, binding.chipFontLarge
+            ).forEach { it.typeface = chipTypeface }
             (binding.btnRandomList as? com.google.android.material.button.MaterialButton)?.let { mb ->
                 mb.strokeColor = android.content.res.ColorStateList.valueOf(onSidebar)
                 mb.setTextColor(onSidebar)

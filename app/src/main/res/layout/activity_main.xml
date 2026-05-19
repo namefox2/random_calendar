@@ -258,6 +258,41 @@
             android:textColor="@color/text_primary"
             android:layout_marginBottom="20dp" />
 
+        <!-- 글씨체 -->
+        <TextView
+            android:id="@+id/tvFontStyleLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="글씨체"
+            android:textSize="14sp"
+            android:textColor="@color/text_secondary"
+            android:layout_marginBottom="8dp" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chipGroupFontStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            app:singleSelection="true"
+            app:selectionRequired="true">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipFontHandwriting"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="손글씨"
+                android:checked="true" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipFontSystem"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="시스템" />
+
+        </com.google.android.material.chip.ChipGroup>
+
         <!-- 글씨 크기 -->
         <TextView
             android:id="@+id/tvFontSizeLabel"
