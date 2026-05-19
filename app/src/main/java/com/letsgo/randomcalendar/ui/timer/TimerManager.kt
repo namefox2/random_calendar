@@ -29,8 +29,7 @@ object TimerManager {
     val state: LiveData<TimerState?> = _state
 
     var onAlarm: (() -> Unit)? = null
-    var onPersist: ((Long, Int) -> Unit)? = null   // (todoId, elapsedSeconds)
-    var onSetComplete: (() -> Unit)? = null
+    var onPersist: ((Long, Int) -> Unit)? = null
 
     fun startNormal(
         todoId: Long,
@@ -100,7 +99,6 @@ object TimerManager {
         _state.value = null
     }
 
-    /** TimerService가 1초마다 호출 */
     fun tick() {
         val current = _state.value ?: return
         if (!current.isRunning) return
@@ -143,13 +141,11 @@ object TimerManager {
                 onAlarm?.invoke()
                 val nextSet = state.currentSet + 1
                 if (nextSet > state.totalSets) {
-                    // 전체 세트 완료
                     _state.value = state.copy(
                         elapsedSeconds = newElapsed,
                         isRunning = false,
                         phaseElapsedSeconds = phaseTotal
                     )
-                    onSetComplete?.invoke()
                 } else {
                     _state.value = state.copy(
                         elapsedSeconds = newElapsed,

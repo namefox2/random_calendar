@@ -21,17 +21,14 @@ class MainViewModel(
     private val _selectedDate = MutableLiveData(LocalDate.now())
     val selectedDate: LiveData<LocalDate> = _selectedDate
 
-    // 선택된 날짜의 할 일 목록
     val todosForSelectedDate: LiveData<List<TodoItem>> = _selectedDate.switchMap { date ->
         todoRepo.getByDate(date.format(DateTimeFormatter.ISO_LOCAL_DATE))
     }
 
-    // 현재 월의 메모
     val currentMonthMemo: LiveData<MonthMemo?> = _currentYearMonth.switchMap { ym ->
         memoRepo.getByYearMonth(ym.format(DateTimeFormatter.ofPattern("yyyy-MM")))
     }
 
-    // 달력 색상 계산용: 현재 월 전체 TodoItem
     private val _monthDayData = MutableLiveData<Map<String, DayData>>()
     val monthDayData: LiveData<Map<String, DayData>> = _monthDayData
 
@@ -80,8 +77,6 @@ class MainViewModel(
         }
     }
 
-    // --- TodoItem CRUD ---
-
     fun addTodo(date: LocalDate, name: String, url: String = "") {
         viewModelScope.launch {
             val dateStr = date.format(DateTimeFormatter.ISO_LOCAL_DATE)
@@ -117,8 +112,6 @@ class MainViewModel(
             refreshMonthData()
         }
     }
-
-    // --- MonthMemo CRUD ---
 
     fun saveMemo(content: String) {
         val ym = _currentYearMonth.value ?: return

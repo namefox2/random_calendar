@@ -156,7 +156,6 @@ class TodoTabFragment : Fragment() {
 
         viewModel.addTodo(name, url, timerType, goalSeconds, workSec, restSec, sets)
 
-        // 폼 초기화
         binding.etNewName.text?.clear()
         binding.etNewUrl.text?.clear()
         binding.etGoalMinutes.text?.clear()
@@ -179,13 +178,7 @@ class TodoTabFragment : Fragment() {
         viewModel.summary.observe(viewLifecycleOwner) { summary ->
             binding.tvSummary.text = buildString {
                 append("달성 ${summary.done}/${summary.total}")
-                if (summary.totalElapsedSeconds > 0) {
-                    val h = summary.totalElapsedSeconds / 3600
-                    val m = (summary.totalElapsedSeconds % 3600) / 60
-                    append(" · ")
-                    if (h > 0) append("${h}h ")
-                    if (m > 0) append("${m}m")
-                }
+                if (summary.elapsedText.isNotEmpty()) append(" · ${summary.elapsedText}")
             }
             binding.pbAchievement.progress = summary.achievementRate
         }

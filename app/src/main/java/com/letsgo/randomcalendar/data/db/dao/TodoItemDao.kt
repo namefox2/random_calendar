@@ -19,14 +19,8 @@ interface TodoItemDao {
     @Query("SELECT * FROM todo_items WHERE date LIKE :yearMonth || '%'")
     suspend fun getAllInMonth(yearMonth: String): List<TodoItem>
 
-    @Query("SELECT SUM(elapsedSeconds) FROM todo_items WHERE date = :date")
-    suspend fun getTotalElapsedSeconds(date: String): Int?
-
     @Query("SELECT COUNT(*) FROM todo_items WHERE date = :date")
     suspend fun getTotalCount(date: String): Int
-
-    @Query("SELECT COUNT(*) FROM todo_items WHERE date = :date AND isDone = 1")
-    suspend fun getDoneCount(date: String): Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(item: TodoItem): Long

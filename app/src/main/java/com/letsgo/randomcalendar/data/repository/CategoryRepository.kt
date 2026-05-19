@@ -7,7 +7,6 @@ import com.letsgo.randomcalendar.data.db.entity.Category
 class CategoryRepository(private val dao: CategoryDao) {
 
     val allTopLevel: LiveData<List<Category>> = dao.getAllTopLevel()
-    val allSmallCategories: LiveData<List<Category>> = dao.getAllSmallCategories()
     val all: LiveData<List<Category>> = dao.getAll()
 
     fun getChildren(parentId: Long): LiveData<List<Category>> = dao.getChildren(parentId)
@@ -21,8 +20,6 @@ class CategoryRepository(private val dao: CategoryDao) {
     suspend fun update(category: Category) = dao.update(category)
 
     suspend fun delete(category: Category) = dao.delete(category)
-
-    suspend fun deleteById(id: Long) = dao.deleteById(id)
 
     suspend fun getAllOnce(): List<Category> = dao.getAllOnce()
 

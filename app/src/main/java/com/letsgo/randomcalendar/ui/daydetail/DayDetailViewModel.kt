@@ -104,5 +104,16 @@ class DayDetailViewModel(
         val done: Int,
         val achievementRate: Int,
         val totalElapsedSeconds: Int
-    )
+    ) {
+        val elapsedText: String get() {
+            val h = totalElapsedSeconds / 3600
+            val m = (totalElapsedSeconds % 3600) / 60
+            return when {
+                h > 0 && m > 0 -> "${h}h ${m}m"
+                h > 0 -> "${h}h"
+                m > 0 -> "${m}m"
+                else -> ""
+            }
+        }
+    }
 }

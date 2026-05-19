@@ -19,9 +19,6 @@ interface CategoryDao {
     @Query("SELECT * FROM categories WHERE id = :id")
     suspend fun getById(id: Long): Category?
 
-    @Query("SELECT * FROM categories WHERE level = 2 ORDER BY name ASC")
-    fun getAllSmallCategories(): LiveData<List<Category>>
-
     @Query("SELECT * FROM categories ORDER BY level ASC, name ASC")
     fun getAll(): LiveData<List<Category>>
 
@@ -40,6 +37,4 @@ interface CategoryDao {
     @Delete
     suspend fun delete(category: Category)
 
-    @Query("DELETE FROM categories WHERE id = :id")
-    suspend fun deleteById(id: Long): Int
 }

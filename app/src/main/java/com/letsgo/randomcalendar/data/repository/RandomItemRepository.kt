@@ -21,11 +21,6 @@ class RandomItemRepository(private val dao: RandomItemDao) {
 
     suspend fun delete(item: RandomItem) = dao.delete(item)
 
-    suspend fun deleteById(id: Long) = dao.deleteById(id)
-
-    fun pickRandom(items: List<RandomItem>, count: Int): List<RandomItem> =
-        items.shuffled().take(count)
-
     suspend fun getAllOnce(): List<RandomItem> = dao.getAllOnce()
 
     suspend fun findByNameAndCategory(name: String, categorySmallId: Long?): RandomItem? =

@@ -294,11 +294,9 @@ class CategoryTreeAdapter(
                 buildTree(all, cat.id, level + 1, indent + 1)
             }
         }
-        // 추가 입력 행 (모든 레벨)
         rows.add(TreeRow(null, parentId, level, indent))
     }
 
-    // 0 = 카테고리 행, 1 = 추가 입력 행
     override fun getItemViewType(position: Int): Int =
         if (rows[position].category != null) 0 else 1
 
@@ -361,7 +359,6 @@ class CategoryTreeAdapter(
             b.btnAddCategory.text = "추가"
 
             if (row.level == 2) {
-                // 소분류: 추가 버튼 클릭 시 URL/타이머 다이얼로그 열기
                 b.btnAddCategory.setOnClickListener {
                     val name = b.etNewCategory.text.toString().trim()
                     row.parentId?.let { parentId ->
@@ -370,7 +367,6 @@ class CategoryTreeAdapter(
                     }
                 }
             } else {
-                // 대/중분류: 바로 추가
                 b.btnAddCategory.setOnClickListener {
                     val name = b.etNewCategory.text.toString().trim()
                     if (name.isNotBlank()) {

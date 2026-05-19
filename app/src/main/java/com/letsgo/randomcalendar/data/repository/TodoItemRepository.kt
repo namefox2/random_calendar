@@ -14,18 +14,7 @@ class TodoItemRepository(private val dao: TodoItemDao) {
 
     suspend fun getAllInMonth(yearMonth: String): List<TodoItem> = dao.getAllInMonth(yearMonth)
 
-    suspend fun getTotalElapsedSeconds(date: String): Int =
-        dao.getTotalElapsedSeconds(date) ?: 0
-
     suspend fun getTotalCount(date: String): Int = dao.getTotalCount(date)
-
-    suspend fun getDoneCount(date: String): Int = dao.getDoneCount(date)
-
-    suspend fun getAchievementRate(date: String): Float {
-        val total = getTotalCount(date)
-        if (total == 0) return 0f
-        return getDoneCount(date).toFloat() / total * 100f
-    }
 
     suspend fun insert(item: TodoItem): Long = dao.insert(item)
 

@@ -228,7 +228,6 @@ class RandomTabFragment : Fragment() {
                 setCount = item.setCount
             )
         }
-        // TODO 탭으로 이동
         (requireParentFragment() as? DayDetailBottomSheet)
             ?.let { sheet ->
                 sheet.view?.findViewById<com.google.android.material.tabs.TabLayout>(
