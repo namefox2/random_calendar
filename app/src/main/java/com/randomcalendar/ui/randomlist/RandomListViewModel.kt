@@ -66,6 +66,36 @@ class RandomListViewModel(
         }
     }
 
+    // 소분류 추가 시 Category와 RandomItem을 동시에 생성
+    fun addCategoryWithItem(
+        name: String,
+        parentMidId: Long,
+        url: String,
+        timerType: String,
+        timerGoalSeconds: Int?,
+        setWorkSeconds: Int,
+        setRestSeconds: Int,
+        setCount: Int
+    ) {
+        viewModelScope.launch {
+            val categoryId = categoryRepo.insert(
+                Category(name = name, parentId = parentMidId, level = 2)
+            )
+            itemRepo.insert(
+                RandomItem(
+                    name = name,
+                    categorySmallId = categoryId,
+                    url = url,
+                    timerType = timerType,
+                    timerGoalSeconds = timerGoalSeconds,
+                    setWorkSeconds = setWorkSeconds,
+                    setRestSeconds = setRestSeconds,
+                    setCount = setCount
+                )
+            )
+        }
+    }
+
     fun deleteItem(item: RandomItem) {
         viewModelScope.launch {
             itemRepo.delete(item)
