@@ -37,6 +37,10 @@ class MainViewModel(
 
     private var achievementThreshold: Int = 80
 
+    init {
+        refreshMonthData()
+    }
+
     fun setAchievementThreshold(threshold: Int) {
         achievementThreshold = threshold
         refreshMonthData()

@@ -257,6 +257,7 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         applyThemeColors()
+        viewModel.refreshMonthData()
         if (::adView.isInitialized) adView.resume()
     }
 
