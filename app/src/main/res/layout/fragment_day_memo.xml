@@ -45,6 +45,7 @@
 
             <!-- 사진 섹션 -->
             <TextView
+                android:id="@+id/tvPhotoLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="사진"

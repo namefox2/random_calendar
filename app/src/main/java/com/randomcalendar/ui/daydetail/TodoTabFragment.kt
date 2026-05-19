@@ -227,6 +227,20 @@ class TodoTabFragment : Fragment() {
             binding.tvRestLabel.setTextColor(labelText)
             binding.tvSetCountLabel.setTextColor(labelText)
 
+            // EditText text/hint colors
+            val hintColor = if (isDarkColor(c.bgColor)) 0xFFBDBDBD.toInt() else 0xFF9E9E9E.toInt()
+            listOf(
+                binding.etNewName, binding.etNewUrl,
+                binding.etGoalMinutes, binding.etWorkSeconds,
+                binding.etRestSeconds, binding.etSetCount
+            ).forEach { et ->
+                et.setTextColor(c.textColor)
+                et.setHintTextColor(hintColor)
+            }
+
+            // RecyclerView background
+            binding.rvTodos.setBackgroundColor(c.bgColor)
+
             // Update adapter
             todoAdapter.applyThemeColors(c)
         } catch (_: Exception) {}

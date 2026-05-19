@@ -20,6 +20,7 @@
             android:padding="16dp">
 
             <TextView
+                android:id="@+id/tvCategoryLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="분류 선택"
@@ -64,6 +65,7 @@
 
     <!-- 선택 개수 + 랜덤돌리기 버튼 (항상 고정 노출) -->
     <LinearLayout
+        android:id="@+id/layoutBottomBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -75,6 +77,7 @@
         android:background="@color/bg_primary">
 
         <TextView
+            android:id="@+id/tvCountLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="선택 개수:"

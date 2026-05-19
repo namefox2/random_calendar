@@ -69,11 +69,33 @@ class RandomTabFragment : Fragment() {
 
         binding.btnAddToTodo.setOnClickListener { addPickedToTodo() }
 
+        applyTheme()
+    }
+
+    private fun applyTheme() {
         try {
             val c = ThemeHelper.load(requireContext())
             ThemeHelper.applyButton(binding.btnPickRandom, c)
             ThemeHelper.applyButton(binding.btnAddToTodo, c)
+            binding.root.setBackgroundColor(c.bgColor)
+            binding.layoutBottomBar.setBackgroundColor(c.bgColor)
+            binding.tvSelectedPath.setTextColor(c.textColor)
+            binding.tvEmptyPick.setTextColor(c.textColor)
+            binding.etPickCount.setTextColor(c.textColor)
+            val hintColor = if (isDarkColor(c.bgColor)) 0xFFBDBDBD.toInt() else 0xFF9E9E9E.toInt()
+            binding.etPickCount.setHintTextColor(hintColor)
+            val labelColor = if (isDarkColor(c.bgColor)) android.graphics.Color.WHITE
+                             else android.graphics.Color.parseColor("#757575")
+            binding.tvCategoryLabel.setTextColor(labelColor)
+            binding.tvCountLabel.setTextColor(labelColor)
         } catch (_: Exception) {}
+    }
+
+    private fun isDarkColor(color: Int): Boolean {
+        val r = android.graphics.Color.red(color) / 255.0
+        val g = android.graphics.Color.green(color) / 255.0
+        val b = android.graphics.Color.blue(color) / 255.0
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b < 0.5
     }
 
     private fun buildTopChips(categories: List<Category>) {
@@ -87,20 +109,16 @@ class RandomTabFragment : Fragment() {
         updatePath()
 
         tops.forEach { top ->
-            val chip = Chip(requireContext()).apply {
-                text = top.name
-                isCheckable = true
-                setOnCheckedChangeListener { _, checked ->
-                    if (checked) {
-                        selectedTopId = top.id; selectedMidId = null; selectedSmallId = null
-                        buildMidChips(top.id, categories)
-                    } else if (selectedTopId == top.id) {
-                        selectedTopId = null
-                        binding.chipGroupMid.visibility = View.GONE
-                        binding.chipGroupSmall.visibility = View.GONE
-                    }
-                    updatePath()
+            val chip = makeChip(top.name) { _, checked ->
+                if (checked) {
+                    selectedTopId = top.id; selectedMidId = null; selectedSmallId = null
+                    buildMidChips(top.id, categories)
+                } else if (selectedTopId == top.id) {
+                    selectedTopId = null
+                    binding.chipGroupMid.visibility = View.GONE
+                    binding.chipGroupSmall.visibility = View.GONE
                 }
+                updatePath()
             }
             binding.chipGroupTop.addView(chip)
         }
@@ -116,19 +134,15 @@ class RandomTabFragment : Fragment() {
         if (mids.isEmpty()) { binding.chipGroupMid.visibility = View.GONE; return }
         binding.chipGroupMid.visibility = View.VISIBLE
         mids.forEach { mid ->
-            val chip = Chip(requireContext()).apply {
-                text = mid.name
-                isCheckable = true
-                setOnCheckedChangeListener { _, checked ->
-                    if (checked) {
-                        selectedMidId = mid.id; selectedSmallId = null
-                        buildSmallChips(mid.id, categories)
-                    } else if (selectedMidId == mid.id) {
-                        selectedMidId = null
-                        binding.chipGroupSmall.visibility = View.GONE
-                    }
-                    updatePath()
+            val chip = makeChip(mid.name) { _, checked ->
+                if (checked) {
+                    selectedMidId = mid.id; selectedSmallId = null
+                    buildSmallChips(mid.id, categories)
+                } else if (selectedMidId == mid.id) {
+                    selectedMidId = null
+                    binding.chipGroupSmall.visibility = View.GONE
                 }
+                updatePath()
             }
             binding.chipGroupMid.addView(chip)
         }
@@ -141,16 +155,26 @@ class RandomTabFragment : Fragment() {
         if (smalls.isEmpty()) { binding.chipGroupSmall.visibility = View.GONE; return }
         binding.chipGroupSmall.visibility = View.VISIBLE
         smalls.forEach { small ->
-            val chip = Chip(requireContext()).apply {
-                text = small.name
-                isCheckable = true
-                setOnCheckedChangeListener { _, checked ->
-                    if (checked) selectedSmallId = small.id
-                    else if (selectedSmallId == small.id) selectedSmallId = null
-                    updatePath()
-                }
+            val chip = makeChip(small.name) { _, checked ->
+                if (checked) selectedSmallId = small.id
+                else if (selectedSmallId == small.id) selectedSmallId = null
+                updatePath()
             }
             binding.chipGroupSmall.addView(chip)
+        }
+    }
+
+    private fun makeChip(label: String, listener: (com.google.android.material.chip.Chip, Boolean) -> Unit): Chip {
+        return Chip(requireContext()).apply {
+            text = label
+            isCheckable = true
+            try {
+                val c = ThemeHelper.load(requireContext())
+                val chipText = if (isDarkColor(c.bgColor)) android.graphics.Color.WHITE
+                               else android.graphics.Color.parseColor("#212121")
+                setTextColor(android.content.res.ColorStateList.valueOf(chipText))
+            } catch (_: Exception) {}
+            setOnCheckedChangeListener { chip, checked -> listener(chip as com.google.android.material.chip.Chip, checked) }
         }
     }
 

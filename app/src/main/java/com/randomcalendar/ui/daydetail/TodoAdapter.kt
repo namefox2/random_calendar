@@ -50,6 +50,17 @@ class TodoAdapter(
                 binding.root.setBackgroundColor(c.bgColor)
                 binding.tvName.setTextColor(c.textColor)
                 binding.tvElapsed.setTextColor(c.textColor)
+                binding.tvUrl.setTextColor(c.textColor)
+                binding.tvTimerDisplay.setTextColor(c.textColor)
+                binding.tvTimerGoal.setTextColor(c.textColor)
+                binding.tvSetTimerDisplay.setTextColor(c.textColor)
+                binding.tvSetCount.setTextColor(c.textColor)
+                val chipText = if (isDarkTheme(c.bgColor)) android.graphics.Color.WHITE
+                               else android.graphics.Color.parseColor("#212121")
+                val chipCsl = android.content.res.ColorStateList.valueOf(chipText)
+                binding.chipTimerNone.setTextColor(chipCsl)
+                binding.chipTimerNormal.setTextColor(chipCsl)
+                binding.chipTimerSet.setTextColor(chipCsl)
             }
 
             val isExpanded = item.id in expandedIds
@@ -191,6 +202,13 @@ class TodoAdapter(
             binding.btnSetPause.setOnClickListener { onTimerPause() }
             binding.btnSetReset.setOnClickListener { onTimerReset(item.id) }
         }
+    }
+
+    private fun isDarkTheme(color: Int): Boolean {
+        val r = android.graphics.Color.red(color) / 255.0
+        val g = android.graphics.Color.green(color) / 255.0
+        val b = android.graphics.Color.blue(color) / 255.0
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b < 0.5
     }
 
     private class TodoDiffCallback : DiffUtil.ItemCallback<TodoItem>() {
