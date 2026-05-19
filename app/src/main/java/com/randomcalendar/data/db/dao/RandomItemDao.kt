@@ -39,4 +39,7 @@ interface RandomItemDao {
 
     @Query("DELETE FROM random_items WHERE id = :id")
     suspend fun deleteById(id: Long)
+
+    @Query("DELETE FROM random_items WHERE categorySmallId = :categoryId")
+    suspend fun deleteByCategoryId(categoryId: Long)
 }

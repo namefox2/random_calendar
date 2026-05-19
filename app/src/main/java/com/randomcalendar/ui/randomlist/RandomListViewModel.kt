@@ -36,8 +36,17 @@ class RandomListViewModel(
 
     fun deleteCategory(category: Category) {
         viewModelScope.launch {
-            categoryRepo.delete(category)
+            deleteCategoryRecursive(category)
         }
+    }
+
+    private suspend fun deleteCategoryRecursive(category: Category) {
+        if (category.level == 2) {
+            itemRepo.deleteByCategoryId(category.id)
+        } else {
+            categoryRepo.getChildrenOnce(category.id).forEach { deleteCategoryRecursive(it) }
+        }
+        categoryRepo.delete(category)
     }
 
     fun addItem(

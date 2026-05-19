@@ -33,4 +33,6 @@ class RandomItemRepository(private val dao: RandomItemDao) {
 
     suspend fun getByCategoryIdOnce(categoryId: Long): RandomItem? =
         dao.getByCategoryIdOnce(categoryId)
+
+    suspend fun deleteByCategoryId(categoryId: Long) = dao.deleteByCategoryId(categoryId)
 }
