@@ -43,6 +43,6 @@ interface RandomItemDao {
     @Query("DELETE FROM random_items WHERE categorySmallId = :categoryId")
     suspend fun deleteByCategoryId(categoryId: Long)
 
-    @Query("DELETE FROM random_items WHERE categorySmallId IS NOT NULL AND categorySmallId NOT IN (SELECT id FROM categories)")
+    @Query("DELETE FROM random_items WHERE categorySmallId IS NULL OR categorySmallId NOT IN (SELECT id FROM categories)")
     suspend fun deleteOrphaned()
 }

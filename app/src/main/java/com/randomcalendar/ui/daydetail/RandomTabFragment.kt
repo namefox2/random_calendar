@@ -183,18 +183,20 @@ class RandomTabFragment : Fragment() {
 
     private fun doPick() {
         val count = binding.etPickCount.text.toString().toIntOrNull() ?: 3
+        val validSmallIds = allCategories.filter { it.level == 2 }.map { it.id }.toSet()
+        val validItems = allItems.filter { it.categorySmallId in validSmallIds }
         val filtered = when {
-            selectedSmallId != null -> allItems.filter { it.categorySmallId == selectedSmallId }
+            selectedSmallId != null -> validItems.filter { it.categorySmallId == selectedSmallId }
             selectedMidId != null -> {
                 val smallIds = allCategories.filter { it.parentId == selectedMidId }.map { it.id }.toSet()
-                allItems.filter { it.categorySmallId in smallIds }
+                validItems.filter { it.categorySmallId in smallIds }
             }
             selectedTopId != null -> {
                 val midIds = allCategories.filter { it.parentId == selectedTopId }.map { it.id }.toSet()
                 val smallIds = allCategories.filter { it.parentId in midIds }.map { it.id }.toSet()
-                allItems.filter { it.categorySmallId in smallIds }
+                validItems.filter { it.categorySmallId in smallIds }
             }
-            else -> allItems
+            else -> validItems
         }
         val picked = filtered.shuffled().take(count)
         pickedAdapter.submitList(picked)
