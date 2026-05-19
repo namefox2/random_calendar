@@ -37,6 +37,7 @@ class DayDetailBottomSheet : BottomSheetDialogFragment() {
 
     override fun onStart() {
         super.onStart()
+        dialog?.window?.setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
         val bottomSheet = dialog?.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
         bottomSheet?.let {
             it.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT

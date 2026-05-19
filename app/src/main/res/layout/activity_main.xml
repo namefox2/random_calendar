@@ -289,7 +289,7 @@
                 style="@style/Widget.MaterialComponents.Chip.Choice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="시스템" />
+                android:text="내글씨" />
 
         </com.google.android.material.chip.ChipGroup>
 

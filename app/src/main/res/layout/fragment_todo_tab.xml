@@ -73,54 +73,24 @@
         android:background="@color/divider" />
 
     <!-- 새 항목 추가 폼 -->
-    <LinearLayout
+    <androidx.core.widget.NestedScrollView
         android:id="@+id/layoutTodoForm"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/bg_primary"
+        android:fillViewport="false">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="12dp"
-        android:background="@color/bg_primary">
+        android:padding="12dp">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
-
-            <EditText
-                android:id="@+id/etNewName"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="새 항목 이름"
-                android:textColor="@color/text_primary"
-                android:textColorHint="@color/text_secondary"
-                android:textSize="15sp"
-                android:imeOptions="actionDone"
-                android:inputType="text"
-                android:background="@drawable/bg_input_field"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp"
-                android:layout_marginEnd="8dp" />
-
-            <Button
-                android:id="@+id/btnAdd"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="추가"
-                android:textSize="14sp"
-                style="@style/Widget.MaterialComponents.Button" />
-
-        </LinearLayout>
-
-        <!-- 옵션 chips -->
+        <!-- 옵션 chips (칩을 위쪽으로 배치 - 키보드가 올라와도 보이게) -->
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/chipGroupOptions"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             app:singleSelection="false">
 
             <com.google.android.material.chip.Chip
@@ -311,6 +281,44 @@
 
         </LinearLayout>
 
+        <!-- 이름 입력 + 추가 버튼 (아래쪽 배치 - 키보드 바로 위) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="8dp">
+
+            <EditText
+                android:id="@+id/etNewName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="새 항목 이름"
+                android:textColor="@color/text_primary"
+                android:textColorHint="@color/text_secondary"
+                android:textSize="15sp"
+                android:imeOptions="actionDone"
+                android:inputType="text"
+                android:background="@drawable/bg_input_field"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:layout_marginEnd="8dp" />
+
+            <Button
+                android:id="@+id/btnAdd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="추가"
+                android:textSize="14sp"
+                style="@style/Widget.MaterialComponents.Button" />
+
+        </LinearLayout>
+
     </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
 
 </LinearLayout>
