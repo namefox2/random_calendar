@@ -173,22 +173,26 @@ class MainActivity : AppCompatActivity() {
         binding.tvMemo.setOnClickListener {
             binding.tvMemo.visibility = android.view.View.GONE
             binding.etMemo.visibility = android.view.View.VISIBLE
-            binding.btnSaveMemo.visibility = android.view.View.VISIBLE
             binding.etMemo.requestFocus()
             val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
             imm.showSoftInput(binding.etMemo, InputMethodManager.SHOW_IMPLICIT)
         }
 
-        binding.btnSaveMemo.setOnClickListener { saveMemo() }
+        binding.etMemo.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: android.text.Editable?) {
+                viewModel.saveMemo(s.toString())
+            }
+        })
 
-        binding.etMemo.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) { saveMemo(); true } else false
+        binding.etMemo.setOnFocusChangeListener { _, hasFocus ->
+            if (!hasFocus) collapseMemoField()
         }
     }
 
-    private fun saveMemo() {
+    private fun collapseMemoField() {
         val text = binding.etMemo.text.toString()
-        viewModel.saveMemo(text)
         binding.tvMemo.text = text.ifBlank { "이달의 메모를 입력하세요..." }
         binding.tvMemo.setTextColor(
             getColor(if (text.isBlank()) com.randomcalendar.R.color.text_secondary
@@ -196,7 +200,6 @@ class MainActivity : AppCompatActivity() {
         )
         binding.tvMemo.visibility = android.view.View.VISIBLE
         binding.etMemo.visibility = android.view.View.GONE
-        binding.btnSaveMemo.visibility = android.view.View.GONE
         val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(binding.etMemo.windowToken, 0)
     }
