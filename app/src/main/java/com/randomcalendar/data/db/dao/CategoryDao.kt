@@ -41,5 +41,5 @@ interface CategoryDao {
     suspend fun delete(category: Category)
 
     @Query("DELETE FROM categories WHERE id = :id")
-    suspend fun deleteById(id: Long)
+    suspend fun deleteById(id: Long): Int
 }

@@ -38,11 +38,11 @@ interface RandomItemDao {
     suspend fun delete(item: RandomItem)
 
     @Query("DELETE FROM random_items WHERE id = :id")
-    suspend fun deleteById(id: Long)
+    suspend fun deleteById(id: Long): Int
 
     @Query("DELETE FROM random_items WHERE categorySmallId = :categoryId")
-    suspend fun deleteByCategoryId(categoryId: Long)
+    suspend fun deleteByCategoryId(categoryId: Long): Int
 
     @Query("DELETE FROM random_items WHERE categorySmallId IS NULL OR categorySmallId NOT IN (SELECT id FROM categories)")
-    suspend fun deleteOrphaned()
+    suspend fun deleteOrphaned(): Int
 }
