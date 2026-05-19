@@ -116,8 +116,8 @@
             android:layout_width="match_parent"
             android:layout_height="32dp"
             android:columnCount="7"
-            android:paddingStart="4dp"
-            android:paddingEnd="4dp">
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp">
 
             <TextView style="@style/DayHeader" android:text="일" android:textColor="@color/calendar_red" android:fontFamily="@font/gaegu" />
             <TextView style="@style/DayHeader" android:text="월" android:fontFamily="@font/gaegu" />
@@ -129,19 +129,14 @@
 
         </GridLayout>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/divider" />
-
         <!-- 캘린더 그리드 -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvCalendar"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:paddingStart="4dp"
-            android:paddingEnd="4dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
             android:clipToPadding="false"
             android:overScrollMode="never" />
 

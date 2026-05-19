@@ -17,22 +17,26 @@ object CalendarBuilder {
     ): List<DayCell> {
         val cells = mutableListOf<DayCell>()
         val firstDay = yearMonth.atDay(1)
-        // 일요일=0 기준으로 앞 빈 칸 계산 (dayOfWeek: MON=1..SUN=7 → 일=0,월=1,..)
         val paddingCount = firstDay.dayOfWeek.value % 7
 
-        // 앞 빈 칸
-        repeat(paddingCount) { cells.add(DayCell(null)) }
+        // 이전 달 날짜로 앞 빈 칸 채우기
+        val prevMonth = yearMonth.minusMonths(1)
+        val prevMonthLastDay = prevMonth.lengthOfMonth()
+        for (i in paddingCount - 1 downTo 0) {
+            val date = prevMonth.atDay(prevMonthLastDay - i)
+            cells.add(DayCell(date = date, isCurrentMonth = false, isToday = date == today))
+        }
 
-        // 날짜 칸
+        // 이번 달 날짜
         val daysInMonth = yearMonth.lengthOfMonth()
         for (day in 1..daysInMonth) {
             val date = yearMonth.atDay(day)
             val dateKey = date.format(dateFormatter)
             val data = dayDataMap[dateKey]
-
             cells.add(
                 DayCell(
                     date = date,
+                    isCurrentMonth = true,
                     isToday = date == today,
                     isGreen = data?.isGreen == true,
                     isRed = data?.isRed == true,
@@ -42,10 +46,15 @@ object CalendarBuilder {
             )
         }
 
-        // 뒤 빈 칸 (7의 배수 맞춤)
+        // 다음 달 날짜로 뒤 빈 칸 채우기
+        val nextMonth = yearMonth.plusMonths(1)
         val remainder = cells.size % 7
         if (remainder != 0) {
-            repeat(7 - remainder) { cells.add(DayCell(null)) }
+            var nextDay = 1
+            repeat(7 - remainder) {
+                val date = nextMonth.atDay(nextDay++)
+                cells.add(DayCell(date = date, isCurrentMonth = false, isToday = date == today))
+            }
         }
 
         return cells

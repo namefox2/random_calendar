@@ -2,7 +2,6 @@ package com.randomcalendar.ui.calendar
 
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,14 +34,22 @@ class CalendarAdapter(
         holder.bind(getItem(position))
     }
 
-    private fun makeCellBg(fillColor: Int, strokeColor: Int, strokeDp: Float = 1f, context: android.content.Context): GradientDrawable {
-        val strokePx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, strokeDp, context.resources.displayMetrics).toInt()
-        return GradientDrawable().apply {
-            shape = GradientDrawable.RECTANGLE
-            cornerRadius = 0f
-            setColor(fillColor)
-            setStroke(strokePx, strokeColor)
-        }
+    private fun oval(fillColor: Int) = GradientDrawable().apply {
+        shape = GradientDrawable.OVAL
+        setColor(fillColor)
+    }
+
+    private fun ovalStroke(strokeColor: Int, strokeDp: Float, ctx: android.content.Context) = GradientDrawable().apply {
+        shape = GradientDrawable.OVAL
+        setColor(Color.TRANSPARENT)
+        val px = (strokeDp * ctx.resources.displayMetrics.density).toInt()
+        setStroke(px, strokeColor)
+    }
+
+    private fun roundRect(fillColor: Int, radiusDp: Float, ctx: android.content.Context) = GradientDrawable().apply {
+        shape = GradientDrawable.RECTANGLE
+        setColor(fillColor)
+        cornerRadius = radiusDp * ctx.resources.displayMetrics.density
     }
 
     private fun withAlpha(color: Int, alpha: Int) =
@@ -55,77 +62,96 @@ class CalendarAdapter(
         fun bind(cell: DayCell) {
             val ctx = binding.root.context
             val c = themeColors
+            val primaryColor = c?.primaryColor ?: ctx.getColor(R.color.primary)
+            val textColor = c?.textColor ?: ctx.getColor(R.color.text_primary)
 
             if (cell.date == null) {
-                // 빈 칸: 격자선만 표시
-                binding.root.visibility = View.VISIBLE
+                binding.root.setBackgroundColor(Color.TRANSPARENT)
                 binding.tvDay.text = ""
+                binding.tvDay.background = null
                 binding.tvElapsed.visibility = View.GONE
                 binding.root.isClickable = false
-                if (c != null) {
-                    binding.root.background = makeCellBg(Color.TRANSPARENT, withAlpha(c.textColor, 30), 1f, ctx)
-                } else {
-                    binding.root.setBackgroundResource(R.drawable.bg_day_cell)
-                }
                 return
             }
 
-            binding.root.visibility = View.VISIBLE
-            binding.root.isClickable = true
+            binding.root.isClickable = cell.isCurrentMonth
             binding.tvDay.text = cell.date.dayOfMonth.toString()
 
-            // 요일별 텍스트 색상 (일=빨강, 토=파랑)
-            binding.tvDay.setTextColor(
-                ctx.getColor(
-                    when (cell.date.dayOfWeek.value % 7) {
-                        0 -> R.color.calendar_red
-                        6 -> R.color.day_saturday
-                        else -> R.color.text_primary
-                    }
-                )
-            )
+            // 이전/다음 달: 날짜 회색, 클릭 불가
+            if (!cell.isCurrentMonth) {
+                binding.root.setBackgroundColor(Color.TRANSPARENT)
+                binding.tvDay.background = null
+                binding.tvDay.setTextColor(withAlpha(textColor, 70))
+                binding.tvElapsed.visibility = View.GONE
+                binding.root.setOnClickListener(null)
+                return
+            }
 
-            // 소요시간 표시
+            // 이번 달 날짜 텍스트 색상
+            val isSelected = cell.date == selectedDate
+            val dayOfWeek = cell.date.dayOfWeek.value % 7 // 0=일, 6=토
+
+            // tvDay 원형 배경 (선택/오늘/기본)
+            when {
+                isSelected -> {
+                    binding.tvDay.background = oval(primaryColor)
+                    binding.tvDay.setTextColor(
+                        if (isColorDark(primaryColor)) Color.WHITE else Color.BLACK
+                    )
+                }
+                cell.isToday -> {
+                    binding.tvDay.background = ovalStroke(primaryColor, 2f, ctx)
+                    binding.tvDay.setTextColor(primaryColor)
+                }
+                else -> {
+                    binding.tvDay.background = null
+                    binding.tvDay.setTextColor(
+                        when (dayOfWeek) {
+                            0 -> ctx.getColor(R.color.calendar_red)
+                            6 -> ctx.getColor(R.color.day_saturday)
+                            else -> textColor
+                        }
+                    )
+                }
+            }
+
+            // 셀 배경: 달성(녹색)/미달성(빨강) 표시
+            binding.root.background = when {
+                cell.isGreen -> roundRect(withAlpha(Color.parseColor("#81C784"), 55), 6f, ctx)
+                cell.isRed   -> roundRect(withAlpha(Color.parseColor("#E57373"), 55), 6f, ctx)
+                else         -> null
+            }
+
+            // 소요시간
             if (cell.elapsedText.isNotEmpty()) {
                 binding.tvElapsed.visibility = View.VISIBLE
                 binding.tvElapsed.text = cell.elapsedText
+                binding.tvElapsed.setTextColor(withAlpha(textColor, 150))
             } else {
                 binding.tvElapsed.visibility = View.GONE
-            }
-
-            // 배경: 테마 색상 기반 programmatic 또는 drawable fallback
-            val isSelected = cell.date == selectedDate
-            if (c != null) {
-                binding.root.background = when {
-                    isSelected -> makeCellBg(withAlpha(c.primaryColor, 60), c.primaryColor, 2f, ctx)
-                    cell.isGreen -> makeCellBg(Color.parseColor("#81C784"), withAlpha(c.textColor, 50), 1f, ctx)
-                    cell.isRed -> makeCellBg(Color.parseColor("#E57373"), withAlpha(c.textColor, 50), 1f, ctx)
-                    cell.isToday -> makeCellBg(withAlpha(c.primaryColor, 20), c.primaryColor, 2f, ctx)
-                    else -> makeCellBg(Color.TRANSPARENT, withAlpha(c.textColor, 30), 1f, ctx)
-                }
-            } else {
-                val bgRes = when {
-                    isSelected -> R.drawable.bg_day_cell_selected
-                    cell.isGreen -> R.drawable.bg_day_cell_green
-                    cell.isRed -> R.drawable.bg_day_cell_red
-                    cell.isToday -> R.drawable.bg_day_cell_today
-                    else -> R.drawable.bg_day_cell
-                }
-                binding.root.setBackgroundResource(bgRes)
             }
 
             binding.root.setOnClickListener { onDayClick(cell.date) }
         }
     }
 
+    private fun isColorDark(color: Int): Boolean {
+        val r = Color.red(color) / 255.0
+        val g = Color.green(color) / 255.0
+        val b = Color.blue(color) / 255.0
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b < 0.5
+    }
+
     private class DayCellDiffCallback : DiffUtil.ItemCallback<DayCell>() {
-        override fun areItemsTheSame(old: DayCell, new: DayCell) = old.date == new.date
+        override fun areItemsTheSame(old: DayCell, new: DayCell) =
+            old.date == new.date && old.isCurrentMonth == new.isCurrentMonth
         override fun areContentsTheSame(old: DayCell, new: DayCell) = old == new
     }
 }
 
 data class DayCell(
     val date: LocalDate?,
+    val isCurrentMonth: Boolean = true,
     val isToday: Boolean = false,
     val isGreen: Boolean = false,
     val isRed: Boolean = false,
