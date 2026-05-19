@@ -2,9 +2,7 @@ package com.randomcalendar.ui.main
 
 import android.content.Context
 import android.graphics.Color
-import android.graphics.Typeface
 import android.os.Bundle
-import androidx.core.content.res.ResourcesCompat
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.SeekBar
@@ -334,7 +332,7 @@ class MainActivity : AppCompatActivity() {
             // 슬로건 바
             binding.sloganBar.setBackgroundColor(primaryColor)
             binding.sidebarLayout.setBackgroundColor(sidebarColor)
-            val onPrimary = if (isColorDark(primaryColor)) Color.WHITE else Color.BLACK
+            val onPrimary = if (ThemeHelper.isColorDark(primaryColor)) Color.WHITE else Color.BLACK
             binding.tvSlogan.setTextColor(onPrimary)
             binding.etSlogan.setTextColor(onPrimary)
             binding.btnMenu.setColorFilter(onPrimary)
@@ -358,17 +356,14 @@ class MainActivity : AppCompatActivity() {
             binding.seekAchievement.thumbTintList = android.content.res.ColorStateList.valueOf(accentColor)
 
             // Sidebar text/button colors
-            val onSidebar = if (isColorDark(sidebarColor)) Color.WHITE else Color.parseColor("#424242")
+            val onSidebar = if (ThemeHelper.isColorDark(sidebarColor)) Color.WHITE else Color.parseColor("#424242")
             binding.tvSidebarTitle.setTextColor(onSidebar)
             binding.tvAchievementLabel.setTextColor(onSidebar)
             binding.tvAchievementValue.setTextColor(onSidebar)
             binding.tvFontStyleLabel.setTextColor(onSidebar)
             binding.tvFontSizeLabel.setTextColor(onSidebar)
 
-            // Apply typeface to all sidebar chips
-            val chipTypeface: Typeface = if (ThemeHelper.isHandwritingFont(this)) {
-                ResourcesCompat.getFont(this, R.font.gaegu) ?: Typeface.DEFAULT
-            } else Typeface.DEFAULT
+            val chipTypeface = ThemeHelper.resolveTypeface(this)
             listOf(
                 binding.chipFontHandwriting, binding.chipFontSystem,
                 binding.chipFontSmall, binding.chipFontMedium, binding.chipFontLarge
@@ -387,10 +382,4 @@ class MainActivity : AppCompatActivity() {
         } catch (_: Exception) {}
     }
 
-    private fun isColorDark(color: Int): Boolean {
-        val r = Color.red(color) / 255.0
-        val g = Color.green(color) / 255.0
-        val b = Color.blue(color) / 255.0
-        return 0.2126 * r + 0.7152 * g + 0.0722 * b < 0.5
-    }
 }

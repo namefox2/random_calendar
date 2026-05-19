@@ -1,18 +1,15 @@
 package com.randomcalendar.ui.daydetail
 
 import android.content.Context
-import android.graphics.Typeface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.randomcalendar.R
 import com.randomcalendar.data.db.entity.TodoItem
 import com.randomcalendar.databinding.FragmentTodoTabBinding
 import com.randomcalendar.ui.common.ThemeHelper
@@ -216,10 +213,10 @@ class TodoTabFragment : Fragment() {
             binding.tvSummary.setTextColor(c.textColor)
 
             // Chip text + background: adapt to theme
-            val chipText = if (isDarkColor(c.bgColor)) android.graphics.Color.WHITE
+            val chipText = if (ThemeHelper.isColorDark(c.bgColor)) android.graphics.Color.WHITE
                            else android.graphics.Color.parseColor("#212121")
             val chipCsl = android.content.res.ColorStateList.valueOf(chipText)
-            val chipBgColor = if (isDarkColor(c.bgColor)) {
+            val chipBgColor = if (ThemeHelper.isColorDark(c.bgColor)) {
                 android.graphics.Color.argb(255,
                     minOf(android.graphics.Color.red(c.bgColor) + 70, 255),
                     minOf(android.graphics.Color.green(c.bgColor) + 70, 255),
@@ -234,7 +231,7 @@ class TodoTabFragment : Fragment() {
             }
 
             // Form labels
-            val labelText = if (isDarkColor(c.bgColor)) android.graphics.Color.WHITE
+            val labelText = if (ThemeHelper.isColorDark(c.bgColor)) android.graphics.Color.WHITE
                             else android.graphics.Color.parseColor("#757575")
             binding.tvGoalMinutesLabel.setTextColor(labelText)
             binding.tvWorkLabel.setTextColor(labelText)
@@ -242,7 +239,7 @@ class TodoTabFragment : Fragment() {
             binding.tvSetCountLabel.setTextColor(labelText)
 
             // EditText text/hint/background colors
-            val hintColor = if (isDarkColor(c.bgColor)) 0xFFBDBDBD.toInt() else 0xFF9E9E9E.toInt()
+            val hintColor = if (ThemeHelper.isColorDark(c.bgColor)) 0xFFBDBDBD.toInt() else 0xFF9E9E9E.toInt()
             val density = resources.displayMetrics.density
             listOf(
                 binding.etNewName, binding.etNewUrl,
@@ -270,9 +267,7 @@ class TodoTabFragment : Fragment() {
             binding.rvTodos.setBackgroundColor(c.bgColor)
 
             // Apply typeface to option chips
-            val chipTypeface: Typeface = if (ThemeHelper.isHandwritingFont(requireContext())) {
-                ResourcesCompat.getFont(requireContext(), R.font.gaegu) ?: Typeface.DEFAULT
-            } else Typeface.DEFAULT
+            val chipTypeface = ThemeHelper.resolveTypeface(requireContext())
             listOf(binding.chipUrl, binding.chipNormalTimer, binding.chipSetTimer).forEach {
                 it.typeface = chipTypeface
             }
@@ -280,13 +275,6 @@ class TodoTabFragment : Fragment() {
             // Update adapter
             todoAdapter.applyThemeColors(c, chipTypeface)
         } catch (_: Exception) {}
-    }
-
-    private fun isDarkColor(color: Int): Boolean {
-        val r = android.graphics.Color.red(color) / 255.0
-        val g = android.graphics.Color.green(color) / 255.0
-        val b = android.graphics.Color.blue(color) / 255.0
-        return 0.2126 * r + 0.7152 * g + 0.0722 * b < 0.5
     }
 
     override fun onDestroyView() {

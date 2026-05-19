@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.randomcalendar.databinding.FragmentThemePresetBinding
+import com.randomcalendar.ui.common.ThemeHelper
 
 class ThemePresetFragment : Fragment() {
 
@@ -80,7 +81,7 @@ class ThemePresetFragment : Fragment() {
             binding.previewSidebar.setBackgroundColor(Color.parseColor(preset.sidebar))
             binding.previewAccent.setBackgroundColor(Color.parseColor(preset.accent))
 
-            val onPrimary = if (isColorDark(primaryColor)) Color.WHITE else Color.BLACK
+            val onPrimary = if (ThemeHelper.isColorDark(primaryColor)) Color.WHITE else Color.BLACK
             binding.previewText.setTextColor(onPrimary)
 
             binding.colorSwatches.removeAllViews()
@@ -104,13 +105,6 @@ class ThemePresetFragment : Fragment() {
             .putString("theme_text",    preset.text)
             .apply()
         requireActivity().finish()
-    }
-
-    private fun isColorDark(color: Int): Boolean {
-        val r = Color.red(color)   / 255.0
-        val g = Color.green(color) / 255.0
-        val b = Color.blue(color)  / 255.0
-        return 0.2126 * r + 0.7152 * g + 0.0722 * b < 0.5
     }
 
     override fun onDestroyView() {

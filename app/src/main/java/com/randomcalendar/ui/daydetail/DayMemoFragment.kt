@@ -119,16 +119,9 @@ class DayMemoFragment : Fragment() {
             binding.tvDate.setTextColor(c.textColor)
             binding.tvPhotoLabel.setTextColor(c.textColor)
             binding.etDayMemo.setTextColor(c.textColor)
-            val hintColor = if (isDarkColor(c.bgColor)) 0xFFBDBDBD.toInt() else 0xFF9E9E9E.toInt()
+            val hintColor = if (ThemeHelper.isColorDark(c.bgColor)) 0xFFBDBDBD.toInt() else 0xFF9E9E9E.toInt()
             binding.etDayMemo.setHintTextColor(hintColor)
         } catch (_: Exception) {}
-    }
-
-    private fun isDarkColor(color: Int): Boolean {
-        val r = android.graphics.Color.red(color) / 255.0
-        val g = android.graphics.Color.green(color) / 255.0
-        val b = android.graphics.Color.blue(color) / 255.0
-        return 0.2126 * r + 0.7152 * g + 0.0722 * b < 0.5
     }
 
     private fun launchCamera() {

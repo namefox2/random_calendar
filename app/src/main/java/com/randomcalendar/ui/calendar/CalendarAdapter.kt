@@ -98,7 +98,7 @@ class CalendarAdapter(
                 isSelected -> {
                     binding.tvDay.background = oval(accentColor)
                     binding.tvDay.setTextColor(
-                        if (isColorDark(accentColor)) Color.WHITE else Color.BLACK
+                        if (ThemeHelper.isColorDark(accentColor)) Color.WHITE else Color.BLACK
                     )
                 }
                 cell.isToday -> {
@@ -135,13 +135,6 @@ class CalendarAdapter(
 
             binding.root.setOnClickListener { onDayClick(cell.date) }
         }
-    }
-
-    private fun isColorDark(color: Int): Boolean {
-        val r = Color.red(color) / 255.0
-        val g = Color.green(color) / 255.0
-        val b = Color.blue(color) / 255.0
-        return 0.2126 * r + 0.7152 * g + 0.0722 * b < 0.5
     }
 
     private class DayCellDiffCallback : DiffUtil.ItemCallback<DayCell>() {

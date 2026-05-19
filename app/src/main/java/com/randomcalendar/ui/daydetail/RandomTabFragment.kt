@@ -3,9 +3,7 @@ package com.randomcalendar.ui.daydetail
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.graphics.Typeface
 import android.os.Bundle
-import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DiffUtil
@@ -13,7 +11,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
-import com.randomcalendar.R
 import com.randomcalendar.RandomCalendarApp
 import com.randomcalendar.data.db.entity.Category
 import com.randomcalendar.data.db.entity.RandomItem
@@ -85,20 +82,13 @@ class RandomTabFragment : Fragment() {
             binding.tvSelectedPath.setTextColor(c.textColor)
             binding.tvEmptyPick.setTextColor(c.textColor)
             binding.etPickCount.setTextColor(c.textColor)
-            val hintColor = if (isDarkColor(c.bgColor)) 0xFFBDBDBD.toInt() else 0xFF9E9E9E.toInt()
+            val hintColor = if (ThemeHelper.isColorDark(c.bgColor)) 0xFFBDBDBD.toInt() else 0xFF9E9E9E.toInt()
             binding.etPickCount.setHintTextColor(hintColor)
-            val labelColor = if (isDarkColor(c.bgColor)) android.graphics.Color.WHITE
+            val labelColor = if (ThemeHelper.isColorDark(c.bgColor)) android.graphics.Color.WHITE
                              else android.graphics.Color.parseColor("#757575")
             binding.tvCategoryLabel.setTextColor(labelColor)
             binding.tvCountLabel.setTextColor(labelColor)
         } catch (_: Exception) {}
-    }
-
-    private fun isDarkColor(color: Int): Boolean {
-        val r = android.graphics.Color.red(color) / 255.0
-        val g = android.graphics.Color.green(color) / 255.0
-        val b = android.graphics.Color.blue(color) / 255.0
-        return 0.2126 * r + 0.7152 * g + 0.0722 * b < 0.5
     }
 
     private fun buildTopChips(categories: List<Category>) {
@@ -172,22 +162,7 @@ class RandomTabFragment : Fragment() {
             text = label
             isCheckable = true
             try {
-                val c = ThemeHelper.load(requireContext())
-                val chipText = if (isDarkColor(c.bgColor)) android.graphics.Color.WHITE
-                               else android.graphics.Color.parseColor("#212121")
-                setTextColor(android.content.res.ColorStateList.valueOf(chipText))
-                val chipBgColor = if (isDarkColor(c.bgColor)) {
-                    android.graphics.Color.argb(255,
-                        minOf(android.graphics.Color.red(c.bgColor) + 70, 255),
-                        minOf(android.graphics.Color.green(c.bgColor) + 70, 255),
-                        minOf(android.graphics.Color.blue(c.bgColor) + 70, 255))
-                } else {
-                    android.graphics.Color.parseColor("#E0E0E0")
-                }
-                chipBackgroundColor = android.content.res.ColorStateList.valueOf(chipBgColor)
-                typeface = if (ThemeHelper.isHandwritingFont(context)) {
-                    ResourcesCompat.getFont(context, R.font.gaegu) ?: Typeface.DEFAULT
-                } else Typeface.DEFAULT
+                ThemeHelper.applyChip(this, ThemeHelper.load(requireContext()), ThemeHelper.resolveTypeface(context))
             } catch (_: Exception) {}
             setOnCheckedChangeListener { chip, checked -> listener(chip as com.google.android.material.chip.Chip, checked) }
         }

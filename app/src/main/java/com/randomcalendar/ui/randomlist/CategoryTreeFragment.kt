@@ -98,134 +98,42 @@ class CategoryTreeFragment : Fragment() {
         }
     }
 
-    // 소분류 추가 시: Category(소분류) + RandomItem 동시 생성, URL/타이머 설정 가능
     private fun showAddSmallWithItemDialog(parentMidId: Long, prefillName: String) {
-        val ctx = requireContext()
-        val dp = ctx.resources.displayMetrics.density
-        val pad = (16 * dp).toInt()
-        val padSm = (8 * dp).toInt()
-
-        val root = LinearLayout(ctx).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(pad * 2, pad, pad * 2, 0)
+        showSmallItemDialog(
+            title = "소분류 추가", confirmLabel = "추가",
+            prefillName = prefillName, prefillUrl = "",
+            prefillTimerType = "NONE", prefillGoalSec = null,
+            prefillWork = 0, prefillRest = 0, prefillSets = 0
+        ) { name, url, timerType, goalSec, work, rest, sets ->
+            viewModel.addCategoryWithItem(name, parentMidId, url, timerType, goalSec, work, rest, sets)
         }
-
-        val etName = EditText(ctx).apply {
-            hint = "소분류 이름 (필수)"
-            setText(prefillName)
-            setTextColor(ctx.getColor(com.randomcalendar.R.color.text_primary))
-            setHintTextColor(ctx.getColor(com.randomcalendar.R.color.text_secondary))
-            inputType = InputType.TYPE_CLASS_TEXT
-        }
-
-        val etUrl = EditText(ctx).apply {
-            hint = "URL 링크 (선택)"
-            setTextColor(ctx.getColor(com.randomcalendar.R.color.text_primary))
-            setHintTextColor(ctx.getColor(com.randomcalendar.R.color.text_secondary))
-            inputType = InputType.TYPE_TEXT_VARIATION_URI
-        }
-
-        val tvTimer = TextView(ctx).apply {
-            text = "타이머"
-            setTextColor(ctx.getColor(com.randomcalendar.R.color.text_secondary))
-            setPadding(0, padSm, 0, padSm / 2)
-        }
-
-        val radioGroup = RadioGroup(ctx).apply { orientation = RadioGroup.HORIZONTAL }
-        val rbNone   = RadioButton(ctx).apply { text = "없음"; id = 10; isChecked = true }
-        val rbNormal = RadioButton(ctx).apply { text = "일반"; id = 11 }
-        val rbSet    = RadioButton(ctx).apply { text = "세트"; id = 12 }
-        radioGroup.addView(rbNone); radioGroup.addView(rbNormal); radioGroup.addView(rbSet)
-
-        val layoutNormal = LinearLayout(ctx).apply {
-            orientation = LinearLayout.HORIZONTAL
-            visibility = View.GONE
-            setPadding(0, padSm, 0, 0)
-        }
-        val etGoal = EditText(ctx).apply {
-            hint = "목표 시간(분, 선택)"
-            setTextColor(ctx.getColor(com.randomcalendar.R.color.text_primary))
-            setHintTextColor(ctx.getColor(com.randomcalendar.R.color.text_secondary))
-            inputType = InputType.TYPE_CLASS_NUMBER
-            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
-        }
-        layoutNormal.addView(etGoal)
-
-        val layoutSet = LinearLayout(ctx).apply {
-            orientation = LinearLayout.HORIZONTAL
-            visibility = View.GONE
-            setPadding(0, padSm, 0, 0)
-        }
-        val etWork = EditText(ctx).apply {
-            hint = "운동(초)"
-            setTextColor(ctx.getColor(com.randomcalendar.R.color.text_primary))
-            setHintTextColor(ctx.getColor(com.randomcalendar.R.color.text_secondary))
-            inputType = InputType.TYPE_CLASS_NUMBER
-            gravity = android.view.Gravity.CENTER
-            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply { marginEnd = padSm }
-        }
-        val etRest = EditText(ctx).apply {
-            hint = "휴식(초)"
-            setTextColor(ctx.getColor(com.randomcalendar.R.color.text_primary))
-            setHintTextColor(ctx.getColor(com.randomcalendar.R.color.text_secondary))
-            inputType = InputType.TYPE_CLASS_NUMBER
-            gravity = android.view.Gravity.CENTER
-            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply { marginEnd = padSm }
-        }
-        val etSets = EditText(ctx).apply {
-            hint = "세트수"
-            setTextColor(ctx.getColor(com.randomcalendar.R.color.text_primary))
-            setHintTextColor(ctx.getColor(com.randomcalendar.R.color.text_secondary))
-            inputType = InputType.TYPE_CLASS_NUMBER
-            gravity = android.view.Gravity.CENTER
-            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
-        }
-        layoutSet.addView(etWork); layoutSet.addView(etRest); layoutSet.addView(etSets)
-
-        radioGroup.setOnCheckedChangeListener { _, checkedId ->
-            layoutNormal.visibility = if (checkedId == 11) View.VISIBLE else View.GONE
-            layoutSet.visibility    = if (checkedId == 12) View.VISIBLE else View.GONE
-        }
-
-        root.addView(etName)
-        root.addView(etUrl)
-        root.addView(tvTimer)
-        root.addView(radioGroup)
-        root.addView(layoutNormal)
-        root.addView(layoutSet)
-
-        AlertDialog.Builder(ctx)
-            .setTitle("소분류 추가")
-            .setView(root)
-            .setPositiveButton("추가") { _, _ ->
-                val name = etName.text.toString().trim()
-                if (name.isBlank()) return@setPositiveButton
-                val url = etUrl.text.toString().trim()
-                val timerType = when (radioGroup.checkedRadioButtonId) {
-                    11 -> "NORMAL"; 12 -> "SET"; else -> "NONE"
-                }
-                val goalSec = etGoal.text.toString().toIntOrNull()?.let { it * 60 }
-                val work = etWork.text.toString().toIntOrNull() ?: 30
-                val rest = etRest.text.toString().toIntOrNull() ?: 10
-                val sets = etSets.text.toString().toIntOrNull() ?: 3
-                viewModel.addCategoryWithItem(name, parentMidId, url, timerType, goalSec, work, rest, sets)
-            }
-            .setNegativeButton("취소", null)
-            .show()
     }
 
     private fun showEditDialog(category: Category) {
         if (category.level == 2) {
-            // For small categories: load the associated item and show full edit dialog
             lifecycleScope.launch {
                 val item = viewModel.getItemBySmallCategoryId(category.id)
-                showSmallCategoryEditDialog(category, item)
+                showSmallItemDialog(
+                    title = "소분류 편집", confirmLabel = "저장",
+                    prefillName = category.name, prefillUrl = item?.url ?: "",
+                    prefillTimerType = item?.timerType ?: "NONE",
+                    prefillGoalSec = item?.timerGoalSeconds,
+                    prefillWork = item?.setWorkSeconds ?: 0,
+                    prefillRest = item?.setRestSeconds ?: 0,
+                    prefillSets = item?.setCount ?: 0
+                ) { name, url, timerType, goalSec, work, rest, sets ->
+                    viewModel.renameCategory(category, name)
+                    item?.let {
+                        viewModel.updateItem(it.copy(
+                            name = name, url = url, timerType = timerType,
+                            timerGoalSeconds = goalSec, setWorkSeconds = work,
+                            setRestSeconds = rest, setCount = sets
+                        ))
+                    }
+                }
             }
         } else {
-            val et = EditText(requireContext()).apply {
-                setText(category.name)
-                selectAll()
-            }
+            val et = EditText(requireContext()).apply { setText(category.name); selectAll() }
             AlertDialog.Builder(requireContext())
                 .setTitle("분류 이름 편집")
                 .setView(et)
@@ -238,37 +146,32 @@ class CategoryTreeFragment : Fragment() {
         }
     }
 
-    private fun showSmallCategoryEditDialog(category: Category, existingItem: com.randomcalendar.data.db.entity.RandomItem?) {
+    private fun showSmallItemDialog(
+        title: String, confirmLabel: String,
+        prefillName: String, prefillUrl: String,
+        prefillTimerType: String, prefillGoalSec: Int?,
+        prefillWork: Int, prefillRest: Int, prefillSets: Int,
+        onConfirm: (name: String, url: String, timerType: String, goalSec: Int?, work: Int, rest: Int, sets: Int) -> Unit
+    ) {
         val ctx = requireContext()
         val dp = ctx.resources.displayMetrics.density
         val pad = (16 * dp).toInt()
         val padSm = (8 * dp).toInt()
 
-        val root = LinearLayout(ctx).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(pad * 2, pad, pad * 2, 0)
-        }
+        fun editText(hint: String, value: String = "", number: Boolean = false, weight: Float = 0f, center: Boolean = false) =
+            EditText(ctx).apply {
+                this.hint = hint
+                if (value.isNotEmpty()) setText(value)
+                setTextColor(ctx.getColor(com.randomcalendar.R.color.text_primary))
+                setHintTextColor(ctx.getColor(com.randomcalendar.R.color.text_secondary))
+                inputType = if (number) InputType.TYPE_CLASS_NUMBER else InputType.TYPE_CLASS_TEXT
+                if (center) gravity = android.view.Gravity.CENTER
+                if (weight > 0f) layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, weight)
+            }
 
-        val etName = EditText(ctx).apply {
-            hint = "소분류 이름 (필수)"
-            setText(category.name)
-            setTextColor(ctx.getColor(com.randomcalendar.R.color.text_primary))
-            setHintTextColor(ctx.getColor(com.randomcalendar.R.color.text_secondary))
-            inputType = InputType.TYPE_CLASS_TEXT
-        }
-
-        val etUrl = EditText(ctx).apply {
-            hint = "URL 링크 (선택)"
-            setText(existingItem?.url ?: "")
-            setTextColor(ctx.getColor(com.randomcalendar.R.color.text_primary))
-            setHintTextColor(ctx.getColor(com.randomcalendar.R.color.text_secondary))
-            inputType = InputType.TYPE_TEXT_VARIATION_URI
-        }
-
-        val tvTimer = TextView(ctx).apply {
-            text = "타이머"
-            setTextColor(ctx.getColor(com.randomcalendar.R.color.text_secondary))
-            setPadding(0, padSm, 0, padSm / 2)
+        val etName = editText("소분류 이름 (필수)", prefillName)
+        val etUrl  = editText("URL 링크 (선택)", prefillUrl).also {
+            it.inputType = InputType.TYPE_TEXT_VARIATION_URI
         }
 
         val radioGroup = RadioGroup(ctx).apply { orientation = RadioGroup.HORIZONTAL }
@@ -276,96 +179,62 @@ class CategoryTreeFragment : Fragment() {
         val rbNormal = RadioButton(ctx).apply { text = "일반"; id = 11 }
         val rbSet    = RadioButton(ctx).apply { text = "세트"; id = 12 }
         radioGroup.addView(rbNone); radioGroup.addView(rbNormal); radioGroup.addView(rbSet)
+        when (prefillTimerType) { "NORMAL" -> rbNormal.isChecked = true; "SET" -> rbSet.isChecked = true; else -> rbNone.isChecked = true }
 
-        when (existingItem?.timerType) {
-            "NORMAL" -> rbNormal.isChecked = true
-            "SET"    -> rbSet.isChecked = true
-            else     -> rbNone.isChecked = true
+        val etGoal = editText("목표 시간(분, 선택)", prefillGoalSec?.let { (it / 60).toString() } ?: "", number = true, weight = 1f)
+        val etWork = editText("운동(초)", if (prefillWork > 0) prefillWork.toString() else "", number = true, weight = 1f, center = true).also {
+            (it.layoutParams as? LinearLayout.LayoutParams)?.marginEnd = padSm
         }
+        val etRest = editText("휴식(초)", if (prefillRest > 0) prefillRest.toString() else "", number = true, weight = 1f, center = true).also {
+            (it.layoutParams as? LinearLayout.LayoutParams)?.marginEnd = padSm
+        }
+        val etSets = editText("세트수", if (prefillSets > 0) prefillSets.toString() else "", number = true, weight = 1f, center = true)
 
         val layoutNormal = LinearLayout(ctx).apply {
             orientation = LinearLayout.HORIZONTAL
-            visibility = if (existingItem?.timerType == "NORMAL") View.VISIBLE else View.GONE
+            visibility = if (prefillTimerType == "NORMAL") View.VISIBLE else View.GONE
             setPadding(0, padSm, 0, 0)
+            addView(etGoal)
         }
-        val etGoal = EditText(ctx).apply {
-            hint = "목표 시간(분, 선택)"
-            setText(existingItem?.timerGoalSeconds?.let { (it / 60).toString() } ?: "")
-            setTextColor(ctx.getColor(com.randomcalendar.R.color.text_primary))
-            setHintTextColor(ctx.getColor(com.randomcalendar.R.color.text_secondary))
-            inputType = InputType.TYPE_CLASS_NUMBER
-            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
-        }
-        layoutNormal.addView(etGoal)
-
         val layoutSet = LinearLayout(ctx).apply {
             orientation = LinearLayout.HORIZONTAL
-            visibility = if (existingItem?.timerType == "SET") View.VISIBLE else View.GONE
+            visibility = if (prefillTimerType == "SET") View.VISIBLE else View.GONE
             setPadding(0, padSm, 0, 0)
+            addView(etWork); addView(etRest); addView(etSets)
         }
-        val etWork = EditText(ctx).apply {
-            hint = "운동(초)"
-            setText(if ((existingItem?.setWorkSeconds ?: 0) > 0) existingItem!!.setWorkSeconds.toString() else "")
-            setTextColor(ctx.getColor(com.randomcalendar.R.color.text_primary))
-            setHintTextColor(ctx.getColor(com.randomcalendar.R.color.text_secondary))
-            inputType = InputType.TYPE_CLASS_NUMBER
-            gravity = android.view.Gravity.CENTER
-            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply { marginEnd = padSm }
-        }
-        val etRest = EditText(ctx).apply {
-            hint = "휴식(초)"
-            setText(if ((existingItem?.setRestSeconds ?: 0) > 0) existingItem!!.setRestSeconds.toString() else "")
-            setTextColor(ctx.getColor(com.randomcalendar.R.color.text_primary))
-            setHintTextColor(ctx.getColor(com.randomcalendar.R.color.text_secondary))
-            inputType = InputType.TYPE_CLASS_NUMBER
-            gravity = android.view.Gravity.CENTER
-            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply { marginEnd = padSm }
-        }
-        val etSets = EditText(ctx).apply {
-            hint = "세트수"
-            setText(if ((existingItem?.setCount ?: 0) > 0) existingItem!!.setCount.toString() else "")
-            setTextColor(ctx.getColor(com.randomcalendar.R.color.text_primary))
-            setHintTextColor(ctx.getColor(com.randomcalendar.R.color.text_secondary))
-            inputType = InputType.TYPE_CLASS_NUMBER
-            gravity = android.view.Gravity.CENTER
-            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
-        }
-        layoutSet.addView(etWork); layoutSet.addView(etRest); layoutSet.addView(etSets)
-
-        radioGroup.setOnCheckedChangeListener { _, checkedId ->
-            layoutNormal.visibility = if (checkedId == 11) View.VISIBLE else View.GONE
-            layoutSet.visibility    = if (checkedId == 12) View.VISIBLE else View.GONE
+        radioGroup.setOnCheckedChangeListener { _, id ->
+            layoutNormal.visibility = if (id == 11) View.VISIBLE else View.GONE
+            layoutSet.visibility    = if (id == 12) View.VISIBLE else View.GONE
         }
 
-        root.addView(etName)
-        root.addView(etUrl)
-        root.addView(tvTimer)
-        root.addView(radioGroup)
-        root.addView(layoutNormal)
-        root.addView(layoutSet)
+        val root = LinearLayout(ctx).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(pad * 2, pad, pad * 2, 0)
+            addView(etName); addView(etUrl)
+            addView(TextView(ctx).apply {
+                text = "타이머"
+                setTextColor(ctx.getColor(com.randomcalendar.R.color.text_secondary))
+                setPadding(0, padSm, 0, padSm / 2)
+            })
+            addView(radioGroup); addView(layoutNormal); addView(layoutSet)
+        }
 
         AlertDialog.Builder(ctx)
-            .setTitle("소분류 편집")
+            .setTitle(title)
             .setView(root)
-            .setPositiveButton("저장") { _, _ ->
+            .setPositiveButton(confirmLabel) { _, _ ->
                 val name = etName.text.toString().trim()
                 if (name.isBlank()) return@setPositiveButton
-                val url = etUrl.text.toString().trim()
                 val timerType = when (radioGroup.checkedRadioButtonId) {
                     11 -> "NORMAL"; 12 -> "SET"; else -> "NONE"
                 }
-                val goalSec = etGoal.text.toString().toIntOrNull()?.let { it * 60 }
-                val work = etWork.text.toString().toIntOrNull() ?: 30
-                val rest = etRest.text.toString().toIntOrNull() ?: 10
-                val sets = etSets.text.toString().toIntOrNull() ?: 3
-                viewModel.renameCategory(category, name)
-                if (existingItem != null) {
-                    viewModel.updateItem(existingItem.copy(
-                        name = name, url = url, timerType = timerType,
-                        timerGoalSeconds = goalSec, setWorkSeconds = work,
-                        setRestSeconds = rest, setCount = sets
-                    ))
-                }
+                onConfirm(
+                    name, etUrl.text.toString().trim(), timerType,
+                    etGoal.text.toString().toIntOrNull()?.let { it * 60 },
+                    etWork.text.toString().toIntOrNull() ?: 30,
+                    etRest.text.toString().toIntOrNull() ?: 10,
+                    etSets.text.toString().toIntOrNull() ?: 3
+                )
             }
             .setNegativeButton("취소", null)
             .show()
@@ -500,11 +369,6 @@ class CategoryTreeAdapter(
                         b.etNewCategory.text?.clear()
                     }
                 }
-                b.etNewCategory.setOnEditorActionListener { _, actionId, _ ->
-                    if (actionId == EditorInfo.IME_ACTION_DONE) {
-                        b.btnAddCategory.performClick(); true
-                    } else false
-                }
             } else {
                 // 대/중분류: 바로 추가
                 b.btnAddCategory.setOnClickListener {
@@ -514,11 +378,11 @@ class CategoryTreeAdapter(
                         b.etNewCategory.text?.clear()
                     }
                 }
-                b.etNewCategory.setOnEditorActionListener { _, actionId, _ ->
-                    if (actionId == EditorInfo.IME_ACTION_DONE) {
-                        b.btnAddCategory.performClick(); true
-                    } else false
-                }
+            }
+            b.etNewCategory.setOnEditorActionListener { _, actionId, _ ->
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    b.btnAddCategory.performClick(); true
+                } else false
             }
         }
     }
