@@ -52,6 +52,7 @@ class TimerService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
             ACTION_START -> {
+                handler.removeCallbacks(tickRunnable)
                 startForeground(NOTIF_ID, buildNotification())
                 handler.post(tickRunnable)
             }
