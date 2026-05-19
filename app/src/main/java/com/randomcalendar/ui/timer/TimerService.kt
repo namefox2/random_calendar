@@ -32,7 +32,7 @@ class TimerService : Service() {
     override fun onCreate() {
         super.onCreate()
         toneGenerator = try {
-            ToneGenerator(AudioManager.STREAM_NOTIFICATION, 80)
+            ToneGenerator(AudioManager.STREAM_MUSIC, 80)
         } catch (e: Exception) { null }
 
         TimerManager.onAlarm = {
