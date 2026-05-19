@@ -17,6 +17,10 @@ class RandomListViewModel(
     val allCategories: LiveData<List<Category>> = categoryRepo.all
     val allItems: LiveData<List<RandomItem>> = itemRepo.all
 
+    init {
+        viewModelScope.launch { itemRepo.deleteOrphaned() }
+    }
+
     // 분류 트리용 - 대/중/소 구분
     val topCategories: LiveData<List<Category>> = categoryRepo.allTopLevel
 

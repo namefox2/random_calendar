@@ -35,4 +35,6 @@ class RandomItemRepository(private val dao: RandomItemDao) {
         dao.getByCategoryIdOnce(categoryId)
 
     suspend fun deleteByCategoryId(categoryId: Long) = dao.deleteByCategoryId(categoryId)
+
+    suspend fun deleteOrphaned() = dao.deleteOrphaned()
 }
