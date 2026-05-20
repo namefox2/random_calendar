@@ -49,16 +49,20 @@
                 android:layout_marginBottom="4dp"
                 android:visibility="gone" />
 
-            <TextView
-                android:id="@+id/tvSelectedPath"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="13sp"
-                android:textColor="@color/primary"
-                android:visibility="gone" />
-
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
+
+    <TextView
+        android:id="@+id/tvSelectedPath"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="6dp"
+        android:paddingBottom="2dp"
+        android:textSize="13sp"
+        android:textColor="@color/primary"
+        android:visibility="gone" />
 
     <!-- 선택 개수 + 랜덤돌리기 버튼 (항상 고정 노출) -->
     <LinearLayout
