@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">랜덤 캘린더</string>
+    <string name="default_slogan">오늘도 한 걸음씩</string>
+    <string name="todo_tab">TODO</string>
+    <string name="random_tab">랜덤 선택</string>
+    <string name="add">추가</string>
+    <string name="edit">편집</string>
+    <string name="delete">삭제</string>
+    <string name="cancel">취소</string>
+    <string name="confirm">확인</string>
+    <string name="apply">적용</string>
+    <string name="reset">초기화</string>
+    <string name="timer_none">없음</string>
+    <string name="timer_normal">일반</string>
+    <string name="timer_set">세트</string>
+</resources>
