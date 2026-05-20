@@ -9,6 +9,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.SeekBar
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import com.letsgo.randomcalendar.RandomCalendarApp
@@ -48,6 +49,7 @@ class MainActivity : AppCompatActivity() {
         if (ThemeHelper.isHandwritingFont(this)) setTheme(R.style.Theme_RandomCalendar_Gaegu)
         else setTheme(R.style.Theme_RandomCalendar)
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, true)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
