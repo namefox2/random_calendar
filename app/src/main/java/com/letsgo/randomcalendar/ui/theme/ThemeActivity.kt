@@ -3,7 +3,9 @@ package com.letsgo.randomcalendar.ui.theme
 import android.content.Context
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import com.letsgo.randomcalendar.R
 import com.letsgo.randomcalendar.databinding.ActivityThemeBinding
 import com.letsgo.randomcalendar.ui.common.ThemeHelper
@@ -23,9 +25,14 @@ class ThemeActivity : AppCompatActivity() {
         if (com.letsgo.randomcalendar.ui.common.ThemeHelper.isHandwritingFont(this))
             setTheme(com.letsgo.randomcalendar.R.style.Theme_RandomCalendar_Gaegu)
         super.onCreate(savedInstanceState)
-        WindowCompat.setDecorFitsSystemWindows(window, true)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         binding = ActivityThemeBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
+            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(bars.left, bars.top, bars.right, bars.bottom)
+            insets
+        }
 
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)

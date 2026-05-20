@@ -9,7 +9,9 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.SeekBar
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import com.letsgo.randomcalendar.RandomCalendarApp
@@ -49,9 +51,21 @@ class MainActivity : AppCompatActivity() {
         if (ThemeHelper.isHandwritingFont(this)) setTheme(R.style.Theme_RandomCalendar_Gaegu)
         else setTheme(R.style.Theme_RandomCalendar)
         super.onCreate(savedInstanceState)
-        WindowCompat.setDecorFitsSystemWindows(window, true)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        val dp16 = (16 * resources.displayMetrics.density).toInt()
+        ViewCompat.setOnApplyWindowInsetsListener(binding.mainContent) { v, insets ->
+            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(bars.left, bars.top, bars.right, bars.bottom)
+            insets
+        }
+        ViewCompat.setOnApplyWindowInsetsListener(binding.sidebarLayout) { v, insets ->
+            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(dp16, bars.top + dp16, dp16, bars.bottom + dp16)
+            insets
+        }
 
         setupCalendar()
         setupMonthNav()
