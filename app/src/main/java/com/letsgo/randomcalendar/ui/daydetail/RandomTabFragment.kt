@@ -40,9 +40,9 @@ class RandomTabFragment : Fragment() {
     private var allCategories: List<Category> = emptyList()
     private var allItems: List<RandomItem> = emptyList()
     private var validSmallIds: Set<Long> = emptySet()
-    private var selectedTopId: Long? = null
-    private var selectedMidId: Long? = null
-    private var selectedSmallId: Long? = null
+    private val selectedTopIds: MutableSet<Long> = mutableSetOf()
+    private val selectedMidIds: MutableSet<Long> = mutableSetOf()
+    private val selectedSmallIds: MutableSet<Long> = mutableSetOf()
 
     private val pickedAdapter = PickedItemAdapter()
 
@@ -100,59 +100,52 @@ class RandomTabFragment : Fragment() {
         binding.chipGroupSmall.removeAllViews()
         binding.chipGroupMid.visibility = View.GONE
         binding.chipGroupSmall.visibility = View.GONE
-        selectedTopId = null; selectedMidId = null; selectedSmallId = null
+        selectedTopIds.clear(); selectedMidIds.clear(); selectedSmallIds.clear()
         updatePath()
 
         tops.forEach { top ->
             val chip = makeChip(top.name) { _, checked ->
-                if (checked) {
-                    selectedTopId = top.id; selectedMidId = null; selectedSmallId = null
-                    buildMidChips(top.id, categories)
-                } else if (selectedTopId == top.id) {
-                    selectedTopId = null
-                    binding.chipGroupMid.visibility = View.GONE
-                    binding.chipGroupSmall.visibility = View.GONE
-                }
+                if (checked) selectedTopIds.add(top.id) else selectedTopIds.remove(top.id)
+                selectedMidIds.clear()
+                selectedSmallIds.clear()
+                rebuildMidChips(selectedTopIds, categories)
                 updatePath()
             }
             binding.chipGroupTop.addView(chip)
         }
     }
 
-    private fun buildMidChips(topId: Long, categories: List<Category>) {
-        val mids = categories.filter { it.parentId == topId && it.level == 1 }
+    private fun rebuildMidChips(topIds: Set<Long>, categories: List<Category>) {
+        val mids = categories.filter { it.parentId in topIds && it.level == 1 }
         binding.chipGroupMid.removeAllViews()
         binding.chipGroupSmall.removeAllViews()
         binding.chipGroupSmall.visibility = View.GONE
-        selectedMidId = null; selectedSmallId = null
+        selectedMidIds.clear()
+        selectedSmallIds.clear()
 
-        if (mids.isEmpty()) { binding.chipGroupMid.visibility = View.GONE; return }
+        if (mids.isEmpty() || topIds.isEmpty()) { binding.chipGroupMid.visibility = View.GONE; return }
         binding.chipGroupMid.visibility = View.VISIBLE
         mids.forEach { mid ->
             val chip = makeChip(mid.name) { _, checked ->
-                if (checked) {
-                    selectedMidId = mid.id; selectedSmallId = null
-                    buildSmallChips(mid.id, categories)
-                } else if (selectedMidId == mid.id) {
-                    selectedMidId = null
-                    binding.chipGroupSmall.visibility = View.GONE
-                }
+                if (checked) selectedMidIds.add(mid.id) else selectedMidIds.remove(mid.id)
+                selectedSmallIds.clear()
+                rebuildSmallChips(selectedMidIds, categories)
                 updatePath()
             }
             binding.chipGroupMid.addView(chip)
         }
     }
 
-    private fun buildSmallChips(midId: Long, categories: List<Category>) {
-        val smalls = categories.filter { it.parentId == midId && it.level == 2 }
+    private fun rebuildSmallChips(midIds: Set<Long>, categories: List<Category>) {
+        val smalls = categories.filter { it.parentId in midIds && it.level == 2 }
         binding.chipGroupSmall.removeAllViews()
-        selectedSmallId = null
-        if (smalls.isEmpty()) { binding.chipGroupSmall.visibility = View.GONE; return }
+        selectedSmallIds.clear()
+        if (smalls.isEmpty() || midIds.isEmpty()) { binding.chipGroupSmall.visibility = View.GONE; return }
         binding.chipGroupSmall.visibility = View.VISIBLE
         smalls.forEach { small ->
             val chip = makeChip(small.name) { _, checked ->
-                if (checked) selectedSmallId = small.id
-                else if (selectedSmallId == small.id) selectedSmallId = null
+                if (checked) selectedSmallIds.add(small.id)
+                else selectedSmallIds.remove(small.id)
                 updatePath()
             }
             binding.chipGroupSmall.addView(chip)
@@ -171,10 +164,13 @@ class RandomTabFragment : Fragment() {
     }
 
     private fun updatePath() {
+        val topNames = selectedTopIds.mapNotNull { id -> allCategories.find { it.id == id }?.name }
+        val midNames = selectedMidIds.mapNotNull { id -> allCategories.find { it.id == id }?.name }
+        val smallNames = selectedSmallIds.mapNotNull { id -> allCategories.find { it.id == id }?.name }
         val parts = mutableListOf<String>()
-        selectedTopId?.let { id -> allCategories.find { it.id == id }?.name?.let { parts.add(it) } }
-        selectedMidId?.let { id -> allCategories.find { it.id == id }?.name?.let { parts.add(it) } }
-        selectedSmallId?.let { id -> allCategories.find { it.id == id }?.name?.let { parts.add(it) } }
+        if (topNames.isNotEmpty()) parts.add(topNames.joinToString(", "))
+        if (midNames.isNotEmpty()) parts.add(midNames.joinToString(", "))
+        if (smallNames.isNotEmpty()) parts.add(smallNames.joinToString(", "))
         if (parts.isNotEmpty()) {
             binding.tvSelectedPath.visibility = View.VISIBLE
             binding.tvSelectedPath.text = parts.joinToString(" > ")
@@ -187,13 +183,13 @@ class RandomTabFragment : Fragment() {
         val count = binding.etPickCount.text.toString().toIntOrNull() ?: 3
         val validItems = allItems.filter { it.categorySmallId in validSmallIds }
         val filtered = when {
-            selectedSmallId != null -> validItems.filter { it.categorySmallId == selectedSmallId }
-            selectedMidId != null -> {
-                val smallIds = allCategories.filter { it.parentId == selectedMidId }.map { it.id }.toSet()
+            selectedSmallIds.isNotEmpty() -> validItems.filter { it.categorySmallId in selectedSmallIds }
+            selectedMidIds.isNotEmpty() -> {
+                val smallIds = allCategories.filter { it.parentId in selectedMidIds }.map { it.id }.toSet()
                 validItems.filter { it.categorySmallId in smallIds }
             }
-            selectedTopId != null -> {
-                val midIds = allCategories.filter { it.parentId == selectedTopId }.map { it.id }.toSet()
+            selectedTopIds.isNotEmpty() -> {
+                val midIds = allCategories.filter { it.parentId in selectedTopIds }.map { it.id }.toSet()
                 val smallIds = allCategories.filter { it.parentId in midIds }.map { it.id }.toSet()
                 validItems.filter { it.categorySmallId in smallIds }
             }

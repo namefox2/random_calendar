@@ -33,24 +33,21 @@
                 android:id="@+id/chipGroupTop"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                app:singleSelection="true" />
+                android:layout_marginBottom="4dp" />
 
             <com.google.android.material.chip.ChipGroup
                 android:id="@+id/chipGroupMid"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
-                android:visibility="gone"
-                app:singleSelection="true" />
+                android:visibility="gone" />
 
             <com.google.android.material.chip.ChipGroup
                 android:id="@+id/chipGroupSmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
-                android:visibility="gone"
-                app:singleSelection="true" />
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/tvSelectedPath"
