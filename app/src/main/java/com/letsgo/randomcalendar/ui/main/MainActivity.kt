@@ -9,11 +9,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.SeekBar
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import androidx.core.view.updatePadding
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import com.letsgo.randomcalendar.RandomCalendarApp
@@ -53,24 +49,8 @@ class MainActivity : AppCompatActivity() {
         if (ThemeHelper.isHandwritingFont(this)) setTheme(R.style.Theme_RandomCalendar_Gaegu)
         else setTheme(R.style.Theme_RandomCalendar)
         super.onCreate(savedInstanceState)
-        WindowCompat.setDecorFitsSystemWindows(window, false)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        val dp16 = (16 * resources.displayMetrics.density).toInt()
-        ViewCompat.setOnApplyWindowInsetsListener(binding.mainContent) { v, insets ->
-            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            // 좌/우/하단만 mainContent에 적용
-            v.setPadding(bars.left, 0, bars.right, bars.bottom)
-            // 상단은 sloganBar에 적용 → 파란 배경이 상태바 뒤까지 채워짐
-            binding.sloganBar.updatePadding(top = bars.top)
-            insets
-        }
-        ViewCompat.setOnApplyWindowInsetsListener(binding.sidebarLayout) { v, insets ->
-            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(dp16, bars.top + dp16, dp16, bars.bottom + dp16)
-            insets
-        }
 
         setupCalendar()
         setupMonthNav()
@@ -354,12 +334,13 @@ class MainActivity : AppCompatActivity() {
             binding.mainContent.setBackgroundColor(c.bgColor)
             binding.rvCalendar.setBackgroundColor(c.bgColor)
 
+            // 상태바 색상을 슬로건 바와 맞춤
+            window.statusBarColor = primaryColor
+            WindowInsetsControllerCompat(window, binding.root).isAppearanceLightStatusBars =
+                !ThemeHelper.isColorDark(primaryColor)
             // 슬로건 바
             binding.sloganBar.setBackgroundColor(primaryColor)
             binding.sidebarLayout.setBackgroundColor(sidebarColor)
-            // 상태바 아이콘을 배경색에 맞게 조정 (밝은 배경 → 검정 아이콘)
-            WindowInsetsControllerCompat(window, binding.root).isAppearanceLightStatusBars =
-                !ThemeHelper.isColorDark(primaryColor)
             val onPrimary = if (ThemeHelper.isColorDark(primaryColor)) Color.WHITE else Color.BLACK
             binding.tvSlogan.setTextColor(onPrimary)
             binding.etSlogan.setTextColor(onPrimary)

@@ -8,9 +8,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.letsgo.randomcalendar.RandomCalendarApp
 import com.letsgo.randomcalendar.R
@@ -86,14 +83,8 @@ class RandomListActivity : AppCompatActivity() {
         if (com.letsgo.randomcalendar.ui.common.ThemeHelper.isHandwritingFont(this))
             setTheme(com.letsgo.randomcalendar.R.style.Theme_RandomCalendar_Gaegu)
         super.onCreate(savedInstanceState)
-        WindowCompat.setDecorFitsSystemWindows(window, false)
         binding = ActivityRandomListBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
-            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(bars.left, bars.top, bars.right, bars.bottom)
-            insets
-        }
 
         viewModel
 
