@@ -12,6 +12,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.view.updatePadding
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import com.letsgo.randomcalendar.RandomCalendarApp
@@ -58,7 +60,10 @@ class MainActivity : AppCompatActivity() {
         val dp16 = (16 * resources.displayMetrics.density).toInt()
         ViewCompat.setOnApplyWindowInsetsListener(binding.mainContent) { v, insets ->
             val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(bars.left, bars.top, bars.right, bars.bottom)
+            // 좌/우/하단만 mainContent에 적용
+            v.setPadding(bars.left, 0, bars.right, bars.bottom)
+            // 상단은 sloganBar에 적용 → 파란 배경이 상태바 뒤까지 채워짐
+            binding.sloganBar.updatePadding(top = bars.top)
             insets
         }
         ViewCompat.setOnApplyWindowInsetsListener(binding.sidebarLayout) { v, insets ->
@@ -352,6 +357,9 @@ class MainActivity : AppCompatActivity() {
             // 슬로건 바
             binding.sloganBar.setBackgroundColor(primaryColor)
             binding.sidebarLayout.setBackgroundColor(sidebarColor)
+            // 상태바 아이콘을 배경색에 맞게 조정 (밝은 배경 → 검정 아이콘)
+            WindowInsetsControllerCompat(window, binding.root).isAppearanceLightStatusBars =
+                !ThemeHelper.isColorDark(primaryColor)
             val onPrimary = if (ThemeHelper.isColorDark(primaryColor)) Color.WHITE else Color.BLACK
             binding.tvSlogan.setTextColor(onPrimary)
             binding.etSlogan.setTextColor(onPrimary)
