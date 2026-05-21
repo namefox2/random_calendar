@@ -4,8 +4,11 @@ import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import android.view.GestureDetector
+import android.view.MotionEvent
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import kotlin.math.abs
 import android.widget.SeekBar
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -54,6 +57,7 @@ class MainActivity : AppCompatActivity() {
 
         setupCalendar()
         setupMonthNav()
+        setupSwipeNavigation()
         setupSlogan()
         setupSidebar()
         setupFontSize()
@@ -94,6 +98,28 @@ class MainActivity : AppCompatActivity() {
     private fun setupMonthNav() {
         binding.btnPrevMonth.setOnClickListener { viewModel.goToPreviousMonth() }
         binding.btnNextMonth.setOnClickListener { viewModel.goToNextMonth() }
+    }
+
+    private fun setupSwipeNavigation() {
+        val gestureDetector = GestureDetector(this, object : GestureDetector.SimpleOnGestureListener() {
+            override fun onFling(e1: MotionEvent?, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
+                val diffX = e2.x - (e1?.x ?: return false)
+                val diffY = e2.y - (e1?.y ?: return false)
+                if (abs(diffX) > abs(diffY) && abs(diffX) > 60 && abs(velocityX) > 200) {
+                    if (diffX > 0) viewModel.goToPreviousMonth()
+                    else viewModel.goToNextMonth()
+                    return true
+                }
+                return false
+            }
+        })
+        binding.rvCalendar.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_MOVE) {
+                binding.drawerLayout.requestDisallowInterceptTouchEvent(true)
+            }
+            gestureDetector.onTouchEvent(event)
+            false
+        }
     }
 
     private fun setupSlogan() {
