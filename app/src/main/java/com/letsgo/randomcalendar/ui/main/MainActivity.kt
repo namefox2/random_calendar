@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -15,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.letsgo.randomcalendar.RandomCalendarApp
 import com.letsgo.randomcalendar.R
 import com.letsgo.randomcalendar.databinding.ActivityMainBinding
@@ -101,25 +101,42 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupSwipeNavigation() {
-        val gestureDetector = GestureDetector(this, object : GestureDetector.SimpleOnGestureListener() {
-            override fun onFling(e1: MotionEvent?, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
-                val diffX = e2.x - (e1?.x ?: return false)
-                val diffY = e2.y - (e1?.y ?: return false)
-                if (abs(diffX) > abs(diffY) && abs(diffX) > 60 && abs(velocityX) > 200) {
-                    if (diffX > 0) viewModel.goToPreviousMonth()
-                    else viewModel.goToNextMonth()
-                    return true
+        var startX = 0f
+        var startY = 0f
+        var isSwiping = false
+        val minSwipe = resources.displayMetrics.density * 50
+
+        binding.rvCalendar.addOnItemTouchListener(object : RecyclerView.SimpleOnItemTouchListener() {
+            override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
+                when (e.action) {
+                    MotionEvent.ACTION_DOWN -> {
+                        startX = e.x; startY = e.y; isSwiping = false
+                    }
+                    MotionEvent.ACTION_MOVE -> {
+                        val dx = e.x - startX
+                        val dy = e.y - startY
+                        if (!isSwiping && abs(dx) > abs(dy) * 1.5f && abs(dx) > minSwipe) {
+                            isSwiping = true
+                            binding.drawerLayout.requestDisallowInterceptTouchEvent(true)
+                        }
+                    }
                 }
-                return false
+                return isSwiping
+            }
+
+            override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {
+                when (e.action) {
+                    MotionEvent.ACTION_UP -> {
+                        if (isSwiping) {
+                            if (e.x - startX > 0) viewModel.goToPreviousMonth()
+                            else viewModel.goToNextMonth()
+                        }
+                        isSwiping = false
+                    }
+                    MotionEvent.ACTION_CANCEL -> isSwiping = false
+                }
             }
         })
-        binding.rvCalendar.setOnTouchListener { _, event ->
-            if (event.action == MotionEvent.ACTION_MOVE) {
-                binding.drawerLayout.requestDisallowInterceptTouchEvent(true)
-            }
-            gestureDetector.onTouchEvent(event)
-            false
-        }
     }
 
     private fun setupSlogan() {
