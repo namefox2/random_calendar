@@ -1,8 +1,10 @@
 package com.letsgo.randomcalendar.ui.randomlist
 
+import android.graphics.Color
 import android.os.Bundle
 import android.text.InputType
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
@@ -15,6 +17,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.letsgo.randomcalendar.data.db.entity.Category
@@ -33,6 +36,7 @@ class CategoryTreeFragment : Fragment() {
     )
 
     private lateinit var adapter: CategoryTreeAdapter
+    private lateinit var itemTouchHelper: ItemTouchHelper
     private var allCategories: List<Category> = emptyList()
     private var searchQuery: String = ""
 
@@ -47,10 +51,13 @@ class CategoryTreeFragment : Fragment() {
             onAddCategory = { parentId, level, name -> viewModel.addCategory(name, parentId, level) },
             onAddSmallWithItem = { parentMidId, name -> showAddSmallWithItemDialog(parentMidId, name) },
             onEdit = { category -> showEditDialog(category) },
-            onDelete = { category -> showDeleteConfirm(category) }
+            onDelete = { category -> showDeleteConfirm(category) },
+            onMoveCategory = { category, newParentId -> viewModel.moveToCategory(category, newParentId) },
+            onStartDrag = { vh -> itemTouchHelper.startDrag(vh) }
         )
         binding.rvCategories.layoutManager = LinearLayoutManager(requireContext())
         binding.rvCategories.adapter = adapter
+        setupDragAndDrop()
 
         viewModel.allCategories.observe(viewLifecycleOwner) { categories ->
             allCategories = categories
@@ -58,6 +65,67 @@ class CategoryTreeFragment : Fragment() {
         }
 
         setupSearch()
+    }
+
+    private fun setupDragAndDrop() {
+        var draggedCategory: Category? = null
+        var currentDropTargetId: Long? = null
+
+        val callback = object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0) {
+            override fun isLongPressDragEnabled() = false
+
+            override fun getMovementFlags(rv: RecyclerView, vh: RecyclerView.ViewHolder): Int {
+                val pos = vh.adapterPosition
+                if (pos < 0 || pos >= adapter.itemCount) return 0
+                val row = adapter.getRow(pos)
+                return if (row.category?.level == 2)
+                    makeMovementFlags(ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0)
+                else makeMovementFlags(0, 0)
+            }
+
+            override fun onMove(rv: RecyclerView, source: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+                val pos = target.adapterPosition
+                if (pos < 0 || pos >= adapter.itemCount) return false
+                val targetCat = adapter.getRow(pos).category
+                val newTarget: Long? = when (targetCat?.level) {
+                    1 -> targetCat.id
+                    2 -> targetCat.parentId
+                    else -> null
+                }
+                if (newTarget != currentDropTargetId) {
+                    currentDropTargetId = newTarget
+                    adapter.setHighlightedMid(newTarget)
+                }
+                return false
+            }
+
+            override fun onSwiped(vh: RecyclerView.ViewHolder, direction: Int) {}
+
+            override fun onSelectedChanged(vh: RecyclerView.ViewHolder?, actionState: Int) {
+                super.onSelectedChanged(vh, actionState)
+                if (actionState == ItemTouchHelper.ACTION_STATE_DRAG && vh != null) {
+                    val pos = vh.adapterPosition
+                    if (pos >= 0) draggedCategory = adapter.getRow(pos).category
+                    vh.itemView.alpha = 0.7f
+                }
+            }
+
+            override fun clearView(rv: RecyclerView, vh: RecyclerView.ViewHolder) {
+                super.clearView(rv, vh)
+                vh.itemView.alpha = 1f
+                val dragged = draggedCategory
+                val targetId = currentDropTargetId
+                if (dragged != null && targetId != null && targetId != dragged.parentId) {
+                    viewModel.moveToCategory(dragged, targetId)
+                }
+                draggedCategory = null
+                currentDropTargetId = null
+                adapter.setHighlightedMid(null)
+            }
+        }
+
+        itemTouchHelper = ItemTouchHelper(callback)
+        itemTouchHelper.attachToRecyclerView(binding.rvCategories)
     }
 
     private fun setupSearch() {
@@ -259,7 +327,9 @@ class CategoryTreeAdapter(
     private val onAddCategory: (parentId: Long?, level: Int, name: String) -> Unit,
     private val onAddSmallWithItem: (parentMidId: Long, prefillName: String) -> Unit,
     private val onEdit: (Category) -> Unit,
-    private val onDelete: (Category) -> Unit
+    private val onDelete: (Category) -> Unit,
+    private val onMoveCategory: (Category, Long) -> Unit = { _, _ -> },
+    private val onStartDrag: (RecyclerView.ViewHolder) -> Unit = {}
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     internal data class TreeRow(
@@ -272,6 +342,17 @@ class CategoryTreeAdapter(
     private val rows = mutableListOf<TreeRow>()
     private val collapsedIds = mutableSetOf<Long>()
     private var storedCategories: List<Category> = emptyList()
+    private var highlightedMidId: Long? = null
+
+    fun getRow(position: Int): TreeRow = rows[position]
+
+    fun setHighlightedMid(id: Long?) {
+        val prev = highlightedMidId
+        highlightedMidId = id
+        rows.forEachIndexed { index, row ->
+            if (row.category?.id == prev || row.category?.id == id) notifyItemChanged(index)
+        }
+    }
 
     fun submitCategories(categories: List<Category>) {
         storedCategories = categories
@@ -338,6 +419,26 @@ class CategoryTreeAdapter(
             } else {
                 b.btnToggle.visibility = View.INVISIBLE
             }
+
+            // 소분류(level 2): 드래그 핸들 표시
+            if (cat.level == 2) {
+                b.ivDragHandle.visibility = View.VISIBLE
+                b.ivDragHandle.setOnTouchListener { _, event ->
+                    if (event.actionMasked == MotionEvent.ACTION_DOWN) {
+                        onStartDrag(this)
+                    }
+                    false
+                }
+            } else {
+                b.ivDragHandle.visibility = View.GONE
+                b.ivDragHandle.setOnTouchListener(null)
+            }
+
+            // 중분류(level 1): 드롭 타겟일 때 하이라이트
+            val isDropTarget = cat.level == 1 && cat.id == highlightedMidId
+            b.root.setBackgroundColor(
+                if (isDropTarget) Color.argb(50, 25, 118, 210) else Color.TRANSPARENT
+            )
 
             b.btnEdit.setOnClickListener { onEdit(cat) }
             b.btnDelete.setOnClickListener { onDelete(cat) }
