@@ -109,8 +109,9 @@ class CategoryTreeFragment : Fragment() {
                         adapter.setHighlightedMid(newTarget)
                     }
                 } else if (draggedItem != null) {
-                    // 항목 드래그 → 소분류로 이동
+                    // 항목 드래그 → 중분류 또는 소분류로 이동
                     val newTarget: Long? = when {
+                        targetRow.category?.level == 1 -> targetRow.category.id
                         targetRow.category?.level == 2 -> targetRow.category.id
                         targetRow.item != null -> targetRow.parentId
                         else -> null
@@ -425,14 +426,23 @@ class CategoryTreeAdapter(
         children.forEach { cat ->
             rows.add(TreeRow(category = cat, parentId = parentId, level = level, indent = indent))
             if (cat.id !in collapsedIds) {
-                if (level < 2) {
-                    buildTree(allCats, allItems, cat.id, level + 1, indent + 1)
-                } else {
-                    // 소분류(level 2): 항목 목록 + "항목 추가" 행
-                    allItems.filter { it.categorySmallId == cat.id }.forEach { item ->
-                        rows.add(TreeRow(item = item, parentId = cat.id, level = 3, indent = indent + 1))
+                when (level) {
+                    0 -> buildTree(allCats, allItems, cat.id, level + 1, indent + 1)
+                    1 -> {
+                        // 중분류: 소분류 하위 + 중분류 직속 항목 + "항목 추가"
+                        buildTree(allCats, allItems, cat.id, level + 1, indent + 1)
+                        allItems.filter { it.categorySmallId == cat.id }.forEach { item ->
+                            rows.add(TreeRow(item = item, parentId = cat.id, level = 3, indent = indent + 1))
+                        }
+                        rows.add(TreeRow(parentId = cat.id, level = -1, indent = indent + 1))
                     }
-                    rows.add(TreeRow(parentId = cat.id, level = -1, indent = indent + 1))
+                    else -> {
+                        // 소분류(level 2): 항목 목록 + "항목 추가"
+                        allItems.filter { it.categorySmallId == cat.id }.forEach { item ->
+                            rows.add(TreeRow(item = item, parentId = cat.id, level = 3, indent = indent + 1))
+                        }
+                        rows.add(TreeRow(parentId = cat.id, level = -1, indent = indent + 1))
+                    }
                 }
             }
         }
@@ -498,9 +508,8 @@ class CategoryTreeAdapter(
                 b.ivDragHandle.setOnTouchListener(null)
             }
 
-            // 드롭 타겟 하이라이트 (중분류: 소분류 드래그 / 소분류: 항목 드래그)
-            val isDropTarget = (cat.level == 1 && cat.id == highlightedMidId) ||
-                               (cat.level == 2 && cat.id == highlightedSmallId)
+            // 드롭 타겟 하이라이트
+            val isDropTarget = cat.id == highlightedMidId || cat.id == highlightedSmallId
             b.root.setBackgroundColor(
                 if (isDropTarget) Color.argb(50, 25, 118, 210) else Color.TRANSPARENT
             )

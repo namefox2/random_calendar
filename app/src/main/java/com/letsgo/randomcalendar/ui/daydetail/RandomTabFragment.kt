@@ -59,7 +59,7 @@ class RandomTabFragment : Fragment() {
 
         randomViewModel.allCategories.observe(viewLifecycleOwner) { cats ->
             allCategories = cats
-            validSmallIds = cats.filter { it.level == 2 }.map { it.id }.toSet()
+            validSmallIds = cats.filter { it.level == 1 || it.level == 2 }.map { it.id }.toSet()
             buildTopChips(cats)
         }
 
@@ -186,12 +186,12 @@ class RandomTabFragment : Fragment() {
             selectedSmallIds.isNotEmpty() -> validItems.filter { it.categorySmallId in selectedSmallIds }
             selectedMidIds.isNotEmpty() -> {
                 val smallIds = allCategories.filter { it.parentId in selectedMidIds }.map { it.id }.toSet()
-                validItems.filter { it.categorySmallId in smallIds }
+                validItems.filter { it.categorySmallId in smallIds || it.categorySmallId in selectedMidIds }
             }
             selectedTopIds.isNotEmpty() -> {
                 val midIds = allCategories.filter { it.parentId in selectedTopIds }.map { it.id }.toSet()
                 val smallIds = allCategories.filter { it.parentId in midIds }.map { it.id }.toSet()
-                validItems.filter { it.categorySmallId in smallIds }
+                validItems.filter { it.categorySmallId in smallIds || it.categorySmallId in midIds }
             }
             else -> validItems
         }
