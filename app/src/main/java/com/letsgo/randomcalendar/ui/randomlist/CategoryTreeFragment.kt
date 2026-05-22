@@ -76,7 +76,9 @@ class CategoryTreeFragment : Fragment() {
 
     private fun setupDragAndDrop() {
         var draggedCategory: Category? = null
-        var currentDropTargetId: Long? = null
+        var draggedItem: RandomItem? = null
+        var currentMidTargetId: Long? = null
+        var currentSmallTargetId: Long? = null
 
         val callback = object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0) {
             override fun isLongPressDragEnabled() = false
@@ -85,7 +87,7 @@ class CategoryTreeFragment : Fragment() {
                 val pos = vh.adapterPosition
                 if (pos < 0 || pos >= adapter.itemCount) return 0
                 val row = adapter.getRow(pos)
-                return if (row.category?.level == 2)
+                return if (row.category?.level == 2 || row.item != null)
                     makeMovementFlags(ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0)
                 else makeMovementFlags(0, 0)
             }
@@ -93,15 +95,30 @@ class CategoryTreeFragment : Fragment() {
             override fun onMove(rv: RecyclerView, source: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
                 val pos = target.adapterPosition
                 if (pos < 0 || pos >= adapter.itemCount) return false
-                val targetCat = adapter.getRow(pos).category
-                val newTarget: Long? = when (targetCat?.level) {
-                    1 -> targetCat.id
-                    2 -> targetCat.parentId
-                    else -> null
-                }
-                if (newTarget != currentDropTargetId) {
-                    currentDropTargetId = newTarget
-                    adapter.setHighlightedMid(newTarget)
+                val targetRow = adapter.getRow(pos)
+
+                if (draggedCategory != null) {
+                    // 소분류 드래그 → 중분류로 이동
+                    val newTarget: Long? = when (targetRow.category?.level) {
+                        1 -> targetRow.category.id
+                        2 -> targetRow.category.parentId
+                        else -> null
+                    }
+                    if (newTarget != currentMidTargetId) {
+                        currentMidTargetId = newTarget
+                        adapter.setHighlightedMid(newTarget)
+                    }
+                } else if (draggedItem != null) {
+                    // 항목 드래그 → 소분류로 이동
+                    val newTarget: Long? = when {
+                        targetRow.category?.level == 2 -> targetRow.category.id
+                        targetRow.item != null -> targetRow.parentId
+                        else -> null
+                    }
+                    if (newTarget != currentSmallTargetId) {
+                        currentSmallTargetId = newTarget
+                        adapter.setHighlightedSmall(newTarget)
+                    }
                 }
                 return false
             }
@@ -112,7 +129,11 @@ class CategoryTreeFragment : Fragment() {
                 super.onSelectedChanged(vh, actionState)
                 if (actionState == ItemTouchHelper.ACTION_STATE_DRAG && vh != null) {
                     val pos = vh.adapterPosition
-                    if (pos >= 0) draggedCategory = adapter.getRow(pos).category
+                    if (pos >= 0) {
+                        val row = adapter.getRow(pos)
+                        draggedCategory = row.category
+                        draggedItem = row.item
+                    }
                     vh.itemView.alpha = 0.7f
                 }
             }
@@ -120,14 +141,25 @@ class CategoryTreeFragment : Fragment() {
             override fun clearView(rv: RecyclerView, vh: RecyclerView.ViewHolder) {
                 super.clearView(rv, vh)
                 vh.itemView.alpha = 1f
+
                 val dragged = draggedCategory
-                val targetId = currentDropTargetId
-                if (dragged != null && targetId != null && targetId != dragged.parentId) {
-                    viewModel.moveToCategory(dragged, targetId)
+                val midId = currentMidTargetId
+                if (dragged != null && midId != null && midId != dragged.parentId) {
+                    viewModel.moveToCategory(dragged, midId)
                 }
+
+                val item = draggedItem
+                val smallId = currentSmallTargetId
+                if (item != null && smallId != null && smallId != item.categorySmallId) {
+                    viewModel.updateItem(item.copy(categorySmallId = smallId))
+                }
+
                 draggedCategory = null
-                currentDropTargetId = null
+                draggedItem = null
+                currentMidTargetId = null
+                currentSmallTargetId = null
                 adapter.setHighlightedMid(null)
+                adapter.setHighlightedSmall(null)
             }
         }
 
@@ -354,12 +386,21 @@ class CategoryTreeAdapter(
     private var storedCategories: List<Category> = emptyList()
     private var storedItems: List<RandomItem> = emptyList()
     private var highlightedMidId: Long? = null
+    private var highlightedSmallId: Long? = null
 
     internal fun getRow(position: Int): TreeRow = rows[position]
 
     fun setHighlightedMid(id: Long?) {
         val prev = highlightedMidId
         highlightedMidId = id
+        rows.forEachIndexed { index, row ->
+            if (row.category?.id == prev || row.category?.id == id) notifyItemChanged(index)
+        }
+    }
+
+    fun setHighlightedSmall(id: Long?) {
+        val prev = highlightedSmallId
+        highlightedSmallId = id
         rows.forEachIndexed { index, row ->
             if (row.category?.id == prev || row.category?.id == id) notifyItemChanged(index)
         }
@@ -457,8 +498,9 @@ class CategoryTreeAdapter(
                 b.ivDragHandle.setOnTouchListener(null)
             }
 
-            // 중분류(level 1): 드롭 타겟 하이라이트
-            val isDropTarget = cat.level == 1 && cat.id == highlightedMidId
+            // 드롭 타겟 하이라이트 (중분류: 소분류 드래그 / 소분류: 항목 드래그)
+            val isDropTarget = (cat.level == 1 && cat.id == highlightedMidId) ||
+                               (cat.level == 2 && cat.id == highlightedSmallId)
             b.root.setBackgroundColor(
                 if (isDropTarget) Color.argb(50, 25, 118, 210) else Color.TRANSPARENT
             )
@@ -478,6 +520,10 @@ class CategoryTreeAdapter(
             b.tvItemName.text = item.name
             b.btnEditItem.setOnClickListener { onEditItem(item) }
             b.btnDeleteItem.setOnClickListener { onDeleteItem(item) }
+            b.ivDragHandle.setOnTouchListener { _, event ->
+                if (event.actionMasked == MotionEvent.ACTION_DOWN) onStartDrag(this)
+                false
+            }
         }
     }
 
