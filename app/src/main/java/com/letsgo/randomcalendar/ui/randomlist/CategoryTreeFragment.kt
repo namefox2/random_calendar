@@ -344,7 +344,7 @@ class CategoryTreeAdapter(
     private var storedCategories: List<Category> = emptyList()
     private var highlightedMidId: Long? = null
 
-    fun getRow(position: Int): TreeRow = rows[position]
+    internal fun getRow(position: Int): TreeRow = rows[position]
 
     fun setHighlightedMid(id: Long?) {
         val prev = highlightedMidId
