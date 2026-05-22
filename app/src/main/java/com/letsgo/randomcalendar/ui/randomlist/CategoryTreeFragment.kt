@@ -421,7 +421,7 @@ class CategoryTreeAdapter(
         notifyDataSetChanged()
     }
 
-    private fun buildTree(allCats: List<Category>, allItems: List<RandomItem>, parentId: Long?, level: Int, indent: Int, addAddRow: Boolean = true) {
+    private fun buildTree(allCats: List<Category>, allItems: List<RandomItem>, parentId: Long?, level: Int, indent: Int) {
         val children = allCats.filter { it.parentId == parentId && it.level == level }
         children.forEach { cat ->
             rows.add(TreeRow(category = cat, parentId = parentId, level = level, indent = indent))
@@ -429,13 +429,12 @@ class CategoryTreeAdapter(
                 when (level) {
                     0 -> buildTree(allCats, allItems, cat.id, level + 1, indent + 1)
                     1 -> {
-                        // 중분류: 소분류 하위(추가 행 제외) → 직속 항목 → +항목추가 → +소분류추가
-                        buildTree(allCats, allItems, cat.id, level + 1, indent + 1, addAddRow = false)
+                        // 중분류: 직속 항목 → +항목추가 → 소분류 하위 → +소분류추가
                         allItems.filter { it.categorySmallId == cat.id }.forEach { item ->
                             rows.add(TreeRow(item = item, parentId = cat.id, level = 3, indent = indent + 1))
                         }
                         rows.add(TreeRow(parentId = cat.id, level = -1, indent = indent + 1))
-                        rows.add(TreeRow(parentId = cat.id, level = 2, indent = indent + 1))
+                        buildTree(allCats, allItems, cat.id, level + 1, indent + 1)
                     }
                     else -> {
                         // 소분류(level 2): 항목 목록 + "항목 추가"
@@ -447,7 +446,7 @@ class CategoryTreeAdapter(
                 }
             }
         }
-        if (addAddRow) rows.add(TreeRow(parentId = parentId, level = level, indent = indent))
+        rows.add(TreeRow(parentId = parentId, level = level, indent = indent))
     }
 
     // 0=분류 행, 1=추가 행(분류/항목), 2=항목 리프 행
