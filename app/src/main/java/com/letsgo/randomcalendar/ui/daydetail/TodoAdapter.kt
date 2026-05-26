@@ -58,15 +58,30 @@ class TodoAdapter(
                 binding.tvTimerGoal.setTextColor(c.textColor)
                 binding.tvSetTimerDisplay.setTextColor(c.textColor)
                 binding.tvSetCount.setTextColor(c.textColor)
-                val chipText = if (ThemeHelper.isColorDark(c.bgColor)) android.graphics.Color.WHITE
-                               else android.graphics.Color.parseColor("#212121")
-                val chipCsl = android.content.res.ColorStateList.valueOf(chipText)
-                binding.chipTimerNone.setTextColor(chipCsl)
-                binding.chipTimerNormal.setTextColor(chipCsl)
-                binding.chipTimerSet.setTextColor(chipCsl)
-                binding.chipTimerNone.typeface = chipTypeface
-                binding.chipTimerNormal.typeface = chipTypeface
-                binding.chipTimerSet.typeface = chipTypeface
+
+                // 선택/미선택 상태별 칩 색상
+                val checkedTextColor = if (ThemeHelper.isColorDark(c.primaryColor))
+                    android.graphics.Color.WHITE else android.graphics.Color.BLACK
+                val uncheckedTextColor = c.textColor
+                val chipTextCsl = android.content.res.ColorStateList(
+                    arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf(-android.R.attr.state_checked)),
+                    intArrayOf(checkedTextColor, uncheckedTextColor)
+                )
+                val uncheckedBg = if (ThemeHelper.isColorDark(c.bgColor)) {
+                    android.graphics.Color.argb(255,
+                        minOf(android.graphics.Color.red(c.bgColor) + 50, 255),
+                        minOf(android.graphics.Color.green(c.bgColor) + 50, 255),
+                        minOf(android.graphics.Color.blue(c.bgColor) + 50, 255))
+                } else android.graphics.Color.parseColor("#E0E0E0")
+                val chipBgCsl = android.content.res.ColorStateList(
+                    arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf(-android.R.attr.state_checked)),
+                    intArrayOf(c.primaryColor, uncheckedBg)
+                )
+                listOf(binding.chipTimerNone, binding.chipTimerNormal, binding.chipTimerSet).forEach { chip ->
+                    chip.setTextColor(chipTextCsl)
+                    chip.chipBackgroundColor = chipBgCsl
+                    chip.typeface = chipTypeface
+                }
             }
 
             val isExpanded = item.id in expandedIds
@@ -98,6 +113,8 @@ class TodoAdapter(
                 if (isExpanded) R.drawable.ic_chevron_up else R.drawable.ic_chevron_down
             )
             binding.expandedContent.visibility = if (isExpanded) View.VISIBLE else View.GONE
+
+            binding.btnDelete.setOnClickListener { onDelete(item) }
 
             binding.headerRow.setOnClickListener {
                 if (item.id in expandedIds) expandedIds.remove(item.id)
@@ -154,9 +171,6 @@ class TodoAdapter(
                 "NORMAL" -> bindNormalTimer(item, timerState)
                 "SET" -> bindSetTimer(item, timerState)
             }
-
-            // 삭제
-            binding.btnDelete.setOnClickListener { onDelete(item) }
         }
 
         private fun bindNormalTimer(item: TodoItem, state: TimerManager.TimerState?) {

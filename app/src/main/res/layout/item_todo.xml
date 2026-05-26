@@ -56,6 +56,15 @@
                 android:visibility="gone" />
 
             <ImageButton
+                android:id="@+id/btnDelete"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_delete"
+                android:tint="@color/calendar_red"
+                android:contentDescription="삭제" />
+
+            <ImageButton
                 android:id="@+id/btnExpand"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
@@ -286,15 +295,6 @@
                 </LinearLayout>
 
             </LinearLayout>
-
-            <Button
-                android:id="@+id/btnDelete"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="삭제"
-                android:textColor="@color/calendar_red"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
-                android:layout_gravity="end" />
 
         </LinearLayout>
 
