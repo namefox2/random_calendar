@@ -143,6 +143,8 @@ class TodoTabFragment : Fragment() {
 
     private fun openDatePicker() {
         val base = viewModel.currentDate.value ?: LocalDate.now()
+        val today = LocalDate.now()
+        val initial = if (base.isBefore(today)) today else base
         android.app.DatePickerDialog(
             requireContext(),
             { _, year, month, day ->
@@ -150,19 +152,23 @@ class TodoTabFragment : Fragment() {
                 val fmt = DateTimeFormatter.ofPattern("M월 d일")
                 binding.btnPickDate.text = pickedDate!!.format(fmt)
             },
-            base.year, base.monthValue - 1, base.dayOfMonth
-        ).show()
+            initial.year, initial.monthValue - 1, initial.dayOfMonth
+        ).apply {
+            datePicker.minDate = java.util.Calendar.getInstance().timeInMillis
+        }.show()
     }
 
     private fun computeTargetDates(currentDate: LocalDate): List<LocalDate> {
+        val today = LocalDate.now()
         val year = currentDate.year
         val month = currentDate.month
         val daysInMonth = month.length(currentDate.isLeapYear)
-        val allDays = (1..daysInMonth).map { LocalDate.of(year, month, it) }
+        val futureDays = (1..daysInMonth).map { LocalDate.of(year, month, it) }
+            .filter { !it.isBefore(today) }
         return when {
-            binding.chipEveryDay.isChecked -> allDays
-            binding.chipOddDays.isChecked -> allDays.filter { it.dayOfMonth % 2 == 1 }
-            binding.chipEvenDays.isChecked -> allDays.filter { it.dayOfMonth % 2 == 0 }
+            binding.chipEveryDay.isChecked -> futureDays
+            binding.chipOddDays.isChecked -> futureDays.filter { it.dayOfMonth % 2 == 1 }
+            binding.chipEvenDays.isChecked -> futureDays.filter { it.dayOfMonth % 2 == 0 }
             binding.chipPickDate.isChecked -> listOf(pickedDate ?: currentDate)
             binding.chipRepeat.isChecked -> {
                 val weekdays = buildSet<DayOfWeek> {
@@ -175,7 +181,7 @@ class TodoTabFragment : Fragment() {
                     if (binding.chipSun.isChecked) add(DayOfWeek.SUNDAY)
                 }
                 if (weekdays.isEmpty()) listOf(currentDate)
-                else allDays.filter { it.dayOfWeek in weekdays }
+                else futureDays.filter { it.dayOfWeek in weekdays }
             }
             else -> listOf(currentDate) // chipToday
         }
