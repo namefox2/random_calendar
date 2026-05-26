@@ -15,6 +15,7 @@ import com.letsgo.randomcalendar.databinding.FragmentTodoTabBinding
 import com.letsgo.randomcalendar.ui.common.ThemeHelper
 import com.letsgo.randomcalendar.ui.timer.TimerManager
 import com.letsgo.randomcalendar.ui.timer.TimerService
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -28,6 +29,7 @@ class TodoTabFragment : Fragment() {
     )
 
     private lateinit var todoAdapter: TodoAdapter
+    private var pickedDate: LocalDate? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentTodoTabBinding.inflate(inflater, container, false)
@@ -120,6 +122,15 @@ class TodoTabFragment : Fragment() {
             if (checked) binding.chipNormalTimer.isChecked = false
         }
 
+        binding.chipPickDate.setOnCheckedChangeListener { _, checked ->
+            binding.btnPickDate.visibility = if (checked) View.VISIBLE else View.GONE
+            if (checked && pickedDate == null) openDatePicker()
+        }
+        binding.chipRepeat.setOnCheckedChangeListener { _, checked ->
+            binding.chipGroupWeekdays.visibility = if (checked) View.VISIBLE else View.GONE
+        }
+        binding.btnPickDate.setOnClickListener { openDatePicker() }
+
         binding.btnAdd.setOnClickListener { submitNewTodo() }
 
         binding.etNewName.setOnEditorActionListener { _, actionId, _ ->
@@ -127,6 +138,46 @@ class TodoTabFragment : Fragment() {
                 submitNewTodo()
                 true
             } else false
+        }
+    }
+
+    private fun openDatePicker() {
+        val base = viewModel.currentDate.value ?: LocalDate.now()
+        android.app.DatePickerDialog(
+            requireContext(),
+            { _, year, month, day ->
+                pickedDate = LocalDate.of(year, month + 1, day)
+                val fmt = DateTimeFormatter.ofPattern("M월 d일")
+                binding.btnPickDate.text = pickedDate!!.format(fmt)
+            },
+            base.year, base.monthValue - 1, base.dayOfMonth
+        ).show()
+    }
+
+    private fun computeTargetDates(currentDate: LocalDate): List<LocalDate> {
+        val year = currentDate.year
+        val month = currentDate.month
+        val daysInMonth = month.length(currentDate.isLeapYear)
+        val allDays = (1..daysInMonth).map { LocalDate.of(year, month, it) }
+        return when {
+            binding.chipEveryDay.isChecked -> allDays
+            binding.chipOddDays.isChecked -> allDays.filter { it.dayOfMonth % 2 == 1 }
+            binding.chipEvenDays.isChecked -> allDays.filter { it.dayOfMonth % 2 == 0 }
+            binding.chipPickDate.isChecked -> listOf(pickedDate ?: currentDate)
+            binding.chipRepeat.isChecked -> {
+                val weekdays = buildSet<DayOfWeek> {
+                    if (binding.chipMon.isChecked) add(DayOfWeek.MONDAY)
+                    if (binding.chipTue.isChecked) add(DayOfWeek.TUESDAY)
+                    if (binding.chipWed.isChecked) add(DayOfWeek.WEDNESDAY)
+                    if (binding.chipThu.isChecked) add(DayOfWeek.THURSDAY)
+                    if (binding.chipFri.isChecked) add(DayOfWeek.FRIDAY)
+                    if (binding.chipSat.isChecked) add(DayOfWeek.SATURDAY)
+                    if (binding.chipSun.isChecked) add(DayOfWeek.SUNDAY)
+                }
+                if (weekdays.isEmpty()) listOf(currentDate)
+                else allDays.filter { it.dayOfWeek in weekdays }
+            }
+            else -> listOf(currentDate) // chipToday
         }
     }
 
@@ -154,7 +205,9 @@ class TodoTabFragment : Fragment() {
         val sets = if (timerType == "SET")
             binding.etSetCount.text.toString().toIntOrNull() ?: 3 else 0
 
-        viewModel.addTodo(name, url, timerType, goalSeconds, workSec, restSec, sets)
+        val currentDate = viewModel.currentDate.value ?: LocalDate.now()
+        val targetDates = computeTargetDates(currentDate)
+        viewModel.addTodoToMultipleDates(targetDates, name, url, timerType, goalSeconds, workSec, restSec, sets)
 
         binding.etNewName.text?.clear()
         binding.etNewUrl.text?.clear()
@@ -165,6 +218,9 @@ class TodoTabFragment : Fragment() {
         binding.chipUrl.isChecked = false
         binding.chipNormalTimer.isChecked = false
         binding.chipSetTimer.isChecked = false
+        binding.chipToday.isChecked = true
+        pickedDate = null
+        binding.btnPickDate.text = "날짜를 선택하세요"
 
         val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(binding.etNewName.windowToken, 0)
@@ -218,7 +274,13 @@ class TodoTabFragment : Fragment() {
                 android.graphics.Color.parseColor("#E0E0E0")
             }
             val chipBgCsl = android.content.res.ColorStateList.valueOf(chipBgColor)
-            listOf(binding.chipUrl, binding.chipNormalTimer, binding.chipSetTimer).forEach { chip ->
+            listOf(
+                binding.chipUrl, binding.chipNormalTimer, binding.chipSetTimer,
+                binding.chipToday, binding.chipEveryDay, binding.chipOddDays,
+                binding.chipEvenDays, binding.chipPickDate, binding.chipRepeat,
+                binding.chipMon, binding.chipTue, binding.chipWed, binding.chipThu,
+                binding.chipFri, binding.chipSat, binding.chipSun
+            ).forEach { chip ->
                 chip.setTextColor(chipCsl)
                 chip.chipBackgroundColor = chipBgCsl
             }
@@ -261,9 +323,16 @@ class TodoTabFragment : Fragment() {
 
             // Apply typeface to option chips
             val chipTypeface = ThemeHelper.resolveTypeface(requireContext())
-            listOf(binding.chipUrl, binding.chipNormalTimer, binding.chipSetTimer).forEach {
+            listOf(
+                binding.chipUrl, binding.chipNormalTimer, binding.chipSetTimer,
+                binding.chipToday, binding.chipEveryDay, binding.chipOddDays,
+                binding.chipEvenDays, binding.chipPickDate, binding.chipRepeat,
+                binding.chipMon, binding.chipTue, binding.chipWed, binding.chipThu,
+                binding.chipFri, binding.chipSat, binding.chipSun
+            ).forEach {
                 it.typeface = chipTypeface
             }
+            binding.tvScheduleLabel.setTextColor(labelText)
 
             // Update adapter
             todoAdapter.applyThemeColors(c, chipTypeface)

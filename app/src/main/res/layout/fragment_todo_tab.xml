@@ -281,6 +281,166 @@
 
         </LinearLayout>
 
+        <!-- 추가 날짜 설정 -->
+        <TextView
+            android:id="@+id/tvScheduleLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="추가 날짜"
+            android:textSize="12sp"
+            android:textColor="@color/text_secondary"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="2dp" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chipGroupSchedule"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:singleSelection="true"
+            app:selectionRequired="true">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipToday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="오늘만"
+                android:checked="true"
+                style="@style/Widget.MaterialComponents.Chip.Filter"
+                app:chipStartPadding="4dp"
+                app:chipEndPadding="4dp" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipEveryDay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="매일"
+                style="@style/Widget.MaterialComponents.Chip.Filter"
+                app:chipStartPadding="4dp"
+                app:chipEndPadding="4dp" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipOddDays"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="홀수일"
+                style="@style/Widget.MaterialComponents.Chip.Filter"
+                app:chipStartPadding="4dp"
+                app:chipEndPadding="4dp" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipEvenDays"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="짝수일"
+                style="@style/Widget.MaterialComponents.Chip.Filter"
+                app:chipStartPadding="4dp"
+                app:chipEndPadding="4dp" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipPickDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="날짜 선택"
+                style="@style/Widget.MaterialComponents.Chip.Filter"
+                app:chipStartPadding="4dp"
+                app:chipEndPadding="4dp" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipRepeat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="반복"
+                style="@style/Widget.MaterialComponents.Chip.Filter"
+                app:chipStartPadding="4dp"
+                app:chipEndPadding="4dp" />
+
+        </com.google.android.material.chip.ChipGroup>
+
+        <!-- 날짜 선택 버튼 -->
+        <Button
+            android:id="@+id/btnPickDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="날짜를 선택하세요"
+            android:textSize="13sp"
+            android:layout_marginTop="6dp"
+            android:visibility="gone"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
+        <!-- 요일 반복 chip group -->
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chipGroupWeekdays"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:visibility="gone"
+            app:singleSelection="false">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipMon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="월"
+                style="@style/Widget.MaterialComponents.Chip.Filter"
+                app:chipStartPadding="2dp"
+                app:chipEndPadding="2dp" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipTue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="화"
+                style="@style/Widget.MaterialComponents.Chip.Filter"
+                app:chipStartPadding="2dp"
+                app:chipEndPadding="2dp" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipWed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="수"
+                style="@style/Widget.MaterialComponents.Chip.Filter"
+                app:chipStartPadding="2dp"
+                app:chipEndPadding="2dp" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipThu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="목"
+                style="@style/Widget.MaterialComponents.Chip.Filter"
+                app:chipStartPadding="2dp"
+                app:chipEndPadding="2dp" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipFri"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="금"
+                style="@style/Widget.MaterialComponents.Chip.Filter"
+                app:chipStartPadding="2dp"
+                app:chipEndPadding="2dp" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipSat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="토"
+                style="@style/Widget.MaterialComponents.Chip.Filter"
+                app:chipStartPadding="2dp"
+                app:chipEndPadding="2dp" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipSun"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="일"
+                style="@style/Widget.MaterialComponents.Chip.Filter"
+                app:chipStartPadding="2dp"
+                app:chipEndPadding="2dp" />
+
+        </com.google.android.material.chip.ChipGroup>
+
         <!-- 이름 입력 + 추가 버튼 (아래쪽 배치 - 키보드 바로 위) -->
         <LinearLayout
             android:layout_width="match_parent"
