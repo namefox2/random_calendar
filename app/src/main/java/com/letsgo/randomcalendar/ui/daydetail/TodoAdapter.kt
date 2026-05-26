@@ -160,8 +160,8 @@ class TodoAdapter(
         }
 
         private fun bindNormalTimer(item: TodoItem, state: TimerManager.TimerState?) {
-            val isActive = state?.todoId == item.id
-            val elapsed = if (isActive) state!!.elapsedSeconds else item.elapsedSeconds
+            val activeState = state?.takeIf { it.todoId == item.id }
+            val elapsed = activeState?.elapsedSeconds ?: item.elapsedSeconds
             binding.tvTimerDisplay.text = TimerManager.formatSeconds(elapsed)
 
             if (item.timerGoalSeconds != null) {
@@ -172,7 +172,7 @@ class TodoAdapter(
                 binding.tvTimerGoal.visibility = View.GONE
             }
 
-            val isRunning = isActive && state!!.isRunning
+            val isRunning = activeState?.isRunning == true
             binding.btnTimerStart.isEnabled = !isRunning
             binding.btnTimerPause.isEnabled = isRunning
 
@@ -182,13 +182,13 @@ class TodoAdapter(
         }
 
         private fun bindSetTimer(item: TodoItem, state: TimerManager.TimerState?) {
-            val isActive = state?.todoId == item.id
-            val elapsed = if (isActive) state!!.elapsedSeconds else item.elapsedSeconds
+            val activeState = state?.takeIf { it.todoId == item.id }
 
-            val currentSet = if (isActive) state!!.currentSet else 1
-            val isWorkPhase = if (isActive) state!!.isWorkPhase else true
-            val phaseRemaining = if (isActive) state!!.phaseRemaining else item.setWorkSeconds
-            val phaseProgress = if (isActive) state!!.phaseProgress else 100
+            val elapsed = activeState?.elapsedSeconds ?: item.elapsedSeconds
+            val currentSet = activeState?.currentSet ?: 1
+            val isWorkPhase = activeState?.isWorkPhase ?: true
+            val phaseRemaining = activeState?.phaseRemaining ?: item.setWorkSeconds
+            val phaseProgress = activeState?.phaseProgress ?: 100
 
             binding.tvSetPhase.text = if (isWorkPhase) "운동중" else "휴식중"
             binding.tvSetPhase.setTextColor(
@@ -200,7 +200,7 @@ class TodoAdapter(
             binding.tvSetTimerDisplay.text = TimerManager.formatSeconds(phaseRemaining)
             binding.pbSetPhase.progress = phaseProgress
 
-            val isRunning = isActive && state!!.isRunning
+            val isRunning = activeState?.isRunning == true
             binding.btnSetStart.isEnabled = !isRunning
             binding.btnSetPause.isEnabled = isRunning
 

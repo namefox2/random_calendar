@@ -82,9 +82,15 @@ class MainActivity : AppCompatActivity() {
                 sheet.show(supportFragmentManager, DayDetailBottomSheet.TAG)
             } else {
                 // 첫 번째 탭: 날짜 선택만
+                val prevDate = calendarAdapter.selectedDate
                 calendarAdapter.selectedDate = date
-                calendarAdapter.notifyDataSetChanged()
-                viewModel.selectDate(date)
+                val cells = calendarAdapter.currentList
+                prevDate?.let { prev ->
+                    val pos = cells.indexOfFirst { it.date == prev }
+                    if (pos != -1) calendarAdapter.notifyItemChanged(pos)
+                }
+                val newPos = cells.indexOfFirst { it.date == date }
+                if (newPos != -1) calendarAdapter.notifyItemChanged(newPos)
             }
         }
         binding.rvCalendar.apply {

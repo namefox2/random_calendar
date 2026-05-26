@@ -21,11 +21,6 @@ class RandomListViewModel(
         viewModelScope.launch { itemRepo.deleteOrphaned() }
     }
 
-    // 분류 트리용 - 대/중/소 구분
-    val topCategories: LiveData<List<Category>> = categoryRepo.allTopLevel
-
-    fun getChildren(parentId: Long): LiveData<List<Category>> = categoryRepo.getChildren(parentId)
-
     fun addCategory(name: String, parentId: Long?, level: Int) {
         viewModelScope.launch {
             categoryRepo.insert(Category(name = name, parentId = parentId, level = level))
@@ -80,39 +75,6 @@ class RandomListViewModel(
             )
         }
     }
-
-    // 소분류 추가 시 Category와 RandomItem을 동시에 생성
-    fun addCategoryWithItem(
-        name: String,
-        parentMidId: Long,
-        url: String,
-        timerType: String,
-        timerGoalSeconds: Int?,
-        setWorkSeconds: Int,
-        setRestSeconds: Int,
-        setCount: Int
-    ) {
-        viewModelScope.launch {
-            val categoryId = categoryRepo.insert(
-                Category(name = name, parentId = parentMidId, level = 2)
-            )
-            itemRepo.insert(
-                RandomItem(
-                    name = name,
-                    categorySmallId = categoryId,
-                    url = url,
-                    timerType = timerType,
-                    timerGoalSeconds = timerGoalSeconds,
-                    setWorkSeconds = setWorkSeconds,
-                    setRestSeconds = setRestSeconds,
-                    setCount = setCount
-                )
-            )
-        }
-    }
-
-    suspend fun getItemBySmallCategoryId(categoryId: Long): RandomItem? =
-        itemRepo.getByCategoryIdOnce(categoryId)
 
     fun deleteItem(item: RandomItem) {
         viewModelScope.launch {
