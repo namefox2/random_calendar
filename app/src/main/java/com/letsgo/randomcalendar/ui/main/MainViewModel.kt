@@ -2,11 +2,9 @@ package com.letsgo.randomcalendar.ui.main
 
 import androidx.lifecycle.*
 import com.letsgo.randomcalendar.data.db.entity.MonthMemo
-import com.letsgo.randomcalendar.data.db.entity.TodoItem
 import com.letsgo.randomcalendar.data.repository.MonthMemoRepository
 import com.letsgo.randomcalendar.data.repository.TodoItemRepository
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 
@@ -17,13 +15,6 @@ class MainViewModel(
 
     private val _currentYearMonth = MutableLiveData(YearMonth.now())
     val currentYearMonth: LiveData<YearMonth> = _currentYearMonth
-
-    private val _selectedDate = MutableLiveData(LocalDate.now())
-    val selectedDate: LiveData<LocalDate> = _selectedDate
-
-    val todosForSelectedDate: LiveData<List<TodoItem>> = _selectedDate.switchMap { date ->
-        todoRepo.getByDate(date.format(DateTimeFormatter.ISO_LOCAL_DATE))
-    }
 
     val currentMonthMemo: LiveData<MonthMemo?> = _currentYearMonth.switchMap { ym ->
         memoRepo.getByYearMonth(ym.format(DateTimeFormatter.ofPattern("yyyy-MM")))
@@ -49,10 +40,6 @@ class MainViewModel(
         refreshMonthData()
     }
 
-    fun selectDate(date: LocalDate) {
-        _selectedDate.value = date
-    }
-
     fun refreshMonthData() {
         val ym = _currentYearMonth.value ?: return
         val yearMonth = ym.format(DateTimeFormatter.ofPattern("yyyy-MM"))
@@ -74,42 +61,6 @@ class MainViewModel(
                 )
             }
             _monthDayData.postValue(dayDataMap)
-        }
-    }
-
-    fun addTodo(date: LocalDate, name: String, url: String = "") {
-        viewModelScope.launch {
-            val dateStr = date.format(DateTimeFormatter.ISO_LOCAL_DATE)
-            val existingCount = todoRepo.getTotalCount(dateStr)
-            val item = TodoItem(
-                date = dateStr,
-                name = name,
-                url = url,
-                order = existingCount
-            )
-            todoRepo.insert(item)
-            refreshMonthData()
-        }
-    }
-
-    fun toggleTodoDone(item: TodoItem) {
-        viewModelScope.launch {
-            todoRepo.updateIsDone(item.id, !item.isDone)
-            refreshMonthData()
-        }
-    }
-
-    fun deleteTodo(item: TodoItem) {
-        viewModelScope.launch {
-            todoRepo.delete(item)
-            refreshMonthData()
-        }
-    }
-
-    fun updateTodo(item: TodoItem) {
-        viewModelScope.launch {
-            todoRepo.update(item)
-            refreshMonthData()
         }
     }
 

@@ -68,10 +68,10 @@ class DayDetailBottomSheet : BottomSheetDialogFragment() {
             binding.tvDetailDate.text = date.format(dateFormatter)
         }
         binding.btnPrevDay.setOnClickListener {
-            viewModel.setDate(viewModel.currentDate.value!!.minusDays(1))
+            viewModel.setDate((viewModel.currentDate.value ?: return@setOnClickListener).minusDays(1))
         }
         binding.btnNextDay.setOnClickListener {
-            viewModel.setDate(viewModel.currentDate.value!!.plusDays(1))
+            viewModel.setDate((viewModel.currentDate.value ?: return@setOnClickListener).plusDays(1))
         }
 
         try {

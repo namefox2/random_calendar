@@ -86,8 +86,6 @@ class RandomListActivity : AppCompatActivity() {
         binding = ActivityRandomListBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        viewModel
-
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         binding.toolbar.setNavigationOnClickListener { finish() }

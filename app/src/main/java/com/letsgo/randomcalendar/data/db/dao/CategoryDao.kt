@@ -7,17 +7,8 @@ import com.letsgo.randomcalendar.data.db.entity.Category
 @Dao
 interface CategoryDao {
 
-    @Query("SELECT * FROM categories WHERE level = 0 ORDER BY name ASC")
-    fun getAllTopLevel(): LiveData<List<Category>>
-
-    @Query("SELECT * FROM categories WHERE parentId = :parentId ORDER BY name ASC")
-    fun getChildren(parentId: Long): LiveData<List<Category>>
-
     @Query("SELECT * FROM categories WHERE parentId = :parentId ORDER BY name ASC")
     suspend fun getChildrenOnce(parentId: Long): List<Category>
-
-    @Query("SELECT * FROM categories WHERE id = :id")
-    suspend fun getById(id: Long): Category?
 
     @Query("SELECT * FROM categories ORDER BY level ASC, name ASC")
     fun getAll(): LiveData<List<Category>>
