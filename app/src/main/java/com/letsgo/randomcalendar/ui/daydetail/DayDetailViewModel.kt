@@ -75,6 +75,37 @@ class DayDetailViewModel(
         }
     }
 
+    fun addTodoToMultipleDates(
+        dates: List<LocalDate>,
+        name: String,
+        url: String = "",
+        timerType: String = "NONE",
+        timerGoalSeconds: Int? = null,
+        setWorkSeconds: Int = 0,
+        setRestSeconds: Int = 0,
+        setCount: Int = 0
+    ) {
+        if (name.isBlank() || dates.isEmpty()) return
+        viewModelScope.launch {
+            val items = dates.map { date ->
+                val ds = date.format(fmt)
+                val order = todoRepo.getTotalCount(ds)
+                TodoItem(
+                    date = ds,
+                    name = name.trim(),
+                    url = url.trim(),
+                    timerType = timerType,
+                    timerGoalSeconds = timerGoalSeconds,
+                    setWorkSeconds = setWorkSeconds,
+                    setRestSeconds = setRestSeconds,
+                    setCount = setCount,
+                    order = order
+                )
+            }
+            todoRepo.insertAll(items)
+        }
+    }
+
     fun toggleDone(item: TodoItem) {
         viewModelScope.launch {
             todoRepo.updateIsDone(item.id, !item.isDone)
