@@ -120,6 +120,12 @@ class RandomListViewModel(
         }
     }
 
+    fun moveToCategory(category: Category, newParentId: Long) {
+        viewModelScope.launch {
+            categoryRepo.update(category.copy(parentId = newParentId))
+        }
+    }
+
     fun updateItem(item: RandomItem) {
         viewModelScope.launch {
             itemRepo.update(item)

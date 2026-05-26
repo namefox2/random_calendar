@@ -4,13 +4,17 @@ import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import android.view.MotionEvent
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import kotlin.math.abs
 import android.widget.SeekBar
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.letsgo.randomcalendar.RandomCalendarApp
 import com.letsgo.randomcalendar.R
 import com.letsgo.randomcalendar.databinding.ActivityMainBinding
@@ -53,6 +57,7 @@ class MainActivity : AppCompatActivity() {
 
         setupCalendar()
         setupMonthNav()
+        setupSwipeNavigation()
         setupSlogan()
         setupSidebar()
         setupFontSize()
@@ -93,6 +98,45 @@ class MainActivity : AppCompatActivity() {
     private fun setupMonthNav() {
         binding.btnPrevMonth.setOnClickListener { viewModel.goToPreviousMonth() }
         binding.btnNextMonth.setOnClickListener { viewModel.goToNextMonth() }
+    }
+
+    private fun setupSwipeNavigation() {
+        var startX = 0f
+        var startY = 0f
+        var isSwiping = false
+        val minSwipe = resources.displayMetrics.density * 50
+
+        binding.rvCalendar.addOnItemTouchListener(object : RecyclerView.SimpleOnItemTouchListener() {
+            override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
+                when (e.action) {
+                    MotionEvent.ACTION_DOWN -> {
+                        startX = e.x; startY = e.y; isSwiping = false
+                    }
+                    MotionEvent.ACTION_MOVE -> {
+                        val dx = e.x - startX
+                        val dy = e.y - startY
+                        if (!isSwiping && abs(dx) > abs(dy) * 1.5f && abs(dx) > minSwipe) {
+                            isSwiping = true
+                            binding.drawerLayout.requestDisallowInterceptTouchEvent(true)
+                        }
+                    }
+                }
+                return isSwiping
+            }
+
+            override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {
+                when (e.action) {
+                    MotionEvent.ACTION_UP -> {
+                        if (isSwiping) {
+                            if (e.x - startX > 0) viewModel.goToPreviousMonth()
+                            else viewModel.goToNextMonth()
+                        }
+                        isSwiping = false
+                    }
+                    MotionEvent.ACTION_CANCEL -> isSwiping = false
+                }
+            }
+        })
     }
 
     private fun setupSlogan() {
@@ -333,6 +377,10 @@ class MainActivity : AppCompatActivity() {
             binding.mainContent.setBackgroundColor(c.bgColor)
             binding.rvCalendar.setBackgroundColor(c.bgColor)
 
+            // 상태바 색상을 슬로건 바와 맞춤
+            window.statusBarColor = primaryColor
+            WindowInsetsControllerCompat(window, binding.root).isAppearanceLightStatusBars =
+                !ThemeHelper.isColorDark(primaryColor)
             // 슬로건 바
             binding.sloganBar.setBackgroundColor(primaryColor)
             binding.sidebarLayout.setBackgroundColor(sidebarColor)
