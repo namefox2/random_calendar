@@ -86,6 +86,10 @@ class RandomListActivity : AppCompatActivity() {
         binding = ActivityRandomListBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Fragment이 Activity의 ViewModelStore에서 ViewModel을 가져오므로
+        // Fragment 생성 전에 반드시 먼저 초기화해야 함
+        viewModel
+
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         binding.toolbar.setNavigationOnClickListener { finish() }
