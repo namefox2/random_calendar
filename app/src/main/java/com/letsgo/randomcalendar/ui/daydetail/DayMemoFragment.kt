@@ -2,6 +2,7 @@ package com.letsgo.randomcalendar.ui.daydetail
 
 import android.app.Dialog
 import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -12,6 +13,7 @@ import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -36,17 +38,70 @@ class DayMemoFragment : Fragment() {
 
     private val photoPaths = mutableListOf<String>()
     private var pendingCameraPath: String? = null
+    private fun compressImage(path: String): String? {
+        return try {
+            val file = File(path)
 
+            val bitmap = BitmapFactory.decodeFile(path)
+                ?: return null
+
+            val maxSize = 1280
+
+            val ratio = minOf(
+                maxSize.toFloat() / bitmap.width,
+                maxSize.toFloat() / bitmap.height,
+                1f
+            )
+
+            val resized = if (ratio < 1f) {
+                android.graphics.Bitmap.createScaledBitmap(
+                    bitmap,
+                    (bitmap.width * ratio).toInt(),
+                    (bitmap.height * ratio).toInt(),
+                    true
+                )
+            } else {
+                bitmap
+            }
+
+            file.outputStream().use { output ->
+                resized.compress(
+                    android.graphics.Bitmap.CompressFormat.JPEG,
+                    80,
+                    output
+                )
+            }
+
+            if (resized != bitmap) {
+                resized.recycle()
+            }
+
+            bitmap.recycle()
+
+            file.absolutePath
+        } catch (e: Exception) {
+            null
+        }
+    }
     private val cameraLauncher = registerForActivityResult(
         ActivityResultContracts.TakePicture()
     ) { success ->
         val path = pendingCameraPath ?: return@registerForActivityResult
+
         if (success) {
-            photoPaths.add(path)
-            addPhotoThumb(path)
+            val compressedPath = compressImage(path)
+
+            if (compressedPath != null) {
+                photoPaths.add(compressedPath)
+                addPhotoThumb(compressedPath)
+            } else {
+                photoPaths.add(path)
+                addPhotoThumb(path)
+            }
         } else {
             File(path).delete()
         }
+
         pendingCameraPath = null
     }
 
@@ -58,7 +113,7 @@ class DayMemoFragment : Fragment() {
     }
 
     private val galleryLauncher = registerForActivityResult(
-        ActivityResultContracts.GetContent()
+        ActivityResultContracts.PickVisualMedia()
     ) { uri: Uri? ->
         uri ?: return@registerForActivityResult
         val copied = copyToInternal(uri) ?: return@registerForActivityResult
@@ -101,7 +156,10 @@ class DayMemoFragment : Fragment() {
             if (hasPerm) launchCamera()
             else cameraPermissionLauncher.launch(android.Manifest.permission.CAMERA)
         }
-        binding.btnGallery.setOnClickListener { galleryLauncher.launch("image/*") }
+        binding.btnGallery.setOnClickListener { galleryLauncher.launch(
+            PickVisualMediaRequest(
+            ActivityResultContracts.PickVisualMedia.ImageOnly
+        )) }
 
         binding.btnSaveMemo.setOnClickListener {
             val content = binding.etDayMemo.text.toString()
@@ -146,11 +204,48 @@ class DayMemoFragment : Fragment() {
         return try {
             val dir = (requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
                 ?: requireContext().filesDir).also { it.mkdirs() }
+
             val ts = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
             val dest = File(dir, "memo_$ts.jpg")
-            requireContext().contentResolver.openInputStream(uri)?.use { input ->
-                dest.outputStream().use { output -> input.copyTo(output) }
+
+            val bitmap = requireContext().contentResolver
+                .openInputStream(uri)
+                ?.use { BitmapFactory.decodeStream(it) }
+                ?: return null
+
+            val maxSize = 1280
+
+            val ratio = minOf(
+                maxSize.toFloat() / bitmap.width,
+                maxSize.toFloat() / bitmap.height,
+                1f
+            )
+
+            val resized = if (ratio < 1f) {
+                android.graphics.Bitmap.createScaledBitmap(
+                    bitmap,
+                    (bitmap.width * ratio).toInt(),
+                    (bitmap.height * ratio).toInt(),
+                    true
+                )
+            } else {
+                bitmap
             }
+
+            dest.outputStream().use { output ->
+                resized.compress(
+                    android.graphics.Bitmap.CompressFormat.JPEG,
+                    80,
+                    output
+                )
+            }
+
+            if (resized != bitmap) {
+                resized.recycle()
+            }
+
+            bitmap.recycle()
+
             dest.absolutePath
         } catch (e: Exception) {
             null
@@ -190,6 +285,12 @@ class DayMemoFragment : Fragment() {
         }
         del.setOnClickListener {
             photoPaths.remove(path)
+
+            try {
+                File(path).delete()
+            } catch (_: Exception) {
+            }
+
             binding.photoContainer.removeView(frame)
         }
 
