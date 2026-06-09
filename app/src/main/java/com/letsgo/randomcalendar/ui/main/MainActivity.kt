@@ -232,26 +232,24 @@ class MainActivity : AppCompatActivity() {
         binding.tvMemo.setOnClickListener {
             binding.tvMemo.visibility = android.view.View.GONE
             binding.etMemo.visibility = android.view.View.VISIBLE
+            binding.btnSaveMemo.visibility = android.view.View.VISIBLE
             binding.etMemo.requestFocus()
             val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
             imm.showSoftInput(binding.etMemo, InputMethodManager.SHOW_IMPLICIT)
         }
 
-        binding.etMemo.addTextChangedListener(object : android.text.TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: android.text.Editable?) {
-                viewModel.saveMemo(s.toString())
-            }
-        })
+        binding.btnSaveMemo.setOnClickListener {
+            collapseMemoField(save = true)
+        }
 
         binding.etMemo.setOnFocusChangeListener { _, hasFocus ->
-            if (!hasFocus) collapseMemoField()
+            if (!hasFocus) collapseMemoField(save = true)
         }
     }
 
-    private fun collapseMemoField() {
+    private fun collapseMemoField(save: Boolean = false) {
         val text = binding.etMemo.text.toString()
+        if (save) viewModel.saveMemo(text)
         binding.tvMemo.text = text.ifBlank { "이달의 메모를 입력하세요..." }
         binding.tvMemo.setTextColor(
             getColor(if (text.isBlank()) com.letsgo.randomcalendar.R.color.text_secondary
@@ -259,6 +257,7 @@ class MainActivity : AppCompatActivity() {
         )
         binding.tvMemo.visibility = android.view.View.VISIBLE
         binding.etMemo.visibility = android.view.View.GONE
+        binding.btnSaveMemo.visibility = android.view.View.GONE
         val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(binding.etMemo.windowToken, 0)
     }
@@ -371,6 +370,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @Suppress("DEPRECATION")
     private fun applyThemeColors() {
         try {
             val c = com.letsgo.randomcalendar.ui.common.ThemeHelper.load(this)
