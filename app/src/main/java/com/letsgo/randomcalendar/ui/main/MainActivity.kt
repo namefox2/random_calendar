@@ -11,7 +11,11 @@ import kotlin.math.abs
 import android.widget.SeekBar
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.view.updatePadding
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -55,6 +59,8 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        setupWindowInsets()
         setupCalendar()
         setupMonthNav()
         setupSwipeNavigation()
@@ -370,7 +376,21 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    @Suppress("DEPRECATION")
+    private fun setupWindowInsets() {
+        val density = resources.displayMetrics.density
+        val sidebarBase = (16 * density).toInt()
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
+            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            binding.sloganBar.updatePadding(top = bars.top)
+            binding.mainContent.updatePadding(bottom = bars.bottom)
+            binding.sidebarLayout.updatePadding(
+                top = bars.top + sidebarBase,
+                bottom = bars.bottom + sidebarBase
+            )
+            insets
+        }
+    }
+
     private fun applyThemeColors() {
         try {
             val c = com.letsgo.randomcalendar.ui.common.ThemeHelper.load(this)
@@ -383,8 +403,7 @@ class MainActivity : AppCompatActivity() {
             binding.mainContent.setBackgroundColor(c.bgColor)
             binding.rvCalendar.setBackgroundColor(c.bgColor)
 
-            // 상태바 색상을 슬로건 바와 맞춤
-            window.statusBarColor = primaryColor
+            // 슬로건 바 배경이 status bar 영역까지 확장되어 색상이 자연스럽게 채워짐
             WindowInsetsControllerCompat(window, binding.root).isAppearanceLightStatusBars =
                 !ThemeHelper.isColorDark(primaryColor)
             // 슬로건 바
