@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 기본 테마 색상 -->
+    <color name="primary">#1976D2</color>
+    <color name="primary_dark">#1565C0</color>
+    <color name="accent">#FF9800</color>
+
+    <!-- 앱 배경 / 텍스트 -->
+    <color name="bg_primary">#FFFFFF</color>
+    <color name="bg_sidebar">#F5F5F5</color>
+    <color name="text_primary">#212121</color>
+    <color name="text_secondary">#757575</color>
+
+    <!-- 캘린더 달성률 색상 -->
+    <color name="calendar_green">#81C784</color>
+    <color name="calendar_red">#E57373</color>
+    <color name="calendar_white">#FFFFFF</color>
+
+    <!-- 요일 색상 -->
+    <color name="day_saturday">#1565C0</color>
+
+    <!-- 공통 -->
+    <color name="divider">#E0E0E0</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+</resources>
