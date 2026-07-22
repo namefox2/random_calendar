@@ -18,7 +18,8 @@
         <LinearLayout
             android:id="@+id/sloganBar"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_height="wrap_content"
+            android:minHeight="56dp"
             android:orientation="horizontal"
             android:gravity="center_vertical"
             android:paddingStart="8dp"
@@ -220,7 +221,8 @@
         android:layout_gravity="start"
         android:orientation="vertical"
         android:background="@color/bg_sidebar"
-        android:padding="16dp">
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp">
 
         <TextView
             android:id="@+id/tvSidebarTitle"
